@@ -7,9 +7,14 @@
    ------------------------------------------------------------------ */
 
 @theme {
-  --font-display: 'Bricolage Grotesque', 'Cairo', ui-sans-serif, system-ui, sans-serif;
-  --font-sans: 'Manrope', 'Cairo', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-arabic: 'Cairo', 'Manrope', ui-sans-serif, system-ui, sans-serif;
+  /* Titres : Baloo 2 en français, Baloo Bhaijaan 2 en arabe. Texte courant :
+     Nunito Sans en français, Noto Sans Arabic en arabe. La version d'avant
+     (Bricolage Grotesque + Manrope + Cairo) est gardée sous le repère git
+     `typo-v1-bricolage-manrope`. */
+  --font-display: 'Baloo 2', 'Baloo Bhaijaan 2', ui-rounded, ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Nunito Sans', 'Noto Sans Arabic', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-arabic: 'Noto Sans Arabic', 'Nunito Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-arabic-display: 'Baloo Bhaijaan 2', 'Baloo 2', ui-rounded, ui-sans-serif, system-ui, sans-serif;
 
   --color-ink: #16201a;
   --color-ink-2: #3f4a42;
@@ -104,8 +109,13 @@
   html[dir='rtl'] body {
     font-family: var(--font-arabic);
   }
-  html[dir='rtl'] .font-display {
-    font-family: var(--font-arabic);
+  html[dir='rtl'] .font-display,
+  html[dir='rtl'] h1,
+  html[dir='rtl'] h2,
+  html[dir='rtl'] h3,
+  html[dir='rtl'] h4 {
+    font-family: var(--font-arabic-display);
+    font-weight: 700;
     letter-spacing: 0;
   }
   body {
@@ -124,8 +134,9 @@
   h4 {
     @apply font-display text-ink;
     text-wrap: balance;
-    letter-spacing: -0.01em;
-    font-variation-settings: 'opsz' 96;
+    font-weight: 800;
+    letter-spacing: -0.005em;
+    line-height: 1.1;
   }
   p {
     text-wrap: pretty;

@@ -70,3 +70,16 @@ la fin de `global.css` :
 
 Piège rencontré : dans une data URI SVG, la couleur s'écrit `%23xxxxxx`. Si le `#`
 est encodé deux fois (`%2523`), le motif est bien chargé mais rien ne se dessine.
+
+## Typographie
+
+Titres : Baloo 2 extra-gras en français, Baloo Bhaijaan 2 gras en arabe. Texte courant :
+Nunito Sans en français, Noto Sans Arabic en arabe. Tout se règle dans le bloc `@theme`
+de `apps/boutique/src/styles/global.css` (familles) et dans `Base.astro` (fichiers Google Fonts).
+
+La version précédente (Bricolage Grotesque + Manrope + Cairo) est gardée sous le repère git
+`typo-v1-bricolage-manrope`. Pour y revenir :
+
+```bash
+git checkout typo-v1-bricolage-manrope -- apps/boutique/src/styles/global.css apps/boutique/src/layouts/Base.astro
+```
