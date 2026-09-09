@@ -49,3 +49,24 @@ sert le bon format.
 
 `.github/workflows/deploy.yml` : tests, vérification des types, construction des deux apps,
 assemblage dans `dist/` (`scripts/build-pages.mjs`), publication sur GitHub Pages.
+
+## Le décor
+
+Le site emprunte la matière des sites agroalimentaires tunisiens : herbes posées
+dans les marges, bords de sections irréguliers, photos aux contours organiques,
+fonds en filigrane. Trois outils, dans `apps/boutique/src/components/deco` et à
+la fin de `global.css` :
+
+- **`Deco.astro`** : 14 dessins au trait (persil, coriandre, romarin, poivre,
+  plume, oeuf, oeufs, ble, oranger, piment, ail, grain, poussin, poule).
+  `<Deco type="persil" class="deco deco-lg -start-8 top-24 w-28 text-prairie/25" />`
+  Toujours `aria-hidden`, jamais cliquable. `.deco-lg` disparaît sous 640 px.
+- **`TornEdge.astro`** : bord déchiré (`torn`) ou ondulé (`wave`), posé DANS une
+  section en `relative`. La couleur donnée en `text-*` est celle de la section
+  suivante : le bord la fait mordre sur la section courante.
+- **Classes CSS** : `.filigree` et `.filigree-green` (motif d'herbes très pâle en
+  fond), `blob` et `blob-2` (masquent une image en forme de tache peinte),
+  `.deco-sway` (balancement lent, désactivé si l'utilisateur réduit les animations).
+
+Piège rencontré : dans une data URI SVG, la couleur s'écrit `%23xxxxxx`. Si le `#`
+est encodé deux fois (`%2523`), le motif est bien chargé mais rien ne se dessine.

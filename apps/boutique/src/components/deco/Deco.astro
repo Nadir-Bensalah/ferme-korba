@@ -1,0 +1,184 @@
+---
+/**
+ * Petits éléments décoratifs de la ferme, posés dans les marges des sections.
+ * Dessins au trait, jamais informatifs : toujours aria-hidden.
+ *
+ *   <Deco type="persil" class="absolute -start-6 top-24 w-28 rotate-12 opacity-70" />
+ *
+ * Les types viennent du monde de l'élevage et du Cap Bon : herbes de cuisine,
+ * grain qui nourrit les poules, plume, œuf, fleur d'oranger, épi de blé.
+ */
+import type { DecoType } from './types';
+
+interface Props {
+  type: DecoType;
+  class?: string;
+  /** Couleur du trait. Par défaut, le vert de la ferme. */
+  stroke?: string;
+  /** Remplissage doux, pour les silhouettes. */
+  fill?: string;
+}
+const { type, class: cls = '', stroke = 'currentColor', fill = 'none' } = Astro.props;
+const common = {
+  fill: 'none',
+  stroke,
+  'stroke-width': '1.5',
+  'stroke-linecap': 'round' as const,
+  'stroke-linejoin': 'round' as const,
+};
+---
+
+<svg class={cls} viewBox="0 0 120 120" aria-hidden="true" focusable="false">
+  {
+    type === 'persil' && (
+      <g {...common}>
+        <path d="M60 112V64" />
+        <path d="M60 76c-8-2-14-8-16-16 9-1 15 3 18 9M60 76c8-2 14-8 16-16-9-1-15 3-18 9" />
+        <path d="M60 58c-9-3-15-10-16-20 10 0 17 5 20 12M60 58c9-3 15-10 16-20-10 0-17 5-20 12" />
+        <path d="M60 40c-6-4-9-11-8-19 8 2 13 8 14 15M60 40c6-4 9-11 8-19-8 2-13 8-14 15" />
+        <path d="M52 88c-6-1-10-5-11-11 6 0 11 3 13 7M68 88c6-1 10-5 11-11-6 0-11 3-13 7" />
+      </g>
+    )
+  }
+
+  {
+    type === 'coriandre' && (
+      <g {...common}>
+        <path d="M62 112c-2-24 0-42 6-54" />
+        <path d="M68 58c-10 2-18-2-22-11 10-4 19-1 24 6" />
+        <path d="M74 44c-4-10-1-19 8-24 4 10 1 19-6 24" />
+        <path d="M56 74c-11 0-19-5-21-15 11-2 20 2 24 10" />
+        <path d="M78 70c9-3 15-10 15-20-10 1-17 6-19 14" />
+      </g>
+    )
+  }
+
+  {
+    type === 'romarin' && (
+      <g {...common}>
+        <path d="M30 108C48 84 66 56 82 22" />
+        <path d="M44 88 30 84M48 80l-13-8M54 70 40 66M58 62 45 54M64 52 51 48M68 44 55 36" />
+        <path d="M46 86l4-14M52 78l3-14M58 68l4-14M62 58l4-14M68 48l4-14" />
+      </g>
+    )
+  }
+
+  {
+    type === 'poivre' && (
+      <g stroke={stroke} stroke-width="1.5" fill={fill === 'none' ? 'none' : fill}>
+        <circle cx="34" cy="46" r="9" />
+        <circle cx="62" cy="34" r="7" />
+        <circle cx="84" cy="52" r="10" />
+        <circle cx="52" cy="70" r="8" />
+        <circle cx="78" cy="82" r="6" />
+        <circle cx="34" cy="46" r="3.5" opacity=".5" />
+        <circle cx="84" cy="52" r="4" opacity=".5" />
+      </g>
+    )
+  }
+
+  {
+    type === 'plume' && (
+      <g {...common}>
+        <path d="M34 104c26-6 46-22 56-46 6-16 5-30-3-42-16 6-30 18-40 34-10 16-14 34-13 54Z" />
+        <path d="M34 104 78 40" />
+        <path d="M44 88h16M50 76h16M56 64h15M62 52h13M68 42h10" />
+      </g>
+    )
+  }
+
+  {
+    type === 'oeuf' && (
+      <g {...common}>
+        <path d="M60 106c-16 0-27-11-27-26 0-20 12-46 27-46s27 26 27 46c0 15-11 26-27 26Z" />
+      </g>
+    )
+  }
+
+  {
+    type === 'oeufs' && (
+      <g {...common}>
+        <path d="M42 104c-11 0-19-8-19-19 0-14 8-32 19-32s19 18 19 32c0 11-8 19-19 19Z" />
+        <path d="M80 106c-9 0-15-7-15-15 0-11 7-26 15-26s15 15 15 26c0 8-6 15-15 15Z" />
+      </g>
+    )
+  }
+
+  {
+    type === 'ble' && (
+      <g {...common}>
+        <path d="M60 112V54" />
+        <path d="M60 54c-7-2-11-8-11-16 7 0 12 5 13 11M60 54c7-2 11-8 11-16-7 0-12 5-13 11" />
+        <path d="M60 40c-7-2-11-8-11-16 7 0 12 5 13 11M60 40c7-2 11-8 11-16-7 0-12 5-13 11" />
+        <path d="M60 26c-5-2-8-7-8-13 5 1 9 5 10 10M60 26c5-2 8-7 8-13-5 1-9 5-10 10" />
+        <path d="M60 78c-8 1-14-2-17-9 8-2 14 0 18 5M60 90c8 1 14-2 17-9-8-2-14 0-18 5" />
+      </g>
+    )
+  }
+
+  {
+    type === 'oranger' && (
+      <g {...common}>
+        <circle cx="46" cy="66" r="20" />
+        <path d="M46 46v-8M46 38c4-4 10-4 14 0-4 4-10 4-14 0Z" />
+        <path d="M76 86c10-2 18-10 20-21-11-1-20 4-24 13M76 86c-2-11 2-21 11-27" />
+      </g>
+    )
+  }
+
+  {
+    type === 'piment' && (
+      <g {...common}>
+        <path d="M40 40c18-4 34 6 40 24 4 14-2 26-14 32-14 6-26 0-32-14-5-12-2-24 6-30" />
+        <path d="M40 40c-2-8 2-14 10-16 2 6 0 12-4 16" />
+      </g>
+    )
+  }
+
+  {
+    type === 'ail' && (
+      <g {...common}>
+        <path d="M60 30c14 12 22 26 22 42 0 16-10 26-22 26s-22-10-22-26c0-16 8-30 22-42Z" />
+        <path d="M60 30v68M48 52c-4 12-4 26 2 38M72 52c4 12 4 26-2 38" />
+        <path d="M60 30c0-8 2-14 6-18" />
+      </g>
+    )
+  }
+
+  {
+    type === 'grain' && (
+      <g stroke={stroke} stroke-width="1.5" fill="none">
+        <ellipse cx="36" cy="52" rx="7" ry="10" transform="rotate(-20 36 52)" />
+        <ellipse cx="62" cy="38" rx="6" ry="9" transform="rotate(15 62 38)" />
+        <ellipse cx="84" cy="58" rx="7" ry="10" transform="rotate(-8 84 58)" />
+        <ellipse cx="54" cy="76" rx="6" ry="9" transform="rotate(28 54 76)" />
+        <ellipse cx="80" cy="86" rx="5" ry="8" transform="rotate(-24 80 86)" />
+      </g>
+    )
+  }
+
+  {
+    type === 'poussin' && (
+      <g {...common}>
+        <path d="M42 88c0-16 9-28 22-28s22 12 22 28c0 10-9 16-22 16s-22-6-22-16Z" />
+        <path d="M52 60c-2-12 4-22 14-22s16 10 14 22" />
+        <circle cx="60" cy="48" r="1.6" fill={stroke} stroke="none" />
+        <path d="M70 50l7 3-7 3" />
+        <path d="M54 104v6M70 104v6" />
+      </g>
+    )
+  }
+
+  {
+    type === 'poule' && (
+      <g {...common}>
+        <path d="M30 88c0-18 12-32 30-32 12 0 22 5 28 14 6 8 8 18 4 24-6 8-22 12-38 10-14-2-24-8-24-16Z" />
+        <path d="M60 56c-4-10 0-18 8-20 4 8 2 16-4 20" />
+        <path d="M52 40c2-8 8-12 16-12-1 6-5 11-10 13" />
+        <circle cx="66" cy="50" r="1.6" fill={stroke} stroke="none" />
+        <path d="M74 54l8 2-8 4" />
+        <path d="M52 104l4-10M70 104l2-10" />
+      </g>
+    )
+  }
+</svg>

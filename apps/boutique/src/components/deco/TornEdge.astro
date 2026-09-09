@@ -1,0 +1,46 @@
+---
+/**
+ * Bord de section irrégulier, comme du papier déchiré ou une ligne peinte.
+ * À poser dans une section en `relative` :
+ *
+ *   <TornEdge position="bottom" class="text-cream" />
+ *
+ * La couleur vient de `currentColor` : on donne au composant la couleur de la
+ * section SUIVANTE (le bord la fait déborder sur la section courante).
+ */
+type Position = 'top' | 'bottom';
+type Variant = 'torn' | 'wave';
+
+interface Props {
+  position?: Position;
+  variant?: Variant;
+  class?: string;
+  /** Hauteur en pixels du liseré. */
+  height?: number;
+}
+const { position = 'bottom', variant = 'torn', class: cls = '', height = 26 } = Astro.props;
+
+const TORN =
+  'M0,28 L0,9.4 L26.1,5.5 L52.2,17.0 L78.3,3.7 L104.3,14.3 L130.4,10.4 L156.5,3.3 L182.6,13.7 L208.7,2.9 L234.8,12.0 L260.9,3.6 L287.0,4.1 L313.0,11.8 L339.1,21.0 L365.2,4.8 L391.3,7.1 L417.4,16.4 L443.5,23.8 L469.6,15.3 L495.7,11.1 L521.7,24.5 L547.8,3.1 L573.9,21.7 L600.0,8.7 L626.1,5.3 L652.2,4.7 L678.3,9.1 L704.3,20.8 L730.4,6.2 L756.5,15.4 L782.6,16.7 L808.7,10.6 L834.8,14.6 L860.9,3.4 L887.0,3.4 L913.0,6.7 L939.1,17.6 L965.2,11.8 L991.3,9.2 L1017.4,15.5 L1043.5,12.4 L1069.6,8.9 L1095.7,20.3 L1121.7,18.1 L1147.8,7.6 L1173.9,15.2 L1200.0,14.1 L1200,28 Z';
+const WAVE =
+  'M0,32 L0,16 C84,2 156,2 240,16 C324,28 396,28 480,16 C564,2 636,2 720,16 C804,28 876,28 960,16 C1044,2 1116,2 1200,16 L1200,32 Z';
+
+const d = variant === 'wave' ? WAVE : TORN;
+const box = variant === 'wave' ? '0 0 1200 32' : '0 0 1200 28';
+---
+
+<svg
+  class:list={[
+    'pointer-events-none absolute inset-x-0 z-10 block w-full',
+    position === 'top' ? 'top-0' : 'bottom-0',
+    position === 'top' && 'rotate-180',
+    cls,
+  ]}
+  style={`height:${height}px`}
+  viewBox={box}
+  preserveAspectRatio="none"
+  aria-hidden="true"
+  focusable="false"
+>
+  <path d={d} fill="currentColor"></path>
+</svg>

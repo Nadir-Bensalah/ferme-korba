@@ -615,3 +615,85 @@ details[open] .faq-chevron {
     transition: none;
   }
 }
+
+/* ------------------------------------------------------------------
+   Décor : filigranes, bords irréguliers, formes organiques.
+   Rien d'informatif ici, uniquement de la matière.
+   ------------------------------------------------------------------ */
+@layer components {
+  /* Fond en filigrane : herbes, œufs et grains au trait, très pâles. */
+  .filigree {
+    position: relative;
+  }
+  .filigree::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.45;
+    background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%27360%27%20height%3D%27360%27%20viewBox%3D%270%200%20360%20360%27%3E%3Cg%20fill%3D%27none%27%20stroke%3D%27%23c9bda0%27%20stroke-width%3D%271.6%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%3E%3Cpath%20d%3D%27M46%2096V52M46%2066c-6-1-10-6-11-12%206%200%2011%202%2013%206M46%2066c6-1%2010-6%2011-12-6%200-11%202-13%206M46%2054c-5-2-8-6-8-12%205%201%209%204%2010%208M46%2054c5-2%208-6%208-12-5%201-9%204-10%208%27%2F%3E%3Cpath%20d%3D%27M150%2078c-9%200-15-6-15-14%200-11%207-25%2015-25s15%2014%2015%2025c0%208-6%2014-15%2014Z%27%2F%3E%3Cpath%20d%3D%27M262%2044c10%208%2016%2018%2016%2029%200%2011-7%2018-16%2018s-16-7-16-18c0-11%206-21%2016-29Z%27%2F%3E%3Cpath%20d%3D%27M262%2044v47%27%2F%3E%3Cpath%20d%3D%27M92%20196c14-3%2024-12%2026-25-14-2-25%203-30%2014M92%20196c-3-14%202-26%2013-33%27%2F%3E%3Cpath%20d%3D%27M198%20214c-12%200-20-8-20-19%200-14%209-32%2020-32s20%2018%2020%2032c0%2011-8%2019-20%2019Z%27%2F%3E%3Cpath%20d%3D%27M300%20186c18-24%2026-38%2030-52M312%20202l-8-10M320%20190l-6-12M328%20176l-8-10%27%2F%3E%3Cpath%20d%3D%27M40%20286c16-2%2028-10%2032-22-14-4-27%200-34%2010%27%2F%3E%3Cpath%20d%3D%27M140%20300c0-14%208-24%2019-24s19%2010%2019%2024c0%209-8%2014-19%2014s-19-5-19-14Z%27%2F%3E%3Cpath%20d%3D%27M150%20276c-2-10%203-18%209-18s11%208%209%2018%27%2F%3E%3Cpath%20d%3D%27M252%20306c10-14%2016-24%2018-34M262%20316l-6-8M270%20306l-5-9%27%2F%3E%3Cellipse%20cx%3D%27330%27%20cy%3D%27268%27%20rx%3D%277%27%20ry%3D%2710%27%20transform%3D%27rotate%28-20%20330%20268%29%27%2F%3E%3Cellipse%20cx%3D%27348%27%20cy%3D%27288%27%20rx%3D%276%27%20ry%3D%279%27%20transform%3D%27rotate%2815%20348%20288%29%27%2F%3E%3Cellipse%20cx%3D%2796%27%20cy%3D%27120%27%20rx%3D%276%27%20ry%3D%279%27%20transform%3D%27rotate%2828%2096%20120%29%27%2F%3E%3Cellipse%20cx%3D%27214%27%20cy%3D%27128%27%20rx%3D%277%27%20ry%3D%2710%27%20transform%3D%27rotate%28-8%20214%20128%29%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+    background-size: 340px 340px;
+    background-repeat: repeat;
+    -webkit-mask-image: radial-gradient(150% 130% at 50% 45%, #000 60%, transparent 100%);
+    mask-image: radial-gradient(150% 130% at 50% 45%, #000 60%, transparent 100%);
+  }
+  .filigree-green::before {
+    background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%27360%27%20height%3D%27360%27%20viewBox%3D%270%200%20360%20360%27%3E%3Cg%20fill%3D%27none%27%20stroke%3D%27%23a9cbb6%27%20stroke-width%3D%271.6%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%3E%3Cpath%20d%3D%27M46%2096V52M46%2066c-6-1-10-6-11-12%206%200%2011%202%2013%206M46%2066c6-1%2010-6%2011-12-6%200-11%202-13%206M46%2054c-5-2-8-6-8-12%205%201%209%204%2010%208M46%2054c5-2%208-6%208-12-5%201-9%204-10%208%27%2F%3E%3Cpath%20d%3D%27M150%2078c-9%200-15-6-15-14%200-11%207-25%2015-25s15%2014%2015%2025c0%208-6%2014-15%2014Z%27%2F%3E%3Cpath%20d%3D%27M262%2044c10%208%2016%2018%2016%2029%200%2011-7%2018-16%2018s-16-7-16-18c0-11%206-21%2016-29Z%27%2F%3E%3Cpath%20d%3D%27M262%2044v47%27%2F%3E%3Cpath%20d%3D%27M92%20196c14-3%2024-12%2026-25-14-2-25%203-30%2014M92%20196c-3-14%202-26%2013-33%27%2F%3E%3Cpath%20d%3D%27M198%20214c-12%200-20-8-20-19%200-14%209-32%2020-32s20%2018%2020%2032c0%2011-8%2019-20%2019Z%27%2F%3E%3Cpath%20d%3D%27M300%20186c18-24%2026-38%2030-52M312%20202l-8-10M320%20190l-6-12M328%20176l-8-10%27%2F%3E%3Cpath%20d%3D%27M40%20286c16-2%2028-10%2032-22-14-4-27%200-34%2010%27%2F%3E%3Cpath%20d%3D%27M140%20300c0-14%208-24%2019-24s19%2010%2019%2024c0%209-8%2014-19%2014s-19-5-19-14Z%27%2F%3E%3Cpath%20d%3D%27M150%20276c-2-10%203-18%209-18s11%208%209%2018%27%2F%3E%3Cpath%20d%3D%27M252%20306c10-14%2016-24%2018-34M262%20316l-6-8M270%20306l-5-9%27%2F%3E%3Cellipse%20cx%3D%27330%27%20cy%3D%27268%27%20rx%3D%277%27%20ry%3D%2710%27%20transform%3D%27rotate%28-20%20330%20268%29%27%2F%3E%3Cellipse%20cx%3D%27348%27%20cy%3D%27288%27%20rx%3D%276%27%20ry%3D%279%27%20transform%3D%27rotate%2815%20348%20288%29%27%2F%3E%3Cellipse%20cx%3D%2796%27%20cy%3D%27120%27%20rx%3D%276%27%20ry%3D%279%27%20transform%3D%27rotate%2828%2096%20120%29%27%2F%3E%3Cellipse%20cx%3D%27214%27%20cy%3D%27128%27%20rx%3D%277%27%20ry%3D%2710%27%20transform%3D%27rotate%28-8%20214%20128%29%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+    opacity: 0.6;
+  }
+  .filigree > * {
+    position: relative;
+  }
+}
+
+@utility blob {
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20200%20200%27%3E%3Cpath%20fill%3D%27%23000%27%20d%3D%27M100%204c26%200%2044%2010%2060%2026%2015%2015%2032%2030%2034%2052%202%2023-13%2041-28%2058-16%2018-33%2038-58%2039-26%201-47-16-64-34C28%20128%2010%20110%2012%2087c2-23%2020-38%2036-53C63%2019%2076%204%20100%204Z%27%2F%3E%3C%2Fsvg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20200%20200%27%3E%3Cpath%20fill%3D%27%23000%27%20d%3D%27M100%204c26%200%2044%2010%2060%2026%2015%2015%2032%2030%2034%2052%202%2023-13%2041-28%2058-16%2018-33%2038-58%2039-26%201-47-16-64-34C28%20128%2010%20110%2012%2087c2-23%2020-38%2036-53C63%2019%2076%204%20100%204Z%27%2F%3E%3C%2Fsvg%3E");
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+}
+
+@utility blob-2 {
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20200%20200%27%3E%3Cpath%20fill%3D%27%23000%27%20d%3D%27M104%206c28-2%2052%2012%2068%2032%2015%2019%2020%2044%2014%2068-6%2025-24%2046-47%2055-24%2010-52%205-73-10C45%20136%2032%20112%2032%2086c0-27%2014-50%2033-63C81%2012%2090%207%20104%206Z%27%2F%3E%3C%2Fsvg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20200%20200%27%3E%3Cpath%20fill%3D%27%23000%27%20d%3D%27M104%206c28-2%2052%2012%2068%2032%2015%2019%2020%2044%2014%2068-6%2025-24%2046-47%2055-24%2010-52%205-73-10C45%20136%2032%20112%2032%2086c0-27%2014-50%2033-63C81%2012%2090%207%20104%206Z%27%2F%3E%3C%2Fsvg%3E");
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+}
+
+@layer utilities {
+  /* Élément décoratif posé dans une marge : invisible aux lecteurs d'écran,
+     jamais cliquable, et effacé sur petit écran quand il gênerait. */
+  .deco {
+    position: absolute;
+    pointer-events: none;
+    user-select: none;
+  }
+  @media (max-width: 640px) {
+    .deco-lg {
+      display: none;
+    }
+  }
+  /* Balancement très lent d'un brin d'herbe. */
+  .deco-sway {
+    animation: sway 9s ease-in-out infinite;
+    transform-origin: 50% 90%;
+  }
+  @keyframes sway {
+    0%,
+    100% {
+      transform: rotate(-3deg);
+    }
+    50% {
+      transform: rotate(3deg);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .deco-sway {
+      animation: none;
+    }
+  }
+}
