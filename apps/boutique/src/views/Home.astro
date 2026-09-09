@@ -31,6 +31,7 @@ const zones = seedZones.filter((z) => z.active).sort((a, b) => a.sort - b.sort);
 const trust = [...d.home.trust, ...d.home.trust, ...d.home.trust];
 /** Un dessin par promesse, dans l'ordre de d.home.trust. */
 const trustIcons: IconName[] = ['plein-air', 'aube', 'camion', 'especes'];
+const heroBadgeIcons: IconName[] = ['plein-air', 'stock', 'aube', 'camion'];
 /** Un dessin par étape, dans l'ordre de d.home.howSteps. */
 const stepIcons: IconName[] = ['panier', 'telephone', 'balance', 'porte'];
 
@@ -64,7 +65,7 @@ const star = `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor
 <Base lang={lang} ownTrustBar description={d.meta.defaultDescription} image="/images/farm/hero-ferme.jpg" jsonLd={jsonLd}>
   <!-- Hero -->
   <section class="relative isolate overflow-hidden bg-ink text-paper" style="min-height: calc(100svh - var(--header-h))">
-    <div class="photo-veil absolute inset-0">
+    <div class="hero-veil absolute inset-0">
       <Picture
         src="/images/farm/hero-ferme.jpg"
         alt={d.home.heroAlt}
@@ -89,19 +90,34 @@ const star = `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor
       </div>
     </div>
 
-    <div class="container-x relative z-10 flex flex-col justify-end pb-14 pt-40 sm:pb-20 sm:pt-48 lg:pb-28" style="min-height: calc(100svh - var(--header-h))">
+    <div class="hero-inner container-x relative z-10 flex flex-col justify-end pt-24 sm:pb-20 sm:pt-48 lg:pb-28" style="min-height: calc(100svh - var(--header-h))">
       <p class="reveal eyebrow text-yolk">{d.home.heroEyebrow}</p>
-      <h1 class="reveal mt-4 max-w-4xl font-display font-extrabold leading-[0.95] text-paper" style="--reveal-delay: 80ms; font-size: clamp(2.75rem, 9vw, 6.5rem)">
-        {d.home.heroTitle}
+      <h1 class="reveal mt-4 max-w-4xl font-display font-extrabold leading-[0.95] text-paper" style="--reveal-delay: 80ms; font-size: clamp(2.35rem, 8.5vw, 6.5rem)">
+        {d.home.heroTitleLead}{' '}
+        <span class="hero-accent">{d.home.heroTitleAccent}</span>
       </h1>
-      <p class="reveal mt-5 max-w-xl text-lg text-paper/85 sm:text-xl" style="--reveal-delay: 160ms">{d.home.heroText}</p>
-      <div class="reveal mt-8 flex flex-col gap-3 sm:flex-row" style="--reveal-delay: 240ms">
+      <p class="reveal mt-4 max-w-xl text-base text-paper/85 sm:mt-5 sm:text-xl" style="--reveal-delay: 160ms">{d.home.heroText}</p>
+      <div class="reveal mt-6 flex flex-col gap-3 sm:mt-8 sm:flex-row" style="--reveal-delay: 240ms">
         <a href={href(lang, routes.shop)} class="btn-yolk btn-lg">
           {d.home.heroCta}
           <svg class="rtl:rotate-180" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
         </a>
         <a href="#comment" class="btn btn-lg border border-paper/40 bg-paper/10 text-paper backdrop-blur-sm hover:bg-paper/20">{d.home.heroCta2}</a>
       </div>
+
+      <ul class="reveal hero-badges scrollbar-none mask-fade-x -mx-4 mt-6 flex snap-x snap-mandatory items-center gap-5 overflow-x-auto px-4 sm:mx-0 sm:mt-10 sm:flex-wrap sm:gap-x-10 sm:gap-y-5 sm:overflow-visible sm:px-0" style="--reveal-delay: 320ms">
+        {
+          d.home.heroBadges.map((b, i) => (
+            <li class="flex shrink-0 snap-start items-center gap-2.5 sm:gap-3">
+              <Icon name={heroBadgeIcons[i]!} class="h-7 w-7 shrink-0 text-paper sm:h-9 sm:w-9" strokeWidth={1.4} />
+              <span class="text-[13px] font-bold leading-tight text-paper sm:text-base">
+                {b.title}
+                <span class="block font-semibold text-paper/80">{b.text}</span>
+              </span>
+            </li>
+          ))
+        }
+      </ul>
     </div>
 
   </section>
@@ -418,6 +434,48 @@ const star = `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor
     .cat-card:hover,
     .cat-card:hover .cat-arrow {
       transform: none;
+    }
+  }
+</style>
+
+<style>
+  /* La photo du hero est en plein soleil : sans un voile dense, ni le titre ni
+     les repères ne tiennent. Il monte plus haut et plus fort que le voile
+     commun des autres sections. */
+  .hero-veil::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(to top, rgb(12 22 14 / 0.88) 0%, rgb(12 22 14 / 0.55) 45%, rgb(12 22 14 / 0.18) 75%, transparent 100%),
+      linear-gradient(to right, rgb(12 22 14 / 0.45) 0%, transparent 60%);
+  }
+  html[dir='rtl'] .hero-veil::after {
+    background:
+      linear-gradient(to top, rgb(12 22 14 / 0.88) 0%, rgb(12 22 14 / 0.55) 45%, rgb(12 22 14 / 0.18) 75%, transparent 100%),
+      linear-gradient(to left, rgb(12 22 14 / 0.45) 0%, transparent 60%);
+  }
+  /* La barre de navigation du bas est fixe et recouvre les derniers pixels du
+     hero : le contenu doit lui laisser sa place, sinon les repères passent
+     dessous. */
+  .hero-inner {
+    padding-bottom: calc(var(--bottom-bar-h) + env(safe-area-inset-bottom) + 1rem);
+  }
+  @media (min-width: 1024px) {
+    .hero-inner {
+      padding-bottom: 7rem;
+    }
+  }
+  /* Un vert clair : le vert de la marque, trop sombre, disparaissait dans l'herbe. */
+  .hero-accent {
+    color: #7fdb98;
+  }
+  /* Un filet clair sépare les repères du hero, comme sur une devanture. */
+  @media (min-width: 640px) {
+    .hero-badges > li + li {
+      padding-inline-start: 1.75rem;
+      border-inline-start: 1px solid rgb(255 255 255 / 0.25);
     }
   }
 </style>
