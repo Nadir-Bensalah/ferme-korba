@@ -1,0 +1,136 @@
+---
+import '@/styles/global.css';
+import { ClientRouter } from 'astro:transitions';
+import type { Lang } from '@ferme/core';
+import { brand } from '@ferme/core';
+import { t, dir, locale, otherLang } from '@/i18n';
+import { href, asset, switchLangPath } from '@/lib/paths';
+import Header from '@/components/Header.astro';
+import Footer from '@/components/Footer.astro';
+import BottomBar from '@/components/BottomBar.astro';
+import Toasts from '@/components/islands/Toasts';
+
+interface Props {
+  lang: Lang;
+  title?: string;
+  description?: string;
+  /** Image de partage, chemin absolu depuis /public. */
+  image?: string;
+  /** Pas de barre du bas (tunnel de commande). */
+  noBottomBar?: boolean;
+  /** Le pied de page est réduit (tunnel de commande). */
+  slimFooter?: boolean;
+  /** Données structurées supplémentaires (JSON-LD). */
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+  /** noindex pour les pages personnelles. */
+  noindex?: boolean;
+  /** Classe ajoutée au <main>. */
+  mainClass?: string;
+}
+
+const { lang, title, description, image = '/images/og-default.jpg', noBottomBar = false, slimFooter = false, jsonLd, noindex = false, mainClass = '' } = Astro.props;
+const d = t(lang);
+const fullTitle = title ? `${title} · ${d.meta.siteName}` : d.meta.defaultTitle;
+const desc = description ?? d.meta.defaultDescription;
+const site = Astro.site ? Astro.site.toString().replace(/\/$/, '') : '';
+const canonical = `${site}${Astro.url.pathname}`;
+const altPath = switchLangPath(Astro.url.pathname, otherLang(lang));
+const frPath = lang === 'fr' ? Astro.url.pathname : altPath;
+const arPath = lang === 'ar' ? Astro.url.pathname : altPath;
+const ogImage = `${site}${asset(image)}`;
+
+const business = {
+  '@context': 'https://schema.org',
+  '@type': ['LocalBusiness', 'GroceryStore'],
+  name: brand.name[lang],
+  description: desc,
+  url: `${site}${href(lang)}`,
+  telephone: brand.phone,
+  email: brand.email,
+  image: ogImage,
+  address: { '@type': 'PostalAddress', streetAddress: brand.address[lang], addressLocality: 'Korba', addressRegion: 'Nabeul', postalCode: '8070', addressCountry: 'TN' },
+  geo: { '@type': 'GeoCoordinates', latitude: brand.geo.lat, longitude: brand.geo.lng },
+  openingHours: 'Mo-Sa 08:00-19:00',
+  priceRange: 'DT',
+  paymentAccepted: 'Cash',
+  areaServed: ['Korba', 'Nabeul', 'Hammamet', 'Kelibia', 'Tunis'],
+  sameAs: [brand.social.facebook, brand.social.instagram].filter(Boolean),
+};
+const ld = [business, ...(jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [])];
+---
+
+<!doctype html>
+<html lang={locale(lang)} dir={dir(lang)} class="js">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={desc} />
+    {noindex ? <meta name="robots" content="noindex, nofollow" /> : <meta name="robots" content="index, follow, max-image-preview:large" />}
+    <link rel="canonical" href={canonical} />
+    <link rel="alternate" hreflang="fr-TN" href={`${site}${frPath}`} />
+    <link rel="alternate" hreflang="ar-TN" href={`${site}${arPath}`} />
+    <link rel="alternate" hreflang="x-default" href={`${site}${frPath}`} />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={d.meta.siteName} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={desc} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:locale" content={lang === 'ar' ? 'ar_TN' : 'fr_TN'} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="color-scheme" content="light" />
+    <meta name="apple-mobile-web-app-title" content={d.meta.siteName} />
+    <meta name="format-detection" content="telephone=yes" />
+    <link rel="icon" href={asset('/favicon.svg')} type="image/svg+xml" />
+    <link rel="apple-touch-icon" href={asset('/icons/apple-touch-icon.png')} />
+    <link rel="manifest" href={asset('/manifest.webmanifest')} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href={lang === 'ar'
+        ? 'https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Manrope:wght@500;700&display=swap'
+        : 'https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=Manrope:wght@400;500;600;700;800&display=swap'}
+    />
+    <script type="application/ld+json" set:html={JSON.stringify(ld)} />
+    <ClientRouter />
+    <slot name="head" />
+  </head>
+  <body class:list={['flex min-h-dvh flex-col', !noBottomBar && 'pb-bottom-bar lg:pb-0']}>
+    <a href="#contenu" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:rounded-md focus:bg-yolk focus:px-4 focus:py-2 focus:font-bold">{d.nav.skip}</a>
+    <Header lang={lang} />
+    <main id="contenu" class:list={['flex-1', mainClass]}>
+      <slot />
+    </main>
+    <Footer lang={lang} slim={slimFooter} />
+    {!noBottomBar && <BottomBar lang={lang} />}
+    <Toasts client:idle lang={lang} />
+    <script>
+      // Apparition au défilement. Relancé à chaque changement de page.
+      function arm() {
+        const els = document.querySelectorAll<HTMLElement>('.reveal:not(.is-in)');
+        if (!els.length) return;
+        if (!('IntersectionObserver' in window)) {
+          els.forEach((e) => e.classList.add('is-in'));
+          return;
+        }
+        const io = new IntersectionObserver(
+          (entries) => {
+            for (const en of entries) {
+              if (en.isIntersecting) {
+                (en.target as HTMLElement).classList.add('is-in');
+                io.unobserve(en.target);
+              }
+            }
+          },
+          { rootMargin: '0px 0px -8% 0px', threshold: 0.08 },
+        );
+        els.forEach((e) => io.observe(e));
+      }
+      arm();
+      document.addEventListener('astro:page-load', arm);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /confirmation
+Disallow: /ar/confirmation
+Disallow: /compte
+Disallow: /ar/compte
+Sitemap: https://nadir-bensalah.github.io/ferme-korba/sitemap-index.xml

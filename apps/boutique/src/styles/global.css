@@ -1,0 +1,355 @@
+@import 'tailwindcss';
+
+/* ------------------------------------------------------------------
+   Ferme Korba · système visuel
+   Blanc de boucherie, vert prairie, jaune d'œuf. Photos plein cadre,
+   beaucoup d'air, typographie généreuse. Mobile d'abord.
+   ------------------------------------------------------------------ */
+
+@theme {
+  --font-display: 'Bricolage Grotesque', 'Cairo', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Manrope', 'Cairo', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-arabic: 'Cairo', 'Manrope', ui-sans-serif, system-ui, sans-serif;
+
+  --color-ink: #16201a;
+  --color-ink-2: #3f4a42;
+  --color-ink-3: #6b7566;
+  --color-line: #e5e3da;
+  --color-line-2: #d3d0c4;
+  --color-paper: #ffffff;
+  --color-cream: #fbf7ee;
+  --color-cream-2: #f4eedf;
+  --color-moss: #eaf3ea;
+
+  --color-prairie: #1e7a3c;
+  --color-prairie-deep: #14532d;
+  --color-prairie-soft: #dff0e2;
+  --color-yolk: #f2a900;
+  --color-yolk-deep: #c98600;
+  --color-yolk-soft: #fff1cc;
+  --color-paprika: #c8442b;
+  --color-paprika-soft: #fbe6e1;
+  --color-sky: #e6f1fb;
+
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --radius-pill: 999px;
+
+  --shadow-card: 0 1px 2px rgba(22, 32, 26, 0.06), 0 8px 24px -12px rgba(22, 32, 26, 0.18);
+  --shadow-float: 0 12px 40px -12px rgba(22, 32, 26, 0.35);
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-shimmer: shimmer 1.6s linear infinite;
+  --animate-pop: pop 0.45s var(--ease-spring) both;
+  --animate-marquee: marquee 30s linear infinite;
+
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0) rotate(-1deg);
+    }
+    50% {
+      transform: translateY(-10px) rotate(1deg);
+    }
+  }
+  @keyframes shimmer {
+    from {
+      background-position: -200% 0;
+    }
+    to {
+      background-position: 200% 0;
+    }
+  }
+  @keyframes pop {
+    0% {
+      transform: scale(0.6);
+      opacity: 0;
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+  @keyframes marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+}
+
+@layer base {
+  :root {
+    color-scheme: light;
+    --header-h: 64px;
+    --bottom-bar-h: 72px;
+  }
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+  html[dir='rtl'] body {
+    font-family: var(--font-arabic);
+  }
+  html[dir='rtl'] .font-display {
+    font-family: var(--font-arabic);
+    letter-spacing: 0;
+  }
+  body {
+    @apply bg-paper text-ink font-sans antialiased;
+    font-feature-settings: 'ss01', 'cv11';
+    overflow-x: clip;
+    min-height: 100dvh;
+  }
+  ::selection {
+    background: var(--color-yolk-soft);
+    color: var(--color-ink);
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-display text-ink;
+    text-wrap: balance;
+    letter-spacing: -0.01em;
+    font-variation-settings: 'opsz' 96;
+  }
+  p {
+    text-wrap: pretty;
+  }
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+  :focus-visible {
+    outline: 3px solid var(--color-yolk);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+  button,
+  [role='button'] {
+    touch-action: manipulation;
+  }
+  input,
+  select,
+  textarea {
+    font: inherit;
+  }
+  /* Les chiffres s'alignent dans les tableaux et les totaux. */
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* Utilitaires de base réutilisables par @apply (Tailwind 4 : @utility). */
+@utility btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: var(--radius-pill);
+  font-weight: 600;
+  min-height: 48px;
+  padding-inline: 1.25rem;
+  user-select: none;
+  transition:
+    transform 0.2s,
+    background-color 0.2s,
+    color 0.2s,
+    box-shadow 0.2s;
+  &:active {
+    transform: scale(0.97);
+  }
+}
+@utility chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  border-radius: var(--radius-pill);
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+@layer components {
+  .container-x {
+    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+  .btn-primary {
+    @apply btn bg-prairie text-white shadow-card hover:bg-prairie-deep;
+  }
+  .btn-yolk {
+    @apply btn bg-yolk text-ink hover:bg-yolk-deep;
+  }
+  .btn-ghost {
+    @apply btn border border-line-2 bg-paper text-ink hover:border-ink;
+  }
+  .btn-soft {
+    @apply btn bg-prairie-soft text-prairie-deep hover:bg-moss;
+  }
+  .btn-sm {
+    min-height: 40px;
+    padding-inline: 1rem;
+    @apply text-sm;
+  }
+  .btn-lg {
+    min-height: 56px;
+    padding-inline: 1.75rem;
+    @apply text-base;
+  }
+  .btn[disabled],
+  .btn[aria-disabled='true'] {
+    @apply cursor-not-allowed opacity-50;
+    transform: none;
+  }
+  .chip-fermier {
+    @apply chip bg-prairie-soft text-prairie-deep;
+  }
+  .chip-nouveau {
+    @apply chip bg-sky text-ink;
+  }
+  .chip-promo {
+    @apply chip bg-paprika-soft text-paprika;
+  }
+  .chip-best {
+    @apply chip bg-yolk-soft text-yolk-deep;
+  }
+  .card {
+    @apply rounded-lg bg-paper shadow-card;
+  }
+  .eyebrow {
+    @apply text-xs font-bold uppercase tracking-[0.14em] text-prairie;
+  }
+  html[dir='rtl'] .eyebrow {
+    letter-spacing: 0;
+  }
+  .field {
+    @apply block w-full rounded-md border border-line-2 bg-paper px-4 py-3 text-base text-ink placeholder:text-ink-3 focus:border-prairie focus:ring-4 focus:ring-prairie/15 focus:outline-none;
+    min-height: 48px;
+  }
+  .field[aria-invalid='true'] {
+    @apply border-paprika focus:border-paprika focus:ring-paprika/15;
+  }
+  .label {
+    @apply mb-1.5 block text-sm font-semibold text-ink-2;
+  }
+  .help {
+    @apply mt-1.5 text-sm text-ink-3;
+  }
+  .error {
+    @apply mt-1.5 text-sm font-medium text-paprika;
+  }
+  .skeleton {
+    @apply animate-shimmer rounded-md;
+    background: linear-gradient(90deg, #f1efe7 25%, #faf8f2 50%, #f1efe7 75%);
+    background-size: 200% 100%;
+  }
+  .prose-farm {
+    @apply text-lg leading-relaxed text-ink-2;
+  }
+  .prose-farm p + p {
+    @apply mt-4;
+  }
+  .prose-farm strong {
+    @apply font-semibold text-ink;
+  }
+  /* Photo plein cadre avec un léger voile pour le texte. */
+  .photo-veil::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(22, 32, 26, 0.75) 0%, rgba(22, 32, 26, 0.15) 55%, transparent 100%);
+    pointer-events: none;
+  }
+}
+
+@layer utilities {
+  /* Apparition au défilement : l'élément est visible au repos, l'animation
+     ne fait que l'amener. Sans JS, tout reste lisible. */
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+  .js .reveal {
+    opacity: 0;
+    transform: translateY(18px);
+    transition:
+      opacity 0.7s var(--ease-out-expo),
+      transform 0.7s var(--ease-out-expo);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+  .js .reveal.is-in {
+    opacity: 1;
+    transform: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .js .reveal {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+  .text-balance {
+    text-wrap: balance;
+  }
+  .scrollbar-none {
+    scrollbar-width: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+  .safe-bottom {
+    padding-bottom: max(env(safe-area-inset-bottom), 0px);
+  }
+  .pb-bottom-bar {
+    padding-bottom: calc(var(--bottom-bar-h) + env(safe-area-inset-bottom));
+  }
+  .mask-fade-x {
+    mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+  }
+  .grain {
+    position: relative;
+  }
+  .grain::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.35;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.6 0 0 0 0 0.55 0 0 0 0 0.45 0 0 0 0.08 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+}
+
+/* Transitions de page (Astro ClientRouter). Fondu doux, pas de glissement. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.28s;
+  animation-timing-function: var(--ease-out-expo);
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
+  }
+}

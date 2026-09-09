@@ -1,0 +1,17 @@
+{
+  "name": "ferme-korba",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Site vitrine et boutique en ligne d'un élevage de volailles à Korba (Tunisie), paiement à la livraison, avec son espace de gestion.",
+  "workspaces": ["packages/*", "apps/*"],
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "dev": "npm run dev -w apps/boutique",
+    "dev:admin": "npm run dev -w apps/admin",
+    "build": "npm run build -w packages/core && npm run build -w apps/boutique && npm run build -w apps/admin",
+    "build:pages": "node scripts/build-pages.mjs",
+    "check": "npm run check -w packages/core && npm run check -w apps/boutique && npm run check -w apps/admin",
+    "test": "npm run test -w packages/core",
+    "preview": "npm run preview -w apps/boutique"
+  }
+}

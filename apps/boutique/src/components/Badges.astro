@@ -1,0 +1,17 @@
+---
+import type { Badge, Lang } from '@ferme/core';
+
+interface Props {
+  badges: Badge[];
+  lang: Lang;
+}
+const { badges, lang } = Astro.props;
+const labels: Record<Badge, { fr: string; ar: string; cls: string }> = {
+  fermier: { fr: 'Fermier', ar: 'بلدي', cls: 'chip-fermier' },
+  nouveau: { fr: 'Nouveau', ar: 'جديد', cls: 'chip-nouveau' },
+  promo: { fr: 'Promo', ar: 'تخفيض', cls: 'chip-promo' },
+  best: { fr: 'Le plus demandé', ar: 'الأكثر طلباً', cls: 'chip-best' },
+};
+---
+
+{badges.map((b) => <span class={labels[b].cls}>{labels[b][lang]}</span>)}

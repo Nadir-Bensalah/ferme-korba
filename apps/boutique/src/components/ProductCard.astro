@@ -1,0 +1,69 @@
+---
+import type { Lang, Product } from '@ferme/core';
+import { displayPrice, formatPrice } from '@ferme/core';
+import { t, L } from '@/i18n';
+import { href, routes } from '@/lib/paths';
+import Picture from '@/components/Picture.astro';
+import Badges from '@/components/Badges.astro';
+import AddButton from '@/components/islands/AddButton';
+
+/**
+ * Carte produit : photo carrée, badges, nom, prix et bouton d'ajout.
+ * Utilisée sur l'accueil, la boutique et les pages recettes.
+ */
+interface Props {
+  product: Product;
+  lang: Lang;
+  /** Position dans la grille, pour décaler l'apparition. */
+  index?: number;
+  /** Chargement prioritaire (au-dessus de la ligne de flottaison). */
+  eager?: boolean;
+}
+const { product: p, lang, index = 0, eager = false } = Astro.props;
+const d = t(lang);
+const price = displayPrice(p.pricing, lang);
+const estimated = p.pricing.mode === 'per_kg_estimated';
+const url = href(lang, routes.product(p.slug));
+const soldOut = p.stock === 'rupture';
+const compare = p.compare_at ? formatPrice(p.compare_at, lang) : null;
+---
+
+<article class="reveal group relative flex flex-col overflow-hidden rounded-lg bg-paper shadow-card transition-shadow hover:shadow-float" style={`--reveal-delay:${Math.min(index, 8) * 60}ms`}>
+  <a href={url} class="relative block aspect-square overflow-hidden bg-cream" tabindex="-1" aria-hidden="true">
+    <Picture
+      src={p.images[0] ?? '/images/products/poulet-entier.jpg'}
+      alt=""
+      sizes="(min-width: 1280px) 300px, (min-width: 768px) 33vw, 50vw"
+      imgClass={`h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105 ${soldOut ? 'grayscale' : ''}`}
+      loading={eager ? 'eager' : 'lazy'}
+      fetchpriority={eager ? 'high' : 'auto'}
+      width={800}
+      height={800}
+      transitionName={`product-${p.id}`}
+    />
+    <div class="absolute start-2.5 top-2.5 flex flex-col items-start gap-1.5">
+      <Badges badges={p.badges} lang={lang} />
+      {p.stock === 'bientot' && <span class="chip bg-paper/90 text-ink-2">{d.common.soon}</span>}
+      {soldOut && <span class="chip bg-ink text-paper">{d.common.outOfStock}</span>}
+    </div>
+  </a>
+  <div class="flex flex-1 flex-col gap-1 p-3 sm:p-4">
+    <h3 class="text-base font-bold leading-tight sm:text-lg">
+      <a href={url} class="after:absolute after:inset-0 after:content-['']">{L(p.name, lang)}</a>
+    </h3>
+    <p class="line-clamp-2 text-sm text-ink-3">{L(p.short, lang)}</p>
+    <div class="mt-auto flex items-end justify-between gap-2 pt-3">
+      <div class="leading-tight">
+        {estimated && <div class="text-[11px] font-semibold uppercase tracking-wide text-ink-3">{d.common.from}</div>}
+        <div class="flex items-baseline gap-1.5">
+          <span class="font-display text-lg font-extrabold text-ink tabular sm:text-xl">{price.amount}</span>
+          <span class="text-xs font-semibold text-ink-3">{price.unit}</span>
+        </div>
+        {compare && <div class="text-xs text-ink-3 line-through tabular">{compare}</div>}
+      </div>
+      <div class="relative z-10">
+        <AddButton client:visible product={{ id: p.id, slug: p.slug, name: p.name, images: p.images, pricing: p.pricing, stock: p.stock }} lang={lang} compact />
+      </div>
+    </div>
+  </div>
+</article>

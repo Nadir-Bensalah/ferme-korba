@@ -1,0 +1,14 @@
+---
+import Base from '@/layouts/Base.astro';
+import { t } from '@/i18n';
+const lang = 'fr' as const;
+const d = t(lang);
+---
+
+<Base lang={lang}>
+  <section class="container-x py-16">
+    <p class="eyebrow">{d.home.heroEyebrow}</p>
+    <h1 class="mt-3 text-5xl font-extrabold">{d.home.heroTitle}</h1>
+    <p class="prose-farm mt-4 max-w-xl">{d.home.heroText}</p>
+  </section>
+</Base>

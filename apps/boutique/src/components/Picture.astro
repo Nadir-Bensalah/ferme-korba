@@ -1,0 +1,45 @@
+---
+import { asset } from '@/lib/paths';
+
+/**
+ * Photo responsive : WebP en 480/960/1600 avec repli JPEG.
+ * `src` est le chemin public sans suffixe ni extension de taille :
+ *   <Picture src="/images/products/oeufs.jpg" alt="…" sizes="(min-width: 1024px) 33vw, 50vw" />
+ * Les variantes viennent de scripts/images.mjs. Une image absente ne casse rien :
+ * le navigateur prend le JPEG d'origine.
+ */
+interface Props {
+  src: string;
+  alt: string;
+  sizes?: string;
+  class?: string;
+  imgClass?: string;
+  loading?: 'lazy' | 'eager';
+  fetchpriority?: 'high' | 'low' | 'auto';
+  width?: number;
+  height?: number;
+  /** Astro View Transitions : nom partagé entre la carte et la fiche. */
+  transitionName?: string;
+}
+const { src, alt, sizes = '100vw', class: cls = '', imgClass = '', loading = 'lazy', fetchpriority = 'auto', width = 1600, height = 1067, transitionName } = Astro.props;
+const isLocal = src.startsWith('/images/');
+const stem = src.replace(/\.(jpe?g|png|webp)$/i, '');
+const srcset = isLocal ? [480, 960, 1600].map((w) => `${asset(`${stem}-${w}.webp`)} ${w}w`).join(', ') : undefined;
+const fallback = isLocal ? asset(src) : src;
+---
+
+<picture class={cls}>
+  {srcset && <source type="image/webp" srcset={srcset} sizes={sizes} />}
+  <img
+    src={fallback}
+    alt={alt}
+    class={imgClass}
+    loading={loading}
+    decoding="async"
+    fetchpriority={fetchpriority}
+    width={width}
+    height={height}
+    sizes={sizes}
+    transition:name={transitionName}
+  />
+</picture>
