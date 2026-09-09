@@ -437,6 +437,8 @@ export const ar: Dictionary = {
     storyTitle: 'حكاية دجاجة من قربة',
     storyText: 'انزل بالصفحة: من بيضة في القش إلى دجاجة على مائدتك.',
     storyCounter: 'يوم تربية',
+    storyGoTo: 'الانتقال إلى المرحلة {n}: {title}',
+    storySteps: 'المراحل الست',
     story: [
       {
         when: 'اليوم 0',
@@ -758,6 +760,19 @@ export const ar: Dictionary = {
     legalTitle: 'إشعار قانوني',
     termsTitle: 'شروط البيع العامة',
     privacyTitle: 'سياسة الخصوصية',
+  },
+  search: {
+    label: 'بحث',
+    placeholder: 'منتج، وصفة… (مثال: مرقاز، بيض، طاجين)',
+    hint: 'اكتب للبحث. Échap للإغلاق.',
+    empty: (q: string) => `لا شيء لـ «${q}». جرّب كلمة أخرى، أو اتصل بنا.`,
+    start: 'ابحث عن منتج أو وصفة أو صفحة.',
+    products: 'المنتجات',
+    recipes: 'الوصفات',
+    pages: 'الصفحات',
+    close: 'إغلاق البحث',
+    seeAllProducts: 'عرض كل المتجر',
+    shortcut: 'Ctrl K',
   },
   bottomBar: {
     cart: 'السلة',

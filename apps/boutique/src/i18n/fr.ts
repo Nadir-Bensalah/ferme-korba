@@ -435,6 +435,8 @@ export const fr = {
     storyTitle: 'L’histoire d’un poulet de Korba',
     storyText: 'Faites défiler : de l’œuf ramassé dans la paille au poulet posé sur votre table.',
     storyCounter: 'jours d’élevage',
+    storyGoTo: 'Aller à l’étape {n} : {title}',
+    storySteps: 'Les six étapes',
     story: [
       {
         when: 'jour 0',
@@ -756,6 +758,19 @@ export const fr = {
     legalTitle: 'Mentions légales',
     termsTitle: 'Conditions générales de vente',
     privacyTitle: 'Politique de confidentialité',
+  },
+  search: {
+    label: 'Rechercher',
+    placeholder: 'Un produit, une recette… (ex. : merguez, œufs, tajine)',
+    hint: 'Tapez pour chercher. Échap pour fermer.',
+    empty: (q: string) => `Rien pour « ${q} ». Essayez un autre mot, ou appelez-nous.`,
+    start: 'Cherchez un produit, une recette ou une page.',
+    products: 'Produits',
+    recipes: 'Recettes',
+    pages: 'Pages',
+    close: 'Fermer la recherche',
+    seeAllProducts: 'Voir toute la boutique',
+    shortcut: 'Ctrl K',
   },
   bottomBar: {
     cart: 'Panier',
