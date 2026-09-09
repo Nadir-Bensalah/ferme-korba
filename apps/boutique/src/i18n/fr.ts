@@ -135,6 +135,15 @@ export const fr = {
       { title: 'On prépare le matin', text: 'Abattage, découpe et pesée le jour de la livraison. Le prix s’ajuste au poids réel.' },
       { title: 'Vous payez à la porte', text: 'En espèces, au livreur, une fois la commande vérifiée. Rien avant.' },
     ],
+    farmCards: [
+      { value: '90', label: 'jours en plein air', text: 'Pour des poulets plus sains et plus savoureux.' },
+      { value: '0', label: 'antibiotique de confort', text: 'Une alimentation naturelle et contrôlée.' },
+      { value: '24 h', label: 'entre la ferme et votre table', text: 'Des produits ultra frais, récoltés et livrés rapidement.' },
+      { value: '1998', label: 'année de la première couvée', text: 'Plus de 25 ans de passion et de savoir-faire familial.' },
+    ],
+    farmPlace: 'Korba, Cap Bon',
+    farmSince: (y: number) => `Depuis ${y}`,
+    farmScriptAlt: 'Des poules heureuses pour de bons produits !',
     farmTitle: 'Une ferme, une famille, des poules dehors',
     farmText:
       'À Korba, entre les orangers et la mer, nos poulets grandissent 90 jours en plein air, nourris au grain. Pas de hâte, pas d’antibiotiques de confort. Juste du temps.',

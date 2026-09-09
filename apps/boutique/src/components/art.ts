@@ -20,5 +20,9 @@ export type ArtName =
   | 'recap-maison'
   | 'bande-branche'
   | 'gout-local-blanc'
+  | 'carte-poule'
+  | 'carte-feuille'
+  | 'carte-soleil'
+  | 'poules-heureuses'
   | 'footer-oeufs-heureux'
   | 'footer-gout-local';
