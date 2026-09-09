@@ -1,0 +1,63 @@
+---
+import type { Lang } from '@ferme/core';
+import { t } from '@/i18n';
+import Icon from '@/components/Icon.astro';
+import type { IconName } from '@/components/icons';
+import Art from '@/components/Art.astro';
+
+/**
+ * La bande verte de la page panier : les quatre promesses posées à plat, sans
+ * défilement, séparées par des filets, un rameau d'olivier qui pointe depuis
+ * la droite, et la signature « Le goût du local » écrite en blanc au bout.
+ * Même vert et même vague en bas que la bande qui défile ailleurs.
+ */
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const d = t(lang);
+const order = [3, 0, 1, 2];
+const icons: IconName[] = ['plein-air', 'aube', 'camion', 'especes'];
+const items = order.map((i) => ({ label: d.home.trust[i]!, icon: icons[i]! }));
+const WAVE =
+  'M0,32 L0,16 C84,2 156,2 240,16 C324,28 396,28 480,16 C564,2 636,2 720,16 C804,28 876,28 960,16 C1044,2 1116,2 1200,16 L1200,32 Z';
+---
+
+<div class="cart-band relative z-10 bg-prairie-deep text-yolk-soft" aria-label={d.home.trust.join(', ')}>
+  <div class="relative mx-auto flex w-full max-w-[1880px] items-center px-5 sm:px-8 lg:px-10 xl:px-12">
+    <ul class="flex min-w-0 flex-1 items-center gap-x-4 overflow-x-auto py-3 scrollbar-none sm:gap-x-0 lg:py-4">
+      {
+        items.map((it, i) => (
+          <li class:list={['flex shrink-0 items-center gap-3 whitespace-nowrap text-[13px] font-bold uppercase tracking-wide sm:px-6 lg:px-10 lg:text-sm', i > 0 && 'sm:border-s sm:border-paper/25']}>
+            <Icon name={it.icon} class="h-7 w-7 shrink-0 text-yolk" strokeWidth={1.5} />
+            {it.label}
+          </li>
+        ))
+      }
+    </ul>
+    <div class="pointer-events-none hidden shrink-0 items-center lg:flex" aria-hidden="true">
+      <Art name="bande-branche" class="cart-band-branch h-16 w-32 rtl:-scale-x-100 xl:w-40" sizes="160px" />
+      {lang === 'fr' && <Art name="gout-local-blanc" class="ms-6 h-12 w-40 xl:w-48" sizes="192px" />}
+    </div>
+  </div>
+  <svg class="cart-band-wave" viewBox="0 0 1200 32" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+    <path d={WAVE} fill="currentColor" transform="rotate(180 600 16)"></path>
+  </svg>
+</div>
+
+<style>
+  .cart-band-wave {
+    position: absolute;
+    inset-inline: 0;
+    top: 100%;
+    display: block;
+    width: 100%;
+    height: 22px;
+    color: var(--color-prairie-deep);
+    pointer-events: none;
+  }
+  /* Le rameau dépasse un peu de la bande, comme posé dessus. */
+  .cart-band-branch {
+    transform: translateY(6px) rotate(-8deg);
+  }
+</style>

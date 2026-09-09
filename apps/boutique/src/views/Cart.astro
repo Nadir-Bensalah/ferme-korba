@@ -2,11 +2,17 @@
 import type { Lang } from '@ferme/core';
 import Base from '@/layouts/Base.astro';
 import DemoBanner from '@/components/DemoBanner.astro';
+import CartBand from '@/components/CartBand.astro';
 import CartPage from '@/components/islands/CartPage';
 import TunnelStyles from '@/components/tunnel/TunnelStyles.astro';
-import Deco from '@/components/deco/Deco.astro';
+import Art from '@/components/Art.astro';
 import { t } from '@/i18n';
 
+/**
+ * La page panier, d'après la maquette : bande verte fixe sous l'en-tête,
+ * lignes à gauche, récapitulatif à droite, un rameau d'olivier en bas à
+ * gauche et le nid d'œufs aux olives qui déborde en bas à droite.
+ */
 interface Props {
   lang: Lang;
 }
@@ -14,13 +20,13 @@ const { lang } = Astro.props;
 const d = t(lang);
 ---
 
-<Base lang={lang} title={d.cart.title} noindex>
+<Base lang={lang} title={d.cart.title} noindex ownTrustBar>
   <TunnelStyles />
-  <section class="container-x relative py-8 sm:py-12">
-    <Deco type="persil" class="deco deco-lg deco-sway end-2 top-6 hidden w-24 rotate-6 text-prairie/20 xl:block" />
-    <DemoBanner lang={lang} class="mb-5" />
-    <h1 class="text-3xl font-extrabold sm:text-4xl">{d.cart.title}</h1>
-    <div class="mt-6">
+  <CartBand lang={lang} />
+  <section class="relative overflow-hidden pb-24 pt-10 sm:pb-28 lg:pb-32">
+    <Art name="bande-branche" class="deco -start-10 bottom-4 w-40 rotate-[160deg] opacity-90 sm:w-52 lg:-start-12 lg:w-64" sizes="256px" />
+    <div class="relative mx-auto w-full max-w-[1480px] px-4 sm:px-6 lg:px-8">
+      <DemoBanner lang={lang} class="mb-5" />
       <CartPage client:load lang={lang} />
     </div>
   </section>

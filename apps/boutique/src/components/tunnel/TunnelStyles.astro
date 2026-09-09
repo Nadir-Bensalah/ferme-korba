@@ -406,4 +406,194 @@
       transition: none;
     }
   }
+
+  /* --------------------------------------------------------------
+     Page panier, d'après la maquette
+     -------------------------------------------------------------- */
+  .fk-cutoff {
+    border-radius: var(--radius-lg);
+    border-color: color-mix(in srgb, var(--color-prairie) 22%, transparent);
+    background: var(--color-prairie-soft);
+    padding: 0.875rem 1.25rem;
+    min-height: 64px;
+    flex: none;
+  }
+  .fk-line {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    border-radius: var(--radius-lg);
+    background: var(--color-paper);
+    box-shadow: var(--shadow-card);
+    padding: 1rem;
+    padding-inline-end: 4.5rem;
+  }
+  @media (width >= 640px) {
+    .fk-line {
+      gap: 1.25rem;
+      padding: 1.25rem;
+      padding-inline-end: 5.5rem;
+    }
+  }
+  .fk-line-photo {
+    display: block;
+    flex: none;
+    width: 6rem;
+    height: 5rem;
+    overflow: hidden;
+    border-radius: var(--radius-md);
+    background: var(--color-cream);
+  }
+  @media (width >= 640px) {
+    .fk-line-photo {
+      width: 9.5rem;
+      height: 6.5rem;
+    }
+  }
+  .fk-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    border-radius: 999px;
+    background: var(--color-prairie-soft);
+    color: var(--color-prairie-deep);
+    padding: 0.3rem 0.75rem;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .fk-trash {
+    position: absolute;
+    inset-inline-end: 1rem;
+    top: 1rem;
+    display: inline-flex;
+    height: 3rem;
+    width: 3rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: var(--color-cream);
+    color: var(--color-ink-2);
+    transition:
+      background 0.2s,
+      color 0.2s;
+  }
+  @media (width >= 640px) {
+    .fk-trash {
+      top: 50%;
+      transform: translateY(-50%);
+      inset-inline-end: 1.25rem;
+    }
+  }
+  .fk-trash:hover {
+    background: var(--color-paprika);
+    color: #fff;
+  }
+  .fk-weight {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    border-radius: var(--radius-lg);
+    background: var(--color-cream-2);
+    padding: 1rem 1.25rem;
+  }
+  @media (width >= 1024px) {
+    .fk-weight {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      gap: 2rem;
+    }
+  }
+  .fk-forgot {
+    border-radius: var(--radius-lg);
+    background: var(--color-cream);
+    padding: 1.25rem;
+  }
+  .fk-suggest {
+    align-items: center;
+    padding: 0.625rem;
+  }
+  @media (width >= 640px) {
+    .fk-forgot .fk-suggest {
+      width: auto;
+      min-width: 0;
+    }
+  }
+  .fk-suggest-add.is-solid {
+    height: 40px;
+    width: 40px;
+    background: var(--color-prairie);
+    color: #fff;
+  }
+  .fk-suggest-add.is-solid:hover {
+    background: var(--color-prairie-deep);
+  }
+  .fk-recap {
+    position: relative;
+  }
+  .fk-recap-card {
+    position: relative;
+    overflow: hidden;
+    border-radius: 1.5rem;
+    background: var(--color-paper);
+    box-shadow: var(--shadow-card);
+    padding: 1.5rem;
+  }
+  @media (width >= 640px) {
+    .fk-recap-card {
+      padding: 1.75rem;
+    }
+  }
+  /* La maison en filigrane, dans le coin du titre. */
+  .fk-recap-house {
+    position: absolute;
+    inset-inline-end: -0.5rem;
+    top: 0.25rem;
+    width: 15rem;
+    opacity: 0.9;
+    pointer-events: none;
+  }
+  html[dir='rtl'] .fk-recap-house {
+    transform: scaleX(-1);
+  }
+  .fk-free {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    border-radius: var(--radius-md);
+    background: var(--color-prairie-soft);
+    border: 1px solid color-mix(in srgb, var(--color-prairie) 20%, transparent);
+    padding: 0.875rem 1rem;
+  }
+  .fk-free-check {
+    display: inline-flex;
+    height: 28px;
+    width: 28px;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: var(--color-prairie);
+    color: #fff;
+  }
+  /* Le nid d'œufs déborde du coin bas du récapitulatif. */
+  .fk-recap-eggs {
+    position: absolute;
+    inset-inline-end: -2.5rem;
+    bottom: -3.5rem;
+    width: 13rem;
+    pointer-events: none;
+    filter: drop-shadow(0 10px 18px rgba(22, 32, 26, 0.18));
+  }
+  @media (width >= 640px) {
+    .fk-recap-eggs {
+      width: 16rem;
+      inset-inline-end: -3.5rem;
+      bottom: -4rem;
+    }
+  }
+  html[dir='rtl'] .fk-recap-eggs {
+    transform: scaleX(-1);
+  }
 </style>
