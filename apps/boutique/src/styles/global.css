@@ -785,17 +785,6 @@ details[open] .faq-chevron {
     background: var(--color-paper);
     color: var(--color-ink-3);
   }
-  @media (min-width: 1024px) {
-    .story {
-      --story-axis: 50%;
-    }
-    .story-step {
-      padding-inline-start: 0;
-    }
-    .story-dot {
-      top: 2.5rem;
-    }
-  }
   /* Le grand chiffre fantôme du fond de carte. */
   .story-num {
     font-family: var(--font-display);
@@ -855,4 +844,871 @@ details[open] .faq-chevron {
 .edge-in-top {
   bottom: auto;
   top: 0;
+}
+
+/* qualité, frise animée */
+/* La frise vit dans `data-step` sur sa racine : la scène collante, la vignette
+   du bandeau, l'état des pastilles, des cartes et des points en découlent par
+   sélecteurs. `data-story-live` n'est posé que par le script, hors mouvement
+   réduit : sans lui, tout est plein et la scène montre l'étape en cours. */
+@layer components {
+  /* Deux colonnes sur ordinateur : la scène collante, puis le rail. En arabe la
+     grille se lit de droite à gauche : la scène passe à droite toute seule. */
+  @media (min-width: 1024px) {
+    .story-stage {
+      display: grid;
+      grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+      gap: 3rem;
+      align-items: start;
+    }
+    .story-scene-col {
+      position: sticky;
+      top: calc(var(--header-h) + 4.75rem);
+    }
+  }
+  .story-stage-box {
+    position: relative;
+    height: min(26rem, calc(100vh - var(--header-h) - 7.5rem));
+    overflow: hidden;
+    border-radius: 1.25rem;
+    border: 1px solid var(--color-line);
+    background: var(--color-cream);
+    color: var(--color-prairie);
+  }
+  .story-scene {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    visibility: hidden;
+    transform: scale(0.96);
+    transition:
+      opacity 0.4s var(--ease-out-expo),
+      transform 0.4s var(--ease-out-expo),
+      visibility 0s 0.4s;
+  }
+  [data-step='1'] .story-scene:nth-of-type(1),
+  [data-step='2'] .story-scene:nth-of-type(2),
+  [data-step='3'] .story-scene:nth-of-type(3),
+  [data-step='4'] .story-scene:nth-of-type(4),
+  [data-step='5'] .story-scene:nth-of-type(5),
+  [data-step='6'] .story-scene:nth-of-type(6) {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    transition-delay: 0s;
+  }
+  /* Couleurs des dessins : vert par héritage, touches de jaune et de paprika. */
+  .story-root .k {
+    stroke: var(--color-yolk);
+  }
+  .story-root .kd {
+    stroke: var(--color-yolk-deep);
+  }
+  .story-root .kf {
+    fill: var(--color-yolk);
+  }
+  .story-root .pk {
+    stroke: var(--color-paprika);
+  }
+  .story-root .pkf {
+    fill: var(--color-paprika);
+    stroke: var(--color-paprika);
+  }
+  .story-root .pf {
+    fill: var(--color-paper);
+  }
+  .story-root .gf {
+    fill: var(--color-prairie-soft);
+  }
+  .story-root .l2 {
+    stroke: var(--color-line-2);
+  }
+  /* Les parties qui bougent. Chaque élément dit son animation dans `--an` ;
+     elle ne tourne que dans la scène affichée, et repart de zéro à chaque
+     retour sur l'étape. L'état sans animation est l'image finale de l'étape.
+     `:where()` garde ces défauts sous les réglages par élément qui suivent. */
+  :where(.story-scene) .an {
+    transform-box: fill-box;
+    transform-origin: 50% 100%;
+    animation-name: none;
+    animation-duration: 4s;
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
+    animation-fill-mode: both;
+  }
+  [data-step='1'] .story-scene:nth-of-type(1) .an,
+  [data-step='2'] .story-scene:nth-of-type(2) .an,
+  [data-step='3'] .story-scene:nth-of-type(3) .an,
+  [data-step='4'] .story-scene:nth-of-type(4) .an,
+  [data-step='5'] .story-scene:nth-of-type(5) .an,
+  [data-step='6'] .story-scene:nth-of-type(6) .an {
+    animation-name: var(--an, none);
+  }
+  /* Jour 0 */
+  .sc1-egg {
+    --an: sc-egg-sway;
+    animation-duration: 4s;
+    transform-origin: 50% 92%;
+  }
+  .sc-straw {
+    --an: sc-straw-sway;
+    animation-duration: 3.2s;
+  }
+  .sc-straw-b {
+    animation-delay: -1s;
+  }
+  .sc-straw-c {
+    animation-delay: -2.1s;
+  }
+  .sc-straw-d {
+    animation-delay: -0.6s;
+  }
+  .sc-straw-e {
+    animation-delay: -2.6s;
+  }
+  /* Jour 1 */
+  .sc2-crack {
+    --an: sc-crack;
+    animation-duration: 6s;
+    animation-iteration-count: 1;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 0;
+    opacity: 0;
+  }
+  .sc2-top {
+    --an: sc-shell-open;
+    animation-duration: 6s;
+    animation-iteration-count: 1;
+    transform-origin: 100% 100%;
+    transform: rotate(80deg);
+  }
+  .sc2-chick {
+    --an: sc-chick-pop;
+    animation-duration: 6s;
+    animation-iteration-count: 1;
+  }
+  .sc2-sparks {
+    --an: sc-sparks;
+    animation-duration: 6s;
+    animation-iteration-count: 1;
+    transform-origin: 50% 50%;
+    opacity: 0;
+  }
+  .sc-eye {
+    --an: sc-blink;
+    animation-duration: 4s;
+    transform-origin: 50% 50%;
+  }
+  .sc-eye-b {
+    animation-delay: -1.7s;
+  }
+  /* 3 semaines */
+  .sc3-cone {
+    --an: sc-breathe;
+    animation-duration: 5s;
+    transform-origin: 50% 0;
+    opacity: 0.16;
+  }
+  .sc3-halo {
+    --an: sc-halo;
+    animation-duration: 5s;
+    transform-origin: 50% 50%;
+    opacity: 0.28;
+  }
+  .sc3-chick {
+    --an: sc-bob;
+    animation-duration: 2.6s;
+  }
+  .sc3-chick-b {
+    --an: sc-bob;
+    animation-duration: 3.4s;
+    animation-delay: -1s;
+  }
+  /* 4 semaines */
+  .sc4-door {
+    --an: sc-door;
+    animation-duration: 7s;
+    animation-iteration-count: 1;
+    transform-origin: 0 0;
+    transform: rotate(-76deg);
+  }
+  .sc4-walk {
+    --an: sc-walk;
+    animation-duration: 7s;
+    animation-iteration-count: 1;
+    animation-timing-function: linear;
+    transform: translateX(150px);
+  }
+  .sc4-bob {
+    --an: sc-peck;
+    animation-duration: 3s;
+  }
+  .sc-grass {
+    --an: sc-grass;
+    animation-duration: 2.6s;
+  }
+  .sc-grass-b {
+    animation-delay: -0.8s;
+  }
+  .sc-grass-c {
+    animation-delay: -1.5s;
+  }
+  .sc-grass-d {
+    animation-delay: -2.1s;
+  }
+  /* 90 jours */
+  .sc5-coq {
+    --an: sc-crow;
+    animation-duration: 6s;
+  }
+  .sc5-wave {
+    --an: sc-wave;
+    animation-duration: 6s;
+    transform-origin: 0 50%;
+    opacity: 0;
+  }
+  .sc5-tete {
+    --an: sc-peck;
+    animation-duration: 3.4s;
+  }
+  /* À l'aube */
+  .sc6-flip {
+    transform-box: view-box;
+    transform-origin: 200px 150px;
+  }
+  html[dir='rtl'] .sc6-flip {
+    transform: scaleX(-1);
+  }
+  .sc6-sun {
+    --an: sc-sun;
+    animation-duration: 3.2s;
+    animation-iteration-count: 1;
+    animation-timing-function: var(--ease-out-expo);
+  }
+  .sc6-rays {
+    --an: sc-spin;
+    animation-duration: 40s;
+    animation-timing-function: linear;
+    transform-origin: 50% 50%;
+  }
+  .sc6-truck {
+    --an: sc-truck;
+    animation-duration: 9s;
+    animation-timing-function: linear;
+    transform: translateX(90px);
+  }
+  .sc6-plate {
+    --an: sc-plate-pop;
+    animation-duration: 0.5s;
+    animation-iteration-count: 1;
+    animation-delay: 2.6s;
+    animation-timing-function: var(--ease-spring);
+    transform-origin: 50% 50%;
+  }
+  /* Survol de la scène : la version forte de chaque animation. */
+  @media (hover: hover) {
+    .story-stage-box:hover .sc1-egg {
+      --an: sc-egg-wobble;
+      animation-duration: 0.9s;
+    }
+    .story-stage-box:hover .sc2-chick {
+      --an: sc-chick-jump;
+      animation-duration: 0.9s;
+      animation-iteration-count: infinite;
+    }
+    .story-stage-box:hover .sc3-chick,
+    .story-stage-box:hover .sc3-chick-b {
+      --an: sc-chick-jump;
+      animation-duration: 0.8s;
+    }
+    .story-stage-box:hover .sc3-halo {
+      animation-duration: 1.2s;
+    }
+    .story-stage-box:hover .sc4-bob {
+      --an: sc-chick-jump;
+      animation-duration: 0.7s;
+    }
+    .story-stage-box:hover .sc5-coq {
+      --an: sc-crow-strong;
+      animation-duration: 1.8s;
+    }
+    .story-stage-box:hover .sc5-wave {
+      --an: sc-wave-strong;
+      animation-duration: 1.8s;
+    }
+    .story-stage-box:hover .sc5-tete {
+      animation-duration: 1.2s;
+    }
+    .story-stage-box:hover .sc6-truck {
+      animation-duration: 3.5s;
+    }
+  }
+
+  /* Le marqueur : un point vert à la pointe du trait, avec un halo qui respire. */
+  .story-marker {
+    display: none;
+    position: absolute;
+    top: -7px;
+    inset-inline-start: 1px;
+    margin-inline-start: -7px;
+    z-index: 3;
+    width: 14px;
+    height: 14px;
+    border-radius: 999px;
+    background: var(--color-prairie);
+    box-shadow: 0 0 0 3px var(--color-paper);
+    transform: translateY(var(--story-y, 0px));
+  }
+  .story-marker::before {
+    content: '';
+    position: absolute;
+    inset: -8px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--color-prairie) 35%, transparent);
+    animation: story-pulse 2s ease-out infinite;
+  }
+  .js .story[data-story-live] .story-marker {
+    display: block;
+  }
+
+  /* Pastilles : des boutons, à la souris comme au clavier. */
+  .story-dot {
+    appearance: none;
+    padding: 0;
+    cursor: pointer;
+    line-height: 1;
+    transition:
+      background-color 0.45s var(--ease-out-expo),
+      border-color 0.45s var(--ease-out-expo),
+      color 0.45s var(--ease-out-expo),
+      transform 0.45s var(--ease-spring);
+  }
+  .story-dot:focus-visible {
+    outline: 3px solid var(--color-yolk);
+    outline-offset: 3px;
+  }
+  .story-dot::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 999px;
+    border: 2px solid var(--color-prairie);
+    opacity: 0;
+    pointer-events: none;
+  }
+  .story-root[data-story-live] .story-dot::after {
+    animation: story-dot-wave 0.6s var(--ease-out-expo) both;
+  }
+  .story-step {
+    scroll-margin-top: calc(var(--header-h) + 5.25rem);
+  }
+  .story-card {
+    transition:
+      opacity 0.5s var(--ease-out-expo),
+      transform 0.35s var(--ease-out-expo),
+      box-shadow 0.35s var(--ease-out-expo),
+      border-color 0.35s var(--ease-out-expo);
+  }
+  @media (hover: hover) {
+    .story-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-float);
+    }
+  }
+  /* À venir : pastille vide, carte estompée, pas d'onde. */
+  .story-root[data-story-live][data-step='1'] .story-step:nth-child(n + 2) .story-dot,
+  .story-root[data-story-live][data-step='2'] .story-step:nth-child(n + 3) .story-dot,
+  .story-root[data-story-live][data-step='3'] .story-step:nth-child(n + 4) .story-dot,
+  .story-root[data-story-live][data-step='4'] .story-step:nth-child(n + 5) .story-dot,
+  .story-root[data-story-live][data-step='5'] .story-step:nth-child(n + 6) .story-dot {
+    border-color: var(--color-line-2);
+    background: var(--color-paper);
+    color: var(--color-ink-3);
+  }
+  .story-root[data-story-live][data-step='1'] .story-step:nth-child(n + 2) .story-dot::after,
+  .story-root[data-story-live][data-step='2'] .story-step:nth-child(n + 3) .story-dot::after,
+  .story-root[data-story-live][data-step='3'] .story-step:nth-child(n + 4) .story-dot::after,
+  .story-root[data-story-live][data-step='4'] .story-step:nth-child(n + 5) .story-dot::after,
+  .story-root[data-story-live][data-step='5'] .story-step:nth-child(n + 6) .story-dot::after {
+    animation: none;
+  }
+  .story-root[data-story-live][data-step='1'] .story-step:nth-child(n + 2) .story-card,
+  .story-root[data-story-live][data-step='2'] .story-step:nth-child(n + 3) .story-card,
+  .story-root[data-story-live][data-step='3'] .story-step:nth-child(n + 4) .story-card,
+  .story-root[data-story-live][data-step='4'] .story-step:nth-child(n + 5) .story-card,
+  .story-root[data-story-live][data-step='5'] .story-step:nth-child(n + 6) .story-card {
+    opacity: 0.55;
+  }
+  /* En cours : pastille agrandie, carte mise en avant. */
+  .story-root[data-story-live][data-step='1'] .story-step:nth-child(1) .story-dot,
+  .story-root[data-story-live][data-step='2'] .story-step:nth-child(2) .story-dot,
+  .story-root[data-story-live][data-step='3'] .story-step:nth-child(3) .story-dot,
+  .story-root[data-story-live][data-step='4'] .story-step:nth-child(4) .story-dot,
+  .story-root[data-story-live][data-step='5'] .story-step:nth-child(5) .story-dot,
+  .story-root[data-story-live][data-step='6'] .story-step:nth-child(6) .story-dot {
+    transform: scale(1.12);
+  }
+  .story-root[data-story-live][data-step='1'] .story-step:nth-child(1) .story-card,
+  .story-root[data-story-live][data-step='2'] .story-step:nth-child(2) .story-card,
+  .story-root[data-story-live][data-step='3'] .story-step:nth-child(3) .story-card,
+  .story-root[data-story-live][data-step='4'] .story-step:nth-child(4) .story-card,
+  .story-root[data-story-live][data-step='5'] .story-step:nth-child(5) .story-card,
+  .story-root[data-story-live][data-step='6'] .story-step:nth-child(6) .story-card {
+    border-color: var(--color-prairie);
+    box-shadow: var(--shadow-float);
+  }
+
+  /* Le bandeau : la vignette de l'étape et les six points. */
+  .story-nav {
+    pointer-events: auto;
+  }
+  .story-nav-dot {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 1.25rem;
+    height: 1.5rem;
+    padding: 0;
+    border: 0;
+    border-radius: 999px;
+    background: none;
+    cursor: pointer;
+  }
+  @media (min-width: 640px) {
+    .story-nav-dot {
+      width: 1.5rem;
+    }
+  }
+  .story-nav-dot::before {
+    content: '';
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 999px;
+    background: var(--color-prairie);
+    transition:
+      transform 0.3s var(--ease-spring),
+      background-color 0.3s var(--ease-out-expo);
+  }
+  .story-nav-dot:focus-visible {
+    outline: 3px solid var(--color-yolk);
+    outline-offset: -1px;
+  }
+  .story-root[data-story-live][data-step='1'] .story-nav-dot:nth-child(n + 2)::before,
+  .story-root[data-story-live][data-step='2'] .story-nav-dot:nth-child(n + 3)::before,
+  .story-root[data-story-live][data-step='3'] .story-nav-dot:nth-child(n + 4)::before,
+  .story-root[data-story-live][data-step='4'] .story-nav-dot:nth-child(n + 5)::before,
+  .story-root[data-story-live][data-step='5'] .story-nav-dot:nth-child(n + 6)::before {
+    background: var(--color-line-2);
+  }
+  [data-step='1'] .story-nav-dot:nth-child(1)::before,
+  [data-step='2'] .story-nav-dot:nth-child(2)::before,
+  [data-step='3'] .story-nav-dot:nth-child(3)::before,
+  [data-step='4'] .story-nav-dot:nth-child(4)::before,
+  [data-step='5'] .story-nav-dot:nth-child(5)::before,
+  [data-step='6'] .story-nav-dot:nth-child(6)::before {
+    transform: scale(1.5);
+  }
+  .story-vignette {
+    position: relative;
+    display: inline-block;
+    width: 2.75rem;
+    height: 2.75rem;
+    color: var(--color-prairie);
+  }
+  .story-vig {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transform: scale(0.6) rotate(-14deg);
+    transition:
+      opacity 0.4s var(--ease-out-expo),
+      transform 0.4s var(--ease-spring);
+  }
+  [data-step='1'] .story-vig:nth-of-type(1),
+  [data-step='2'] .story-vig:nth-of-type(2),
+  [data-step='3'] .story-vig:nth-of-type(3),
+  [data-step='4'] .story-vig:nth-of-type(4),
+  [data-step='5'] .story-vig:nth-of-type(5),
+  [data-step='6'] .story-vig:nth-of-type(6) {
+    opacity: 1;
+    transform: none;
+    /* Le délai laisse la transformation finir avant que la respiration prenne. */
+    animation: story-vig-breathe 3s 0.4s ease-in-out infinite;
+  }
+
+  /* L'éclat quand le compteur touche 90 : trois traits qui s'écartent. */
+  .story-burst {
+    position: absolute;
+    top: 50%;
+    inset-inline-start: 50%;
+    width: 60px;
+    height: 60px;
+    margin: -30px;
+    color: var(--color-yolk-deep);
+    pointer-events: none;
+    overflow: visible;
+  }
+  .story-burst .ray {
+    opacity: 0;
+  }
+  .is-burst .story-burst .ray {
+    animation: story-burst 0.3s ease-out both;
+  }
+  .is-burst .story-burst g:nth-child(2) .ray {
+    animation-delay: 40ms;
+  }
+  .is-burst .story-burst g:nth-child(3) .ray {
+    animation-delay: 80ms;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .story-scene .an,
+    .story-vig,
+    .story-marker::before,
+    .story-dot::after,
+    .story-burst .ray {
+      animation: none !important;
+    }
+    .story-scene,
+    .story-vig,
+    .story-card,
+    .story-dot,
+    .story-nav-dot::before {
+      transition: none;
+    }
+    .story-marker {
+      display: none;
+    }
+    .story-card:hover {
+      transform: none;
+    }
+  }
+}
+
+@keyframes story-pulse {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+@keyframes story-dot-wave {
+  0% {
+    opacity: 0.8;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.9);
+  }
+}
+@keyframes story-vig-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.07);
+  }
+}
+@keyframes story-burst {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-9px);
+  }
+}
+@keyframes sc-egg-sway {
+  0%,
+  100% {
+    transform: rotate(-2.5deg);
+  }
+  50% {
+    transform: rotate(2.5deg);
+  }
+}
+@keyframes sc-egg-wobble {
+  0%,
+  100% {
+    transform: rotate(-7deg);
+  }
+  50% {
+    transform: rotate(7deg);
+  }
+}
+@keyframes sc-straw-sway {
+  0%,
+  100% {
+    transform: rotate(-4deg);
+  }
+  50% {
+    transform: rotate(4deg);
+  }
+}
+@keyframes sc-crack {
+  0% {
+    stroke-dashoffset: 1;
+    opacity: 1;
+  }
+  22% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+  34%,
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 0;
+  }
+}
+@keyframes sc-shell-open {
+  0%,
+  24% {
+    transform: rotate(0);
+  }
+  30% {
+    transform: rotate(-3deg);
+  }
+  42% {
+    transform: rotate(88deg);
+  }
+  50%,
+  100% {
+    transform: rotate(80deg);
+  }
+}
+@keyframes sc-chick-pop {
+  0%,
+  38% {
+    opacity: 0;
+    transform: translateY(40px) scale(0.5);
+  }
+  52% {
+    opacity: 1;
+    transform: translateY(-8px) scale(1.08);
+  }
+  62%,
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes sc-sparks {
+  0%,
+  40% {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  52% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  75%,
+  100% {
+    opacity: 0;
+    transform: scale(1.2);
+  }
+}
+@keyframes sc-blink {
+  0%,
+  90%,
+  100% {
+    transform: scaleY(1);
+  }
+  94% {
+    transform: scaleY(0.1);
+  }
+}
+@keyframes sc-chick-jump {
+  0%,
+  100% {
+    transform: none;
+  }
+  40% {
+    transform: translateY(-26px) scaleY(1.05);
+  }
+  55% {
+    transform: translateY(0) scaleY(0.94);
+  }
+  65% {
+    transform: none;
+  }
+}
+@keyframes sc-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.16;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.24;
+  }
+}
+@keyframes sc-halo {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.28;
+  }
+  50% {
+    transform: scale(1.18);
+    opacity: 0.4;
+  }
+}
+@keyframes sc-bob {
+  0%,
+  100% {
+    transform: none;
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+@keyframes sc-door {
+  0%,
+  12% {
+    transform: rotate(0);
+  }
+  30% {
+    transform: rotate(-82deg);
+  }
+  36% {
+    transform: rotate(-74deg);
+  }
+  100% {
+    transform: rotate(-76deg);
+  }
+}
+@keyframes sc-walk {
+  0%,
+  30% {
+    transform: translateX(0);
+    animation-timing-function: steps(10, end);
+  }
+  75%,
+  100% {
+    transform: translateX(150px);
+  }
+}
+@keyframes sc-peck {
+  0%,
+  72%,
+  100% {
+    transform: rotate(0);
+  }
+  80% {
+    transform: rotate(18deg);
+  }
+  86% {
+    transform: rotate(4deg);
+  }
+  92% {
+    transform: rotate(18deg);
+  }
+}
+@keyframes sc-grass {
+  0%,
+  100% {
+    transform: rotate(-6deg);
+  }
+  50% {
+    transform: rotate(6deg);
+  }
+}
+@keyframes sc-crow {
+  0%,
+  50%,
+  90%,
+  100% {
+    transform: rotate(0);
+  }
+  58%,
+  80% {
+    transform: rotate(-9deg);
+  }
+}
+@keyframes sc-crow-strong {
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+  25%,
+  70% {
+    transform: rotate(-11deg);
+  }
+}
+@keyframes sc-wave {
+  0%,
+  56% {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  64% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  82% {
+    opacity: 0.9;
+    transform: scale(1.1);
+  }
+  90%,
+  100% {
+    opacity: 0;
+    transform: scale(1.25);
+  }
+}
+@keyframes sc-wave-strong {
+  0% {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  30% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.3);
+  }
+}
+@keyframes sc-sun {
+  0% {
+    transform: translateY(96px);
+  }
+  100% {
+    transform: none;
+  }
+}
+@keyframes sc-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes sc-truck {
+  0% {
+    transform: translateX(-200px);
+  }
+  100% {
+    transform: translateX(300px);
+  }
+}
+@keyframes sc-plate-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
 }

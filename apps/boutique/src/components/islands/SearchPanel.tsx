@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import type { Category, Lang, Product, Recipe } from '@ferme/core';
 import { displayPrice, seedCategories, seedProducts, seedRecipes } from '@ferme/core';
 import { t, L } from '@/i18n';
@@ -90,7 +91,7 @@ export default function SearchPanel({ lang, open, onClose }: Props) {
     }
   };
 
-  if (!open) return null;
+  if (!open || typeof document === 'undefined') return null;
   const trimmed = q.trim();
   const none = trimmed.length > 0 && flat.length === 0;
   let idx = -1;
@@ -114,7 +115,7 @@ export default function SearchPanel({ lang, open, onClose }: Props) {
     );
   };
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 z-[70] flex items-start justify-center p-3 sm:p-6" role="dialog" aria-modal="true" aria-label={d.search.label}>
       <div className="absolute inset-0 bg-ink/50 backdrop-blur-sm" onClick={onClose} />
       <div className="relative mt-[max(0px,env(safe-area-inset-top))] w-full max-w-2xl overflow-hidden rounded-xl bg-paper shadow-float animate-pop" style={{ maxHeight: 'calc(100dvh - 24px)' }}>
@@ -229,6 +230,7 @@ export default function SearchPanel({ lang, open, onClose }: Props) {
 
         <p className="hidden border-t border-line px-4 py-2 text-xs text-ink-3 sm:block">{d.search.hint}</p>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

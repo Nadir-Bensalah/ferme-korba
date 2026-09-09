@@ -34,6 +34,13 @@ const storyArt: { photo: string; deco: DecoName; mask: string }[] = [
 ];
 const story = d.quality.story.map((s, i) => ({ ...s, ...(storyArt[i] ?? storyArt[0]!) }));
 
+/** Libellé des boutons d'étape : « Aller à l'étape 3 : à l'abri, au chaud ». */
+function goTo(i: number): string {
+  const title = story[i]?.title ?? '';
+  const t0 = lang === 'fr' && title ? title[0]!.toLowerCase() + title.slice(1) : title;
+  return d.quality.storyGoTo.replace('{n}', String(i + 1)).replace('{title}', t0);
+}
+
 /** Pictos des engagements : plein air, nourriture, antibiotiques, froid, pesée, vétérinaire. */
 const icons = [
   '<circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/>',
@@ -85,37 +92,276 @@ const jsonLd = {
     <TornEdge position="bottom" class="text-paper" height={26} />
   </section>
 
-  {/* 2. La frise de vie : six étapes, un trait qui se dessine, un compteur de jours. */}
+  {/* 2. La frise de vie : six étapes, un trait qui se dessine, un compteur de jours,
+      une scène animée qui suit le défilement (colonne collante sur ordinateur,
+      vignette dans le bandeau sur téléphone). L'étape en cours vit dans
+      `data-step` sur la racine : tout le reste est du CSS. */}
   <section class="relative overflow-x-clip bg-paper py-14 sm:py-20">
     <Deco type="ble" class="deco deco-lg start-[2%] top-40 w-20 -rotate-6 text-prairie/15" />
     <Deco type="coriandre" class="deco deco-lg end-[2%] bottom-32 w-24 text-prairie/15" />
     <div class="container-x">
       <SectionHead eyebrow={d.quality.storyEyebrow} title={d.quality.storyTitle} text={d.quality.storyText} align="center" />
 
-      <div class="relative mt-10">
+      <div class="story-root relative mt-10" data-story-root data-step="1">
         {/* Compteur de jours : collé sous l'en-tête, il monte pendant la frise. */}
         <div class="story-meter -mx-4 sm:-mx-6 lg:-mx-8">
           <div class="relative flex items-center justify-center gap-2.5 border-y border-line bg-paper/95 px-4 py-2.5 backdrop-blur-md">
-            <span class="tabular font-display text-2xl leading-none font-extrabold text-prairie-deep" data-story-days>90</span>
+            {/* Vignette de l'étape en cours, sous 1024 px seulement. */}
+            <span class="story-vignette me-1 lg:hidden" aria-hidden="true">
+              <svg class="story-vig" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                <path class="kd" d="M6 33c8-5 20-5 28 0M10 36c6-3 14-3 20 0" />
+                <path d="M20 33c-7 0-12-5-12-11 0-9 5-19 12-19s12 10 12 19c0 6-5 11-12 11Z" />
+              </svg>
+              <svg class="story-vig" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                <path class="kd" d="M6 33c8-5 20-5 28 0" />
+                <path d="M20 33c-7 0-12-5-12-11 0-9 5-19 12-19s12 10 12 19c0 6-5 11-12 11Z" />
+                <path class="pk" d="M11 20l4 3 3-4 4 4 3-3 4 2" />
+              </svg>
+              <svg class="story-vig" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                <g transform="translate(20 21) scale(.32) translate(-62 -74)">
+                  <path d="M42 88c0-16 9-28 22-28s22 12 22 28c0 10-9 16-22 16s-22-6-22-16Z" />
+                  <path d="M52 60c-2-12 4-22 14-22s16 10 14 22" />
+                  <circle cx="60" cy="48" r="2.4" fill="currentColor" stroke="none" />
+                  <path class="k" stroke-width="4" d="M70 50l7 3-7 3" />
+                  <path d="M54 104v6M70 104v6" />
+                </g>
+              </svg>
+              <svg class="story-vig" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                <path d="M4 34h32" />
+                <path d="M7 34c1-4 0-7-2-9M11 34c0-4 1-7 3-9M33 34c-1-4 0-7 2-9M29 34c0-4-1-7-3-9" />
+                <circle class="kf" cx="32" cy="8" r="4" stroke="none" />
+                <g transform="translate(20 22) scale(.28) translate(-62 -74)">
+                  <path d="M42 88c0-16 9-28 22-28s22 12 22 28c0 10-9 16-22 16s-22-6-22-16Z" />
+                  <path d="M52 60c-2-12 4-22 14-22s16 10 14 22" />
+                  <circle cx="60" cy="48" r="2.4" fill="currentColor" stroke="none" />
+                  <path class="k" stroke-width="4" d="M70 50l7 3-7 3" />
+                  <path d="M54 104v6M70 104v6" />
+                </g>
+              </svg>
+              <svg class="story-vig" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                <g transform="translate(20 22) scale(.3) translate(-60 -70)">
+                  <path d="M30 88c0-18 12-32 30-32 12 0 22 5 28 14 6 8 8 18 4 24-6 8-22 12-38 10-14-2-24-8-24-16Z" />
+                  <path d="M60 56c-4-10 0-18 8-20 4 8 2 16-4 20" />
+                  <path class="pk" stroke-width="3" d="M52 40c2-8 8-12 16-12-1 6-5 11-10 13" />
+                  <circle cx="66" cy="50" r="2.4" fill="currentColor" stroke="none" />
+                  <path class="k" stroke-width="4" d="M74 54l8 2-8 4" />
+                  <path d="M52 104l4-10M70 104l2-10" />
+                </g>
+              </svg>
+              <svg class="story-vig" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                <ellipse cx="20" cy="26" rx="16" ry="6" />
+                <ellipse cx="20" cy="26" rx="10" ry="3.5" class="l2" />
+                <path class="kd" d="M12 24c1-7 15-7 16 0" />
+                <path class="kd" d="M12 24l-4-4M28 24l4-4" />
+              </svg>
+            </span>
+            <span class="story-days relative inline-flex" data-story-days-wrap>
+              <span class="tabular font-display text-2xl leading-none font-extrabold text-prairie-deep" data-story-days>90</span>
+              <svg class="story-burst" viewBox="-30 -30 60 60" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                <g transform="rotate(-38)"><line class="ray" x1="0" y1="-14" x2="0" y2="-20" /></g>
+                <g><line class="ray" x1="0" y1="-15" x2="0" y2="-22" /></g>
+                <g transform="rotate(38)"><line class="ray" x1="0" y1="-14" x2="0" y2="-20" /></g>
+              </svg>
+            </span>
             <span class="text-sm font-bold text-ink-2">{d.quality.storyCounter}</span>
+            {/* Six points : où on en est, et un raccourci vers chaque étape. */}
+            <nav class="story-nav ms-2 flex items-center" aria-label={d.quality.storySteps}>
+              {story.map((_, i) => (
+                <button type="button" class="story-nav-dot" data-story-go={i + 1} aria-label={goTo(i)} aria-current={i === 0 ? 'step' : undefined} />
+              ))}
+            </nav>
             <span class="story-meter-bar absolute inset-x-0 bottom-0"><span class="story-meter-fill" data-story-fill></span></span>
           </div>
         </div>
 
-        <div class="story mt-10" data-story>
-          <div class="story-axis" aria-hidden="true">
-            <svg viewBox="0 0 2 1000" preserveAspectRatio="none" focusable="false">
-              <path class="story-track" d="M1 0V1000" vector-effect="non-scaling-stroke"></path>
-              <path class="story-line" d="M1 0V1000" pathLength="1"></path>
-            </svg>
+        <div class="story-stage mt-10">
+          {/* La scène collante, sur ordinateur seulement. Décorative : cachée aux lecteurs d'écran. */}
+          <div class="story-scene-col hidden lg:block" aria-hidden="true">
+            <div class="story-stage-box">
+              {/* Jour 0 : l'œuf dans la paille. */}
+              <svg class="story-scene" viewBox="0 0 400 300" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                <path class="kd" d="M52 238c40-24 96-34 148-30s100 14 148 30M84 254c34-12 78-18 116-16s78 8 116 16M112 226c22-16 54-24 88-22" />
+                <g class="an an-straw sc-straw"><path class="kd" d="M150 214c-14-10-30-14-48-10" /></g>
+                <g class="an an-straw sc-straw sc-straw-b"><path class="kd" d="M250 214c14-10 30-14 48-10" /></g>
+                <g class="an an-straw sc-straw sc-straw-c"><path class="kd" d="M204 214c-2-10 4-18 12-24" /></g>
+                <g class="an an-egg sc1-egg">
+                  <g transform="translate(200 172) scale(1.9) translate(-60 -70)">
+                    <path class="pf" d="M60 106c-16 0-27-11-27-26 0-20 12-46 27-46s27 26 27 46c0 15-11 26-27 26Z" />
+                    <path class="l2" d="M46 60c-3 6-5 12-5 18" />
+                  </g>
+                </g>
+                <path class="kd" d="M132 240c20 10 116 10 136 0M116 246c30 6 60 8 84 8s54-2 84-8" />
+                <g class="an an-straw sc-straw sc-straw-d"><path class="kd" d="M96 248c-10 4-18 12-22 22" /></g>
+                <g class="an an-straw sc-straw sc-straw-e"><path class="kd" d="M304 248c10 4 18 12 22 22" /></g>
+              </svg>
+
+              {/* Jour 1 : la coquille craque, le poussin surgit. */}
+              <svg class="story-scene" viewBox="0 0 400 300" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                <path class="kd" d="M70 250c40-16 90-22 130-20s90 8 130 20M100 262c30-8 66-12 100-12s70 4 100 12" />
+                <g class="an an-shelltop sc2-top">
+                  <path class="pf" d="M158 188c-4-40 14-84 42-84s46 44 42 84" />
+                  <path d="M158 188l10 9 11-9 10 9 11-9 10 9 11-9 10 9 11-9" />
+                  <path class="l2" d="M180 140c-4 8-6 16-6 24" />
+                </g>
+                <g class="an an-chick sc2-chick">
+                  <g transform="translate(200 236) scale(1.6) translate(-62 -110)">
+                    <path d="M42 88c0-16 9-28 22-28s22 12 22 28c0 10-9 16-22 16s-22-6-22-16Z" />
+                    <path d="M52 60c-2-12 4-22 14-22s16 10 14 22" />
+                    <circle class="an an-blink sc-eye" cx="60" cy="48" r="1.8" fill="currentColor" stroke="none" />
+                    <path class="k" d="M70 50l7 3-7 3" />
+                    <path d="M54 104v6M70 104v6" />
+                  </g>
+                </g>
+                <path class="pf" d="M158 188c-6 32 12 54 42 54s48-22 42-54" />
+                <path d="M158 188l10 9 11-9 10 9 11-9 10 9 11-9 10 9 11-9" />
+                <path class="an an-crack sc2-crack pk" pathLength="1" d="M170 176l10 8 8-10 10 9 9-9 11 8 8-7" />
+                <g class="an an-sparks sc2-sparks kd">
+                  <path d="M136 150l-8-6M262 150l8-6M120 190h-10M290 190h10M146 118l-5-9M254 118l5-9" />
+                </g>
+              </svg>
+
+              {/* 3 semaines : sous la lampe. */}
+              <svg class="story-scene" viewBox="0 0 400 300" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                <path class="an an-cone sc3-cone kf" d="M178 82L96 238h208L222 82Z" stroke="none" />
+                <circle class="an an-halo sc3-halo kf" cx="200" cy="86" r="30" stroke="none" />
+                <path d="M200 0v42" />
+                <path class="pf" d="M168 80l12-38h40l12 38Z" />
+                <path class="k" d="M186 80c4 8 24 8 28 0" />
+                <path class="kd" d="M96 238h208M120 250l10-8M170 252l8-8M230 252l-8-8M280 250l-10-8M150 244h14M250 244h-14" />
+                <g class="an an-chick sc3-chick">
+                  <g transform="translate(214 236) scale(1.5) translate(-62 -110)">
+                    <path d="M42 88c0-16 9-28 22-28s22 12 22 28c0 10-9 16-22 16s-22-6-22-16Z" />
+                    <path d="M52 60c-2-12 4-22 14-22s16 10 14 22" />
+                    <circle class="an an-blink sc-eye" cx="60" cy="48" r="1.8" fill="currentColor" stroke="none" />
+                    <path class="k" d="M70 50l7 3-7 3" />
+                    <path d="M54 104v6M70 104v6" />
+                  </g>
+                </g>
+                <g class="an an-chick sc3-chick-b">
+                  <g transform="translate(150 236) scale(-1.15 1.15) translate(-62 -110)">
+                    <path d="M42 88c0-16 9-28 22-28s22 12 22 28c0 10-9 16-22 16s-22-6-22-16Z" />
+                    <path d="M52 60c-2-12 4-22 14-22s16 10 14 22" />
+                    <circle class="an an-blink sc-eye sc-eye-b" cx="60" cy="48" r="1.8" fill="currentColor" stroke="none" />
+                    <path class="k" d="M70 50l7 3-7 3" />
+                    <path d="M54 104v6M70 104v6" />
+                  </g>
+                </g>
+              </svg>
+
+              {/* 4 semaines : la trappe s'ouvre, le poussin sort. */}
+              <svg class="story-scene" viewBox="0 0 400 300" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                <path class="kd" d="M20 232h360" />
+                <path class="pf" d="M40 232V122l60-46 60 46v110" />
+                <path d="M28 128l72-56 72 56" />
+                <path class="l2" d="M40 150h120M40 178h60M40 206h60" />
+                <path class="gf" d="M108 232v-62h44v62" />
+                <g class="an an-chick sc4-walk">
+                  <g class="an an-chick sc4-bob">
+                    <g transform="translate(130 232) scale(1.3) translate(-62 -110)">
+                      <path d="M42 88c0-16 9-28 22-28s22 12 22 28c0 10-9 16-22 16s-22-6-22-16Z" />
+                      <path d="M52 60c-2-12 4-22 14-22s16 10 14 22" />
+                      <circle class="an an-blink sc-eye" cx="60" cy="48" r="1.8" fill="currentColor" stroke="none" />
+                      <path class="k" d="M70 50l7 3-7 3" />
+                      <path d="M54 104v6M70 104v6" />
+                    </g>
+                  </g>
+                </g>
+                <g class="an an-door sc4-door">
+                  <path class="pf" d="M108 170h44v62h-44Z" />
+                  <path class="l2" d="M116 178v46M130 178v46M144 178v46" />
+                  <circle cx="144" cy="202" r="2" fill="currentColor" stroke="none" />
+                </g>
+                <g class="an an-grass sc-grass"><path d="M210 232c2-8 0-16-6-22M214 232c4-8 10-12 18-14" /></g>
+                <g class="an an-grass sc-grass sc-grass-b"><path d="M262 232c0-10 4-16 12-20M258 232c-4-8-10-12-18-14" /></g>
+                <g class="an an-grass sc-grass sc-grass-c"><path d="M318 232c2-10-2-18-8-24M322 232c4-8 10-14 20-16" /></g>
+                <g class="an an-grass sc-grass sc-grass-d"><path d="M360 232c0-8 2-14 8-18M356 232c-4-8-8-12-16-14" /></g>
+                <circle class="kf" cx="330" cy="70" r="22" stroke="none" />
+                <path class="k" d="M330 36v-8M330 104v8M296 70h-8M364 70h8M306 46l-6-6M354 46l6-6M306 94l-6 6M354 94l6 6" />
+              </svg>
+
+              {/* 90 jours : le coq et la poule. */}
+              <svg class="story-scene" viewBox="0 0 400 300" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                <path class="kd" d="M20 232h360" />
+                <g class="an an-grass sc-grass"><path d="M40 232c2-10-2-16-8-20M44 232c4-8 10-12 18-14" /></g>
+                <g class="an an-grass sc-grass sc-grass-c"><path d="M362 232c2-10-2-16-8-20M366 232c4-8 10-12 18-14" /></g>
+                <g class="an an-crow sc5-coq">
+                  <g transform="translate(130 232) scale(2) translate(-62 -104)">
+                    <path class="pf" d="M30 88c0-18 12-32 30-32 12 0 22 5 28 14 6 8 8 18 4 24-6 8-22 12-38 10-14-2-24-8-24-16Z" />
+                    <path d="M34 70c-14-6-24-18-24-34 10 2 18 10 22 20M36 76c-16-2-28-10-32-24 12-2 22 4 28 12" />
+                    <path d="M60 56c-4-10 0-18 8-20 4 8 2 16-4 20" />
+                    <path class="pkf" d="M52 40c2-8 8-12 16-12-1 6-5 11-10 13Z" />
+                    <path class="pkf" d="M66 56c-2 5 0 8 4 8 1-4 0-7-4-8Z" />
+                    <circle cx="66" cy="50" r="1.6" fill="currentColor" stroke="none" />
+                    <path class="k" d="M74 54l8 2-8 4" />
+                    <path d="M52 104l4-10M70 104l2-10" />
+                  </g>
+                </g>
+                <g class="an an-wave sc5-wave k">
+                  <path d="M186 124c6 8 6 18 0 26M198 114c10 14 10 32 0 46M210 104c14 20 14 46 0 66" />
+                </g>
+                <g class="an sc5-poule">
+                  <g transform="translate(290 232) scale(-1.5 1.5) translate(-62 -104)">
+                    <path class="pf" d="M30 88c0-18 12-32 30-32 12 0 22 5 28 14 6 8 8 18 4 24-6 8-22 12-38 10-14-2-24-8-24-16Z" />
+                    <g class="an an-peck sc5-tete">
+                      <path d="M60 56c-4-10 0-18 8-20 4 8 2 16-4 20" />
+                      <path class="pk" d="M52 40c2-8 8-12 16-12-1 6-5 11-10 13" />
+                      <circle cx="66" cy="50" r="1.6" fill="currentColor" stroke="none" />
+                      <path class="k" d="M74 54l8 2-8 4" />
+                    </g>
+                    <path d="M52 104l4-10M70 104l2-10" />
+                  </g>
+                </g>
+                <path class="kd" d="M226 244l6-4M236 250l6-4M246 242l6-4" />
+              </svg>
+
+              {/* À l'aube : le soleil, le camion, l'assiette. */}
+              <svg class="story-scene" viewBox="0 0 400 300" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                <g class="sc6-flip">
+                  <g class="an an-sun sc6-sun">
+                    <g class="an an-rays sc6-rays k">
+                      <path d="M300 96v-14M300 204v14M246 150h-14M354 150h14M262 112l-10-10M338 112l10-10M262 188l-10 10M338 188l10 10" />
+                    </g>
+                    <circle class="kf" cx="300" cy="150" r="34" stroke="none" />
+                  </g>
+                  <path class="gf" d="M0 236c40-52 110-88 200-86s150 40 200 86Z" />
+                  <path class="kd" d="M0 236h400" />
+                  <path class="l2" d="M0 262h400" />
+                  <path class="l2" stroke-dasharray="14 12" d="M0 250h400" />
+                  <g class="an an-truck sc6-truck">
+                    <path class="pf" d="M40 210h72v42H40Z" />
+                    <path d="M76 220v18M68 224l16 10M84 224l-16 10" />
+                    <path class="pf" d="M112 222h26l14 14v16h-40Z" />
+                    <path class="l2" d="M118 226h16v10h-16Z" />
+                    <circle class="pf" cx="58" cy="255" r="7" />
+                    <circle class="pf" cx="134" cy="255" r="7" />
+                  </g>
+                  <path d="M30 200h90M40 200v24M110 200v24" />
+                  <g class="an an-plate sc6-plate">
+                    <ellipse class="pf" cx="75" cy="196" rx="34" ry="8" />
+                    <ellipse class="l2" cx="75" cy="196" rx="22" ry="4.5" />
+                    <path class="kd" d="M60 194c3-14 27-14 30 0" />
+                    <path class="kd" d="M60 194l-7-7M90 194l7-7" />
+                  </g>
+                </g>
+              </svg>
+            </div>
           </div>
 
-          <ol class="relative flex flex-col gap-8 sm:gap-10 lg:gap-4">
-            {story.map((s, i) => (
-              <li class="story-step reveal grid lg:grid-cols-2 lg:gap-16" style={`--reveal-delay:${(i % 2) * 90}ms`}>
-                <span class="story-dot" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
-                <div class:list={[i % 2 === 0 ? 'lg:col-start-1' : 'lg:col-start-2', 'lg:py-6']}>
-                  <article class="relative overflow-hidden rounded-xl border border-line bg-paper p-5 shadow-card sm:p-6">
+          {/* Le rail : le trait, le marqueur et les six cartes. */}
+          <div class="story" data-story>
+            <div class="story-axis" aria-hidden="true">
+              <svg viewBox="0 0 2 1000" preserveAspectRatio="none" focusable="false">
+                <path class="story-track" d="M1 0V1000" vector-effect="non-scaling-stroke"></path>
+                <path class="story-line" d="M1 0V1000" pathLength="1"></path>
+              </svg>
+              <span class="story-marker"></span>
+            </div>
+
+            <ol class="relative flex flex-col gap-8 sm:gap-10">
+              {story.map((s, i) => (
+                <li class="story-step reveal" id={`etape-${i + 1}`} style={`--reveal-delay:${(i % 2) * 90}ms`}>
+                  <button type="button" class="story-dot" data-story-go={i + 1} aria-label={goTo(i)} aria-current={i === 0 ? 'step' : undefined}>{String(i + 1).padStart(2, '0')}</button>
+                  <article class="story-card relative overflow-hidden rounded-xl border border-line bg-paper p-5 shadow-card sm:p-6">
                     <Deco type={s.deco} class="deco deco-lg -end-5 -bottom-5 w-28 rotate-6 text-prairie/10" />
                     <div class="relative flex items-start justify-between gap-3">
                       <div class="min-w-0">
@@ -143,10 +389,10 @@ const jsonLd = {
                       <p class="text-ink-2">{s.text}</p>
                     </div>
                   </article>
-                </div>
-              </li>
-            ))}
-          </ol>
+                </li>
+              ))}
+            </ol>
+          </div>
         </div>
       </div>
     </div>
@@ -259,15 +505,44 @@ const jsonLd = {
   </script>
 
   <script>
-    // Frise de vie : le trait vert se dessine à mesure qu'on descend, et le
-    // compteur de jours monte avec lui. Sans JS, ou en mouvement réduit, le
-    // trait est déjà plein et le compteur affiche 90 : rien n'est masqué.
+    // Frise de vie. Le trait vert se dessine à mesure qu'on descend, le compteur
+    // de jours monte avec lui, et un marqueur voyage à la pointe du trait : quand
+    // il touche une pastille, l'étape s'allume. L'étape en cours vit dans
+    // `data-step` sur la racine ; la scène, la vignette, les cartes et les
+    // points du bandeau ne sont que du CSS derrière. Sans JS, ou en mouvement
+    // réduit, le trait est plein et le compteur affiche 90 : rien n'est masqué.
+    // En mouvement réduit, l'étape en cours suit quand même le défilement, par
+    // un observateur, pour que la scène montre la bonne image sans bouger.
     const MAX_DAYS = 90;
+    const STEPS = 6;
+    let root: HTMLElement | null = null;
     let wrap: HTMLElement | null = null;
     let days: HTMLElement | null = null;
     let fill: HTMLElement | null = null;
+    let steps: HTMLElement[] = [];
+    let offsets: number[] = [];
+    let wrapH = 0;
     let near = false;
     let queued = false;
+    let burst = false;
+    let io: IntersectionObserver | null = null;
+    let armed = false;
+
+    function setStep(n: number) {
+      if (!root) return;
+      const cur = Number(root.dataset.step || '1');
+      if (cur === n) return;
+      root.dataset.step = String(n);
+      root.querySelectorAll<HTMLElement>('[data-story-go]').forEach((b) => {
+        if (Number(b.dataset.storyGo) === n) b.setAttribute('aria-current', 'step');
+        else b.removeAttribute('aria-current');
+      });
+    }
+
+    /* Position des pastilles dans le rail, relevée quand sa hauteur change. */
+    function measure() {
+      offsets = steps.map((li) => li.offsetTop);
+    }
 
     function paint() {
       queued = false;
@@ -277,9 +552,24 @@ const jsonLd = {
       const span = Math.max(1, r.height - vh * 0.3);
       let p = (vh * 0.7 - r.top) / span;
       p = p < 0 ? 0 : p > 1 ? 1 : p;
+      if (r.height !== wrapH) {
+        wrapH = r.height;
+        measure();
+      }
+      // Le trait court de 0,75 rem à 0,75 rem du bord : le marqueur suit sa pointe.
+      const tip = p * Math.max(0, r.height - 24);
+      let n = 1;
+      for (let i = 1; i < offsets.length; i++) if (tip + 12 >= (offsets[i] ?? 0)) n = i + 1;
       wrap.style.setProperty('--story-progress', String(1 - p));
+      wrap.style.setProperty('--story-y', `${Math.round(tip)}px`);
       if (fill) fill.style.setProperty('--story-fill', `${Math.round(p * 100)}%`);
-      if (days) days.textContent = String(Math.round(p * MAX_DAYS));
+      const dcount = Math.round(p * MAX_DAYS);
+      if (days) days.textContent = String(dcount);
+      if (dcount === MAX_DAYS && !burst && days?.parentElement) {
+        burst = true;
+        days.parentElement.classList.add('is-burst');
+      }
+      setStep(Math.min(STEPS, n));
     }
 
     function onScroll() {
@@ -288,18 +578,68 @@ const jsonLd = {
       requestAnimationFrame(paint);
     }
 
+    /* Clic sur une pastille ou un point du bandeau : on file à l'étape. */
+    function onClick(e: Event) {
+      const b = (e.target as HTMLElement).closest<HTMLElement>('[data-story-go]');
+      if (!b) return;
+      const li = document.getElementById(`etape-${b.dataset.storyGo}`);
+      if (!li) return;
+      li.scrollIntoView({ block: 'start' });
+    }
+
+    function teardown() {
+      if (io) io.disconnect();
+      io = null;
+      near = false;
+      if (armed) {
+        window.removeEventListener('scroll', onScroll);
+        window.removeEventListener('resize', onScroll);
+        armed = false;
+      }
+      root = wrap = days = fill = null;
+      steps = [];
+      offsets = [];
+      wrapH = 0;
+    }
+
     function setup() {
+      teardown();
+      root = document.querySelector<HTMLElement>('[data-story-root]');
       wrap = document.querySelector<HTMLElement>('[data-story]');
       days = document.querySelector<HTMLElement>('[data-story-days]');
       fill = document.querySelector<HTMLElement>('[data-story-fill]');
-      near = false;
-      if (!wrap) return;
-      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      if (!root || !wrap) return;
+      steps = Array.from(wrap.querySelectorAll<HTMLElement>('.story-step'));
+      root.addEventListener('click', onClick);
       if (!('IntersectionObserver' in window)) return;
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        // Pas de trait qui court ni de compteur : seule l'étape en cours change,
+        // quand une carte passe la ligne des 70 % de l'écran.
+        const seen = new Array<boolean>(steps.length).fill(false);
+        io = new IntersectionObserver(
+          (entries) => {
+            for (const en of entries) {
+              const i = steps.indexOf(en.target as HTMLElement);
+              if (i < 0) continue;
+              seen[i] = en.boundingClientRect.top <= window.innerHeight * 0.7;
+            }
+            let n = 1;
+            for (let i = 1; i < seen.length; i++) if (seen[i]) n = i + 1;
+            setStep(n);
+          },
+          { rootMargin: '0px 0px -30% 0px' },
+        );
+        steps.forEach((li) => io!.observe(li));
+        return;
+      }
+      root.dataset.storyLive = '1';
       wrap.dataset.storyLive = '1';
       near = true;
+      armed = true;
+      window.addEventListener('scroll', onScroll, { passive: true });
+      window.addEventListener('resize', onScroll, { passive: true });
       paint();
-      const io = new IntersectionObserver(
+      io = new IntersectionObserver(
         (entries) => {
           for (const en of entries) near = en.isIntersecting;
           if (near) paint();
@@ -309,10 +649,9 @@ const jsonLd = {
       io.observe(wrap);
     }
 
-    window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', onScroll, { passive: true });
     setup();
     document.addEventListener('astro:page-load', setup);
+    document.addEventListener('astro:before-swap', teardown);
   </script>
 
   <script>

@@ -8,13 +8,15 @@ import Badges from '@/components/Badges.astro';
 import AddButton from '@/components/islands/AddButton';
 
 /**
- * Carte produit : photo carrée, badges, nom, prix et bouton d'ajout.
+ * Carte produit : carte crème bien droite, dedans un panneau vert légèrement
+ * de travers qui porte la photo, une étiquette inclinée en haut à droite, puis
+ * nom, accroche, prix et bouton d'ajout.
  * Utilisée sur l'accueil, la boutique et les pages recettes.
  */
 interface Props {
   product: Product;
   lang: Lang;
-  /** Position dans la grille, pour décaler l'apparition. */
+  /** Position dans la grille, pour décaler l'apparition et alterner l'inclinaison. */
   index?: number;
   /** Chargement prioritaire (au-dessus de la ligne de flottaison). */
   eager?: boolean;
@@ -26,28 +28,47 @@ const estimated = p.pricing.mode === 'per_kg_estimated';
 const url = href(lang, routes.product(p.slug));
 const soldOut = p.stock === 'rupture';
 const compare = p.compare_at ? formatPrice(p.compare_at, lang) : null;
+const tilt = index % 2 === 0 ? 'card-tilt-a' : 'card-tilt-b';
+const tag = p.badges.includes('promo')
+  ? { label: lang === 'ar' ? 'تخفيض' : 'Promo', cls: 'bg-paprika text-paper' }
+  : p.badges.includes('nouveau')
+    ? { label: lang === 'ar' ? 'جديد' : 'Nouveau', cls: 'bg-sky text-ink' }
+    : p.badges.includes('best')
+      ? { label: lang === 'ar' ? 'الأكثر طلباً' : 'Le plus demandé', cls: 'bg-yolk text-ink' }
+      : p.badges.includes('fermier')
+        ? { label: lang === 'ar' ? 'بلدي' : 'Fermier', cls: 'bg-prairie-soft text-prairie-deep' }
+        : null;
 ---
 
-<article class="reveal group relative flex flex-col overflow-hidden rounded-lg bg-paper shadow-card transition-shadow hover:shadow-float" style={`--reveal-delay:${Math.min(index, 8) * 60}ms`}>
-  <a href={url} class="relative block aspect-square overflow-hidden bg-cream" tabindex="-1" aria-hidden="true">
-    <Picture
-      src={p.images[0] ?? '/images/products/poulet-entier.jpg'}
-      alt=""
-      sizes="(min-width: 1280px) 300px, (min-width: 768px) 33vw, 50vw"
-      imgClass={`h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105 ${soldOut ? 'grayscale' : ''}`}
-      loading={eager ? 'eager' : 'lazy'}
-      fetchpriority={eager ? 'high' : 'auto'}
-      width={800}
-      height={800}
-      transitionName={`product-${p.id}`}
-    />
-    <div class="absolute start-2.5 top-2.5 flex flex-col items-start gap-1.5">
-      <Badges badges={p.badges} lang={lang} />
-      {p.stock === 'bientot' && <span class="chip bg-paper/90 text-ink-2">{d.common.soon}</span>}
-      {soldOut && <span class="chip bg-ink text-paper">{d.common.outOfStock}</span>}
+<article class:list={['reveal group product-card relative flex flex-col rounded-lg bg-cream p-3 shadow-card transition-[box-shadow,transform] duration-300 hover:-translate-y-0.5 hover:shadow-float sm:p-3.5', tilt]} style={`--reveal-delay:${Math.min(index, 8) * 60}ms`}>
+  <a href={url} class="relative block" tabindex="-1" aria-hidden="true">
+    <!-- Panneau vert légèrement de travers, la photo reste droite dessus. -->
+    <div class="product-panel relative aspect-square rounded-lg bg-prairie shadow-[0_10px_24px_-14px_rgba(20,83,45,.7)]">
+      <div class="product-photo absolute inset-2 overflow-hidden rounded-md bg-cream">
+        <Picture
+          src={p.images[0] ?? '/images/products/poulet-entier.jpg'}
+          alt=""
+          sizes="(min-width: 1280px) 300px, (min-width: 768px) 33vw, 50vw"
+          imgClass={`h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105 ${soldOut ? 'grayscale' : ''}`}
+          loading={eager ? 'eager' : 'lazy'}
+          fetchpriority={eager ? 'high' : 'auto'}
+          width={800}
+          height={800}
+          transitionName={`product-${p.id}`}
+        />
+      </div>
     </div>
+    {
+      soldOut ? (
+        <span class="product-tag bg-ink text-paper">{d.common.outOfStock}</span>
+      ) : p.stock === 'bientot' ? (
+        <span class="product-tag bg-paper text-ink-2">{d.common.soon}</span>
+      ) : (
+        tag && <span class:list={['product-tag', tag.cls]}>{tag.label}</span>
+      )
+    }
   </a>
-  <div class="flex flex-1 flex-col gap-1 p-3 sm:p-4">
+  <div class="flex flex-1 flex-col gap-1 pt-3 sm:pt-4">
     <h3 class="text-base font-bold leading-tight sm:text-lg">
       <a href={url} class="after:absolute after:inset-0 after:content-['']">{L(p.name, lang)}</a>
     </h3>
@@ -55,9 +76,9 @@ const compare = p.compare_at ? formatPrice(p.compare_at, lang) : null;
     <div class="mt-auto flex items-end justify-between gap-2 pt-3">
       <div class="leading-tight">
         {estimated && <div class="text-[11px] font-semibold uppercase tracking-wide text-ink-3">{d.common.from}</div>}
-        <div class="flex items-baseline gap-1.5">
-          <span class="font-display text-lg font-extrabold text-ink tabular sm:text-xl">{price.amount}</span>
-          <span class="text-xs font-semibold text-ink-3">{price.unit}</span>
+        <div class="flex flex-wrap items-baseline gap-x-1.5">
+          <span class="whitespace-nowrap font-display text-lg font-extrabold text-ink tabular sm:text-xl">{price.amount}</span>
+          <span class="whitespace-nowrap text-xs font-semibold text-ink-3">{price.unit}</span>
         </div>
         {compare && <div class="text-xs text-ink-3 line-through tabular">{compare}</div>}
       </div>
@@ -66,4 +87,57 @@ const compare = p.compare_at ? formatPrice(p.compare_at, lang) : null;
       </div>
     </div>
   </div>
+  <span class="sr-only"><Badges badges={p.badges} lang={lang} /></span>
 </article>
+
+<style>
+  /* Le panneau penche, la photo à l'intérieur se redresse d'autant :
+     l'œil voit un cadre posé de travers, pas une photo tordue. */
+  .card-tilt-a .product-panel {
+    transform: rotate(-2.5deg);
+  }
+  .card-tilt-a .product-photo {
+    transform: rotate(2.5deg) scale(1.04);
+  }
+  .card-tilt-b .product-panel {
+    transform: rotate(2deg);
+  }
+  .card-tilt-b .product-photo {
+    transform: rotate(-2deg) scale(1.04);
+  }
+  .product-card:hover .product-panel {
+    transform: rotate(0deg);
+  }
+  .product-card:hover .product-photo {
+    transform: rotate(0deg) scale(1.04);
+  }
+  .product-panel,
+  .product-photo {
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  /* L'étiquette mord sur le coin en haut à droite, un peu penchée. */
+  .product-tag {
+    position: absolute;
+    top: -0.35rem;
+    inset-inline-end: -0.35rem;
+    z-index: 2;
+    padding: 0.35rem 0.7rem;
+    border-radius: 6px;
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    box-shadow: 0 6px 16px -8px rgba(22, 32, 26, 0.5);
+    transform: rotate(6deg);
+  }
+  html[dir='rtl'] .product-tag {
+    transform: rotate(-6deg);
+    letter-spacing: 0;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .product-panel,
+    .product-photo {
+      transition: none;
+    }
+  }
+</style>

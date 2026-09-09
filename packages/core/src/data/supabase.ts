@@ -7,6 +7,7 @@ import type {
   DeliverySlot,
   DeliveryZone,
   Localized,
+  Offer,
   Order,
   OrderInput,
   OrderItem,
@@ -268,6 +269,69 @@ export function productToRow(p: Product): ProductRow {
     is_featured: p.is_featured,
     sort: p.sort,
     tips: p.tips ?? null,
+  };
+}
+
+export interface OfferRow {
+  id: string;
+  kind: string;
+  eyebrow: Localized;
+  title: Localized;
+  subtitle: Localized;
+  badge: Localized;
+  price: number | string | null;
+  compare_at: number | string | null;
+  image: string;
+  cta: Localized;
+  link: string;
+  ends_at: string | null;
+  product_slugs: string[] | null;
+  active: boolean;
+  sort: number;
+  updated_at?: string | null;
+}
+
+const OFFER_KINDS: Offer['kind'][] = ['deal', 'combo', 'season'];
+
+export function rowToOffer(r: OfferRow): Offer {
+  const o: Offer = {
+    id: r.id,
+    kind: OFFER_KINDS.find((k) => k === r.kind) ?? 'season',
+    eyebrow: r.eyebrow,
+    title: r.title,
+    subtitle: r.subtitle,
+    badge: r.badge ?? { fr: '', ar: '' },
+    price: numOrNull(r.price),
+    compare_at: numOrNull(r.compare_at),
+    image: r.image ?? '',
+    cta: r.cta,
+    link: r.link ?? '/produits',
+    ends_at: r.ends_at ? iso(r.ends_at) : null,
+    product_slugs: r.product_slugs ?? [],
+    active: Boolean(r.active),
+    sort: r.sort ?? 0,
+  };
+  if (r.updated_at) o.updated_at = iso(r.updated_at);
+  return o;
+}
+
+export function offerToRow(o: Offer): OfferRow {
+  return {
+    id: o.id,
+    kind: o.kind,
+    eyebrow: o.eyebrow,
+    title: o.title,
+    subtitle: o.subtitle,
+    badge: o.badge,
+    price: o.price ?? null,
+    compare_at: o.compare_at ?? null,
+    image: o.image,
+    cta: o.cta,
+    link: o.link,
+    ends_at: o.ends_at ?? null,
+    product_slugs: o.product_slugs,
+    active: o.active,
+    sort: o.sort,
   };
 }
 
@@ -577,6 +641,11 @@ export function createSupabasePublicSource(env: Required<DataEnv>): PublicDataSo
       const { data, error } = await db.from('recipes').select('*').eq('slug', slug).maybeSingle();
       if (error) fail(error);
       return data ? rowToRecipe(data as RecipeRow) : null;
+    },
+    async listOffers() {
+      const { data, error } = await db.from('offers').select('*').eq('active', true).order('sort').order('id');
+      if (error) fail(error);
+      return ((data ?? []) as OfferRow[]).map(rowToOffer);
     },
     async listZones() {
       const { data, error } = await db.from('delivery_zones').select('*').eq('active', true).order('sort').order('id');
@@ -955,6 +1024,18 @@ export function createSupabaseAdminSource(env: Required<DataEnv>): AdminDataSour
     },
     async deleteRecipe(id) {
       return deleteRow('recipes', id);
+    },
+
+    async listOffers() {
+      const { data, error } = await db.from('offers').select('*').order('sort').order('id');
+      if (error) fail(error);
+      return ((data ?? []) as OfferRow[]).map(rowToOffer);
+    },
+    async upsertOffer(o) {
+      return upsertRow('offers', offerToRow(o), rowToOffer);
+    },
+    async deleteOffer(id) {
+      return deleteRow('offers', id);
     },
 
     async listZones() {

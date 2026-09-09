@@ -5,6 +5,7 @@ import type {
   DashboardStats,
   DeliverySlot,
   DeliveryZone,
+  Offer,
   Order,
   OrderInput,
   OrderStatus,
@@ -29,6 +30,7 @@ interface DemoState {
   categories: Category[];
   products: Product[];
   recipes: Recipe[];
+  offers: Offer[];
   zones: DeliveryZone[];
   slots: DeliverySlot[];
   settings: Settings;
@@ -59,6 +61,7 @@ function fresh(): DemoState {
     categories: structuredClone(seed.categories),
     products: structuredClone(seed.products),
     recipes: structuredClone(seed.recipes),
+    offers: structuredClone(seed.offers),
     zones: structuredClone(seed.zones),
     slots: structuredClone(seed.slots),
     settings: structuredClone(seed.settings),
@@ -172,6 +175,11 @@ export function createLocalPublicSource(): PublicDataSource {
     },
     async getSettings() {
       return load().settings;
+    },
+    async listOffers() {
+      return load()
+        .offers.filter((o) => o.active)
+        .sort((a, b) => a.sort - b.sort);
     },
     async createOrder(input: OrderInput) {
       await delay(400);
@@ -489,6 +497,20 @@ export function createLocalAdminSource(): AdminDataSource {
     async deleteRecipe(id) {
       const s = load();
       s.recipes = s.recipes.filter((r) => r.id !== id);
+      save(s);
+    },
+    async listOffers() {
+      return [...load().offers].sort((a, b) => a.sort - b.sort);
+    },
+    async upsertOffer(o) {
+      const s = load();
+      const item = upsert(s.offers, { ...o, updated_at: new Date().toISOString() });
+      save(s);
+      return item;
+    },
+    async deleteOffer(id) {
+      const s = load();
+      s.offers = s.offers.filter((o) => o.id !== id);
       save(s);
     },
     async listZones() {

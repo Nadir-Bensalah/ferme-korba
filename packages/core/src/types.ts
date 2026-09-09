@@ -122,6 +122,38 @@ export interface Settings {
   updated_at?: string;
 }
 
+/**
+ * Une offre mise en avant sur l'accueil et la boutique : offre du jour avec
+ * compte à rebours, pack combiné, spécial saison. Gérée depuis l'espace de
+ * gestion. Le prix est indicatif : ce qui compte en caisse, ce sont les produits.
+ */
+export type OfferKind = 'deal' | 'combo' | 'season';
+
+export interface Offer {
+  id: string;
+  kind: OfferKind;
+  /** Petit surtitre : « Offre du jour », « Pack combiné », « Spécial saison ». */
+  eyebrow: Localized;
+  title: Localized;
+  subtitle: Localized;
+  /** Pastille : « Économisez 5 DT », « -20 % ». Vide = pas de pastille. */
+  badge: Localized;
+  price?: number | null;
+  compare_at?: number | null;
+  image: string;
+  /** Libellé du bouton : « Commander », « Ajouter le pack ». */
+  cta: Localized;
+  /** Chemin du site (sans langue ni base) : /produits/categorie/oeufs, /produits/merguez-de-volaille. */
+  link: string;
+  /** Fin de l'offre. Vide pour une offre du jour = l'heure limite de commande du jour. */
+  ends_at?: string | null;
+  /** Produits du pack, pour « Ajouter le pack » au panier (slugs). */
+  product_slugs: string[];
+  active: boolean;
+  sort: number;
+  updated_at?: string;
+}
+
 export type OrderStatus =
   | 'nouvelle'
   | 'confirmee'

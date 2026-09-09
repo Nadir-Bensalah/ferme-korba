@@ -7,4 +7,4 @@ export * from './data/source';
 export * from './data/local';
 export * from './data/supabase';
 export * from './data/factory';
-export { seed, categories as seedCategories, products as seedProducts, recipes as seedRecipes, zones as seedZones, slots as seedSlots, settings as seedSettings } from './seed';
+export { seed, categories as seedCategories, products as seedProducts, recipes as seedRecipes, zones as seedZones, slots as seedSlots, settings as seedSettings, offers as seedOffers } from './seed';

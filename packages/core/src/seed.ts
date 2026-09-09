@@ -1,4 +1,4 @@
-import type { Category, DeliverySlot, DeliveryZone, Product, Recipe, Settings } from './types';
+import type { Category, DeliverySlot, DeliveryZone, Offer, Product, Recipe, Settings } from './types';
 
 /**
  * Jeu de données de départ. Il sert :
@@ -600,4 +600,58 @@ export const settings: Settings = {
   closed_days: [0],
 };
 
-export const seed = { categories, products, recipes, zones, slots, settings };
+export const offers: Offer[] = [
+  {
+    id: 'o-jour',
+    kind: 'deal',
+    eyebrow: { fr: 'Offre du jour', ar: 'عرض اليوم' },
+    title: { fr: '-20 % sur les œufs fermiers', ar: '-20% على البيض البلدي' },
+    subtitle: { fr: 'Sur toutes les boîtes, commandé avant 18 h', ar: 'على كل العلب، للطلبات قبل 18:00' },
+    badge: { fr: '-20 %', ar: '-20%' },
+    price: null,
+    compare_at: null,
+    image: '/images/products/oeufs.jpg',
+    cta: { fr: 'Commander', ar: 'اطلب الآن' },
+    link: '/produits/categorie/oeufs',
+    ends_at: null,
+    product_slugs: [],
+    active: true,
+    sort: 1,
+  },
+  {
+    id: 'o-combo',
+    kind: 'combo',
+    eyebrow: { fr: 'Pack combiné', ar: 'باقة مشتركة' },
+    title: { fr: 'Le pack braise du week-end', ar: 'باقة شواء نهاية الأسبوع' },
+    subtitle: { fr: 'Merguez, brochettes et ailes, pour 6 personnes', ar: 'مرقاز وأسياخ وأجنحة، لستة أشخاص' },
+    badge: { fr: 'Économisez 6 DT', ar: 'وفّر 6 د.ت' },
+    price: 49.9,
+    compare_at: 55.9,
+    image: '/images/products/brochettes.jpg',
+    cta: { fr: 'Ajouter le pack', ar: 'أضف الباقة' },
+    link: '/produits/categorie/marines',
+    ends_at: null,
+    product_slugs: ['merguez-de-volaille', 'brochettes-de-poulet-marinees', 'ailes-de-poulet'],
+    active: true,
+    sort: 2,
+  },
+  {
+    id: 'o-saison',
+    kind: 'season',
+    eyebrow: { fr: 'Spécial saison', ar: 'خاص بالموسم' },
+    title: { fr: 'Le poulet du dimanche', ar: 'دجاج يوم الأحد' },
+    subtitle: { fr: 'Poulet fermier entier et boîte de 12 œufs', ar: 'دجاجة بلدية كاملة وعلبة 12 بيضة' },
+    badge: { fr: 'Économisez 3 DT', ar: 'وفّر 3 د.ت' },
+    price: 29.9,
+    compare_at: 32.9,
+    image: '/images/products/poulet-entier.jpg',
+    cta: { fr: 'Ajouter le pack', ar: 'أضف الباقة' },
+    link: '/produits/poulet-fermier-entier',
+    ends_at: null,
+    product_slugs: ['poulet-fermier-entier', 'oeufs-fermiers-x12'],
+    active: true,
+    sort: 3,
+  },
+];
+
+export const seed = { categories, products, recipes, zones, slots, settings, offers };

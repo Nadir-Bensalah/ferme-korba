@@ -5,6 +5,7 @@ import type {
   DashboardStats,
   DeliverySlot,
   DeliveryZone,
+  Offer,
   Order,
   OrderInput,
   OrderStatus,
@@ -30,6 +31,8 @@ export interface PublicDataSource {
   listZones(): Promise<DeliveryZone[]>;
   listSlots(): Promise<DeliverySlot[]>;
   getSettings(): Promise<Settings>;
+  /** Offres actives, dans l'ordre d'affichage. */
+  listOffers(): Promise<Offer[]>;
   /** Crée une commande. Le serveur recalcule tout, le client n'envoie que des quantités. */
   createOrder(input: OrderInput): Promise<{ number: string; tracking_token: string }>;
   /** Suivi sans compte : numéro + jeton secret. */
@@ -93,6 +96,10 @@ export interface AdminDataSource {
   listRecipes(): Promise<Recipe[]>;
   upsertRecipe(r: Recipe): Promise<Recipe>;
   deleteRecipe(id: string): Promise<void>;
+
+  listOffers(): Promise<Offer[]>;
+  upsertOffer(o: Offer): Promise<Offer>;
+  deleteOffer(id: string): Promise<void>;
 
   listZones(): Promise<DeliveryZone[]>;
   upsertZone(z: DeliveryZone): Promise<DeliveryZone>;
