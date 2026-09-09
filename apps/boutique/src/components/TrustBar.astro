@@ -25,6 +25,11 @@ const { lang, attached = false, class: cls = '' } = Astro.props;
 const d = t(lang);
 const items = [...d.home.trust, ...d.home.trust, ...d.home.trust];
 const icons: IconName[] = ['plein-air', 'aube', 'camion', 'especes'];
+// Exactement les deux bords d'origine : déchiré au-dessus, ondulé en dessous.
+// Dans les deux tracés la matière est en bas du cadre, donc celui du dessous
+// est retourné pour venir se coller sous la bande.
+const TORN =
+  'M0,28 L0,9.4 L26.1,5.5 L52.2,17.0 L78.3,3.7 L104.3,14.3 L130.4,10.4 L156.5,3.3 L182.6,13.7 L208.7,2.9 L234.8,12.0 L260.9,3.6 L287.0,4.1 L313.0,11.8 L339.1,21.0 L365.2,4.8 L391.3,7.1 L417.4,16.4 L443.5,23.8 L469.6,15.3 L495.7,11.1 L521.7,24.5 L547.8,3.1 L573.9,21.7 L600.0,8.7 L626.1,5.3 L652.2,4.7 L678.3,9.1 L704.3,20.8 L730.4,6.2 L756.5,15.4 L782.6,16.7 L808.7,10.6 L834.8,14.6 L860.9,3.4 L887.0,3.4 L913.0,6.7 L939.1,17.6 L965.2,11.8 L991.3,9.2 L1017.4,15.5 L1043.5,12.4 L1069.6,8.9 L1095.7,20.3 L1121.7,18.1 L1147.8,7.6 L1173.9,15.2 L1200.0,14.1 L1200,28 Z';
 const WAVE =
   'M0,32 L0,16 C84,2 156,2 240,16 C324,28 396,28 480,16 C564,2 636,2 720,16 C804,28 876,28 960,16 C1044,2 1116,2 1200,16 L1200,32 Z';
 ---
@@ -33,8 +38,8 @@ const WAVE =
 <div class:list={['trust-bar', attached && 'is-attached', cls]} data-trust>
   {
     !attached && (
-      <svg class="trust-wave trust-wave-top" viewBox="0 0 1200 32" preserveAspectRatio="none" aria-hidden="true" focusable="false">
-        <path d={WAVE} fill="currentColor" transform="rotate(180 600 16)" />
+      <svg class="trust-wave trust-wave-top" viewBox="0 0 1200 28" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+        <path d={TORN} fill="currentColor" />
       </svg>
     )
   }
@@ -63,7 +68,7 @@ const WAVE =
     </div>
   </div>
   <svg class="trust-wave trust-wave-bottom" viewBox="0 0 1200 32" preserveAspectRatio="none" aria-hidden="true" focusable="false">
-    <path d={WAVE} fill="currentColor"></path>
+    <path d={WAVE} fill="currentColor" transform="rotate(180 600 16)"></path>
   </svg>
 </div>
 
@@ -112,15 +117,16 @@ const WAVE =
     inset-inline: 0;
     display: block;
     width: 100%;
-    height: 18px;
     color: var(--color-prairie-deep);
     pointer-events: none;
   }
   .trust-wave-top {
     bottom: 100%;
+    height: 26px;
   }
   .trust-wave-bottom {
     top: 100%;
+    height: 22px;
   }
   /* Collée sous la barre de navigation : le haut devient droit. */
   .trust-bar.is-stuck .trust-wave-top {
