@@ -42,6 +42,9 @@ export default function ShopLive({ lang, category, seed }: Props) {
             if (!wrap) continue;
             const p = byId.get(s.id);
             if (!p) {
+              // Marqué disparu, pas seulement masqué : le tri de ShopControls
+              // s'appuie sur ce drapeau pour ne jamais le faire revenir.
+              wrap.dataset.gone = '1';
               wrap.hidden = true;
               continue;
             }
@@ -52,6 +55,8 @@ export default function ShopLive({ lang, category, seed }: Props) {
           if (count) count.textContent = d.shop.count(visible);
           const empty = document.querySelector<HTMLElement>('[data-shop-empty]');
           if (empty) empty.hidden = visible > 0;
+          // Le tri et le filtre se réappliquent sur les valeurs fraîches.
+          document.dispatchEvent(new CustomEvent('shop:live'));
         })
         .catch(() => {
           /* la version construite reste affichée */
@@ -68,6 +73,11 @@ export default function ShopLive({ lang, category, seed }: Props) {
 function patchCard(wrap: HTMLElement, s: CardSeed, p: Product, lang: Lang) {
   const d = t(lang);
   const price = displayPrice(p.pricing, lang);
+  // Les repères de tri suivent la donnée fraîche, sinon la grille se rangerait
+  // sur des prix et des stocks périmés.
+  wrap.dataset.stock = p.stock;
+  wrap.dataset.price = String(p.pricing.mode === 'per_piece' ? p.pricing.price : p.pricing.price_per_kg);
+  wrap.dataset.pop = String(p.badges.includes('best') ? 0 : p.is_featured ? 1 : 2);
   if (price.amount !== s.amount || price.unit !== s.unit) {
     const amount = wrap.querySelector<HTMLElement>('span.font-display');
     if (amount) {

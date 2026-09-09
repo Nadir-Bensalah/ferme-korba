@@ -2,6 +2,8 @@
 import type { Lang } from '@ferme/core';
 import Base from '@/layouts/Base.astro';
 import Account from '@/components/islands/Account';
+import TunnelStyles from '@/components/tunnel/TunnelStyles.astro';
+import Deco from '@/components/deco/Deco.astro';
 import { t } from '@/i18n';
 
 interface Props {
@@ -12,7 +14,9 @@ const d = t(lang);
 ---
 
 <Base lang={lang} title={d.account.title} noindex>
-  <section class="container-x py-8 sm:py-12">
+  <TunnelStyles />
+  <section class="container-x relative py-8 sm:py-12">
+    <Deco type="grain" class="deco deco-lg start-6 top-10 hidden w-20 -rotate-6 text-yolk/25 xl:block" />
     <h1 class="mx-auto mb-6 max-w-2xl text-3xl font-extrabold sm:text-4xl">{d.account.title}</h1>
     <Account client:load lang={lang} />
   </section>

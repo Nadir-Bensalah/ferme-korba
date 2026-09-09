@@ -1,15 +1,17 @@
 ---
 import type { Lang } from '@ferme/core';
-import { brand } from '@ferme/core';
+import { brand, formatPrice, seedSettings, seedZones } from '@ferme/core';
 import Base from '@/layouts/Base.astro';
+import MapEmbed from '@/components/MapEmbed.astro';
 import SectionHead from '@/components/SectionHead.astro';
 import Deco from '@/components/deco/Deco.astro';
 import TornEdge from '@/components/deco/TornEdge.astro';
 import ContactForm from '@/components/islands/ContactForm';
-import { t } from '@/i18n';
-import { telLink, whatsappLink } from '@/lib/paths';
+import OpenStatus from '@/components/islands/OpenStatus';
+import { t, L, formatHour } from '@/i18n';
+import { href, routes, telLink, whatsappLink } from '@/lib/paths';
 
-/** Contact : appeler, WhatsApp, itinéraire, horaires, formulaire. */
+/** Contact : appeler, WhatsApp, itinéraire, horaires en direct, formulaire, questions fréquentes. */
 interface Props {
   lang: Lang;
 }
@@ -49,67 +51,221 @@ const actions = [
     dir: undefined,
   },
 ];
+
+/** Les réponses citent les vraies valeurs de la boutique : minimum, heure limite, zones. */
+const zones = seedZones
+  .filter((z) => z.active)
+  .sort((a, b) => a.sort - b.sort)
+  .map((z) => L(z.name, lang))
+  .join(lang === 'ar' ? '، ' : ', ');
+const faq = d.contact.faq.map((f) => ({
+  q: f.q,
+  a: f.a
+    .replace('{min}', formatPrice(seedSettings.min_order, lang))
+    .replace('{cutoff}', formatHour(seedSettings.cutoff_time, lang))
+    .replace('{zones}', zones)
+    .replace('{phone}', brand.phoneDisplay),
+}));
+
+const site = Astro.site ? Astro.site.toString().replace(/\/$/, '') : '';
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  url: `${site}${href(lang, routes.contact)}`,
+  inLanguage: lang === 'ar' ? 'ar-TN' : 'fr-TN',
+  mainEntity: faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+};
 ---
 
-<Base lang={lang} title={d.contact.title} description={d.contact.text}>
+<Base lang={lang} title={d.contact.title} description={d.contact.text} jsonLd={jsonLd}>
   <section class="filigree relative overflow-clip bg-cream py-12 sm:py-16">
     <Deco type="oranger" class="deco deco-sway deco-lg start-4 top-6 hidden w-20 -rotate-6 text-yolk/25 lg:block lg:w-24" />
     <Deco type="poule" class="deco deco-lg end-4 top-4 hidden w-20 text-ink/10 lg:block lg:w-24" />
     <div class="container-x">
-    <SectionHead as="h1" eyebrow={d.contact.eyebrow} title={d.contact.title} text={d.contact.text} align="center" />
+      <SectionHead as="h1" eyebrow={d.contact.eyebrow} title={d.contact.title} text={d.contact.text} align="center" />
 
-    <ul class="mt-10 grid gap-4 sm:grid-cols-3">
-      {actions.map((a, i) => (
-        <li class="reveal" style={`--reveal-delay:${i * 80}ms`}>
-          <a href={a.href} class={`flex min-h-32 flex-col justify-between gap-4 rounded-lg p-5 shadow-card transition-[transform,box-shadow] hover:shadow-float active:scale-[0.98] sm:min-h-40 sm:p-6 ${a.cls}`} rel={a.external ? 'noopener' : undefined} target={a.external ? '_blank' : undefined}>
-            <span class="flex items-center justify-between">
-              <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={a.icon} />
-              <svg class="rtl:rotate-180 opacity-70" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
-            </span>
-            <span>
-              <span class="block font-display text-xl font-extrabold leading-tight sm:text-2xl">{a.title}</span>
-              <span class="mt-1 block text-base font-semibold opacity-90 tabular" dir={a.dir}>{a.text}</span>
-              <span class="mt-0.5 block text-sm opacity-75">{a.help}</span>
-            </span>
-          </a>
-        </li>
-      ))}
-    </ul>
+      {/* L'état des horaires, tout de suite : ouvert ou fermé, et jusqu'à quand. */}
+      <div class="reveal mt-6 flex justify-center">
+        <OpenStatus client:load lang={lang} hours={brand.hours[lang]} compact />
+      </div>
+
+      <ul class="mt-10 grid gap-4 sm:grid-cols-3">
+        {
+          actions.map((a, i) => (
+            <li class="reveal" style={`--reveal-delay:${i * 80}ms`}>
+              <a
+                href={a.href}
+                class={`flex min-h-32 flex-col justify-between gap-4 rounded-lg p-5 shadow-card transition-[transform,box-shadow] hover:shadow-float active:scale-[0.98] sm:min-h-40 sm:p-6 ${a.cls}`}
+                rel={a.external ? 'noopener' : undefined}
+                target={a.external ? '_blank' : undefined}
+              >
+                <span class="flex items-center justify-between">
+                  <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={a.icon} />
+                  <svg class="rtl:rotate-180 opacity-70" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M5 12h14M13 6l6 6-6 6" />
+                  </svg>
+                </span>
+                <span>
+                  <span class="block font-display text-xl leading-tight font-extrabold sm:text-2xl">{a.title}</span>
+                  <span class="tabular mt-1 block text-base font-semibold opacity-90" dir={a.dir}>
+                    {a.text}
+                  </span>
+                  <span class="mt-0.5 block text-sm opacity-75">{a.help}</span>
+                </span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
     </div>
     <TornEdge position="bottom" variant="wave" height={28} class="edge-in text-paper" />
   </section>
 
-  <section class="relative overflow-clip bg-paper pb-24 pt-14 sm:pt-16">
+  <section class="relative overflow-clip bg-paper pt-14 pb-24 sm:pt-16">
     <Deco type="ble" class="deco deco-lg start-1 bottom-2 hidden w-16 -rotate-12 text-prairie/20 lg:block lg:w-20" />
+    <div class="container-x my-12"><MapEmbed lang={lang} title={d.home.map.mapLabel} /></div>
     <div class="container-x grid gap-10 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:gap-16">
-    <div class="reveal flex flex-col gap-6">
-      <div class="rounded-lg bg-cream p-6">
-        <h2 class="eyebrow">{d.contact.address}</h2>
-        <p class="mt-2 text-lg font-bold">{brand.name[lang]}</p>
-        <p class="mt-1 text-ink-2">{brand.address[lang]}</p>
-        <a href={mapsUrl} class="mt-4 inline-flex items-center gap-1.5 font-bold text-prairie hover:text-prairie-deep" rel="noopener" target="_blank">
-          {d.contact.map}
-          <svg class="rtl:rotate-180" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9" /></svg>
-        </a>
+      <div class="reveal flex flex-col gap-6">
+        <div class="rounded-lg bg-cream p-6">
+          <h2 class="eyebrow">{d.contact.address}</h2>
+          <p class="mt-2 text-lg font-bold">{brand.name[lang]}</p>
+          <p class="mt-1 text-ink-2">{brand.address[lang]}</p>
+          <a href={mapsUrl} class="mt-4 inline-flex items-center gap-1.5 font-bold text-prairie hover:text-prairie-deep" rel="noopener" target="_blank">
+            {d.contact.map}
+            <svg class="rtl:rotate-180" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"></path></svg>
+          </a>
+        </div>
+        <div class="rounded-lg bg-cream p-6">
+          <h2 class="eyebrow mb-3">{d.contact.hours}</h2>
+          <OpenStatus client:load lang={lang} hours={brand.hours[lang]} />
+          <p class="mt-4 border-t border-line-2/50 pt-4 text-ink-2">{d.footer.cod}</p>
+        </div>
+        <div class="rounded-lg bg-cream p-6">
+          <h2 class="eyebrow">{d.common.phone}</h2>
+          <a href={telLink(brand.phone)} class="tabular mt-2 block font-display text-2xl font-extrabold text-ink" dir="ltr">{brand.phoneDisplay}</a>
+          <a href={`mailto:${brand.email}`} class="mt-1 block text-ink-2 hover:text-ink" dir="ltr">{brand.email}</a>
+        </div>
       </div>
-      <div class="rounded-lg bg-cream p-6">
-        <h2 class="eyebrow">{d.contact.hours}</h2>
-        <p class="mt-2 text-lg font-bold">{brand.hours[lang]}</p>
-        <p class="mt-1 text-ink-2">{d.footer.cod}</p>
-      </div>
-      <div class="rounded-lg bg-cream p-6">
-        <h2 class="eyebrow">{d.common.phone}</h2>
-        <a href={telLink(brand.phone)} class="mt-2 block font-display text-2xl font-extrabold text-ink tabular" dir="ltr">{brand.phoneDisplay}</a>
-        <a href={`mailto:${brand.email}`} class="mt-1 block text-ink-2 hover:text-ink" dir="ltr">{brand.email}</a>
-      </div>
-    </div>
 
-    <div class="reveal rounded-xl border border-line bg-paper p-5 shadow-card sm:p-8" style="--reveal-delay: 100ms">
-      <h2 class="text-2xl font-extrabold sm:text-3xl">{d.contact.form}</h2>
-      <p class="mt-2 mb-6 text-ink-2">{d.contact.formText}</p>
-      <ContactForm client:visible lang={lang} />
+      <div class="reveal rounded-xl border border-line bg-paper p-5 shadow-card sm:p-8" style="--reveal-delay: 100ms">
+        <h2 class="text-2xl font-extrabold sm:text-3xl">{d.contact.form}</h2>
+        <p class="mt-2 mb-6 text-ink-2">{d.contact.formText}</p>
+        <ContactForm client:visible lang={lang} whatsapp={whatsappLink(brand.whatsapp, d.contact.whatsappMessage)} />
+      </div>
     </div>
-    </div>
-    <TornEdge position="bottom" variant="torn" height={26} class="edge-in text-cream" />
+    <TornEdge position="bottom" variant="torn" height={26} class="edge-in text-paper" />
   </section>
+
+  {/* Les questions fréquentes : de quoi éviter un appel. */}
+  <section class="relative overflow-clip bg-paper py-16 sm:py-20">
+    <Deco type="oeuf" class="deco deco-lg end-4 top-8 hidden w-14 rotate-6 text-prairie/15 lg:block lg:w-16" />
+    <div class="container-x">
+      <div class="mx-auto max-w-3xl">
+        <SectionHead title={d.contact.faqTitle} text={d.contact.faqText} align="center" />
+        <div class="mt-10 flex flex-col gap-3">
+          {
+            faq.map((f, i) => (
+              <details class="reveal group rounded-lg border border-line bg-paper shadow-card open:border-prairie/40" style={`--reveal-delay:${i * 60}ms`} data-faq>
+                <summary class="flex min-h-14 cursor-pointer items-center justify-between gap-4 px-5 py-4 text-start text-lg leading-tight font-bold select-none">
+                  {f.q}
+                  <svg class="faq-chevron shrink-0 text-prairie transition-transform duration-300" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="m6 9 6 6 6-6" />
+                  </svg>
+                </summary>
+                <div class="faq-body">
+                  <div>
+                    <p class="px-5 pb-5 text-ink-2">{f.a}</p>
+                  </div>
+                </div>
+              </details>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+    <TornEdge position="bottom" variant="wave" height={28} class="edge-in text-cream" />
+  </section>
+
+  <script>
+    // FAQ : ouverture et fermeture animées en hauteur. Sans JS, <details> fait le travail.
+    function setupFaq() {
+      document.querySelectorAll<HTMLDetailsElement>('details[data-faq]:not([data-ready])').forEach((el) => {
+        el.dataset.ready = '1';
+        const summary = el.querySelector('summary');
+        const body = el.querySelector<HTMLElement>('.faq-body');
+        if (!summary || !body) return;
+        const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        summary.addEventListener('click', (e) => {
+          if (reduced) return;
+          e.preventDefault();
+          if (el.open) {
+            el.classList.add('is-closing');
+            const done = () => {
+              el.open = false;
+              el.classList.remove('is-closing');
+              body.removeEventListener('transitionend', done);
+            };
+            body.addEventListener('transitionend', done);
+            setTimeout(done, 450);
+          } else {
+            el.classList.add('is-closing');
+            el.open = true;
+            void body.offsetHeight;
+            el.classList.remove('is-closing');
+          }
+        });
+      });
+    }
+    setupFaq();
+    document.addEventListener('astro:page-load', setupFaq);
+  </script>
 </Base>
+
+<style>
+  /* ------------------------------------------------------------------
+     L'état des horaires et le retour du formulaire vivent dans des îlots
+     React : leurs classes s'écrivent en global, mais ne sortent pas de
+     la page contact.
+     ------------------------------------------------------------------ */
+  :global(.status) {
+    background: var(--color-cream-2);
+    color: var(--color-ink-2);
+  }
+  :global(.status-dot) {
+    display: block;
+    height: 0.6rem;
+    width: 0.6rem;
+    flex: none;
+    border-radius: 999px;
+    background: var(--color-ink-3);
+  }
+  :global(.status-open) {
+    background: var(--color-prairie-soft);
+    color: var(--color-prairie-deep);
+  }
+  :global(.status-open .status-dot) {
+    background: var(--color-prairie);
+    animation: status-beat 2.4s ease-in-out infinite;
+  }
+  :global(.status-closed) {
+    background: var(--color-paprika-soft);
+    color: var(--color-paprika);
+  }
+  :global(.status-closed .status-dot) {
+    background: var(--color-paprika);
+  }
+  @keyframes status-beat {
+    0%,
+    100% {
+      box-shadow: 0 0 0 0 color-mix(in oklab, var(--color-prairie) 45%, transparent);
+    }
+    60% {
+      box-shadow: 0 0 0 0.4rem color-mix(in oklab, var(--color-prairie) 0%, transparent);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    :global(.status-open .status-dot) {
+      animation: none;
+    }
+  }
+</style>

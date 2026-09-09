@@ -1,0 +1,86 @@
+---
+import Icon from '@/components/Icon.astro';
+import Deco from '@/components/deco/Deco.astro';
+
+/**
+ * Rien à afficher : un dessin, une phrase, une porte de sortie. Le texte est
+ * remplaçable à l'exécution (data-empty-title, data-empty-text) quand c'est un
+ * filtre, et non la catégorie, qui a vidé la grille.
+ */
+interface Props {
+  title: string;
+  text?: string;
+  action?: { href: string; label: string };
+  hidden?: boolean;
+  id?: string;
+}
+const { title, text, action, hidden = false, id } = Astro.props;
+---
+
+<div class="empty-state" hidden={hidden} data-shop-empty id={id}>
+  <div class="empty-art" aria-hidden="true">
+    <span class="empty-grain"><Deco type="grain" class="w-16 text-ink/15" /></span>
+    <Icon name="panier-vide" class="h-14 w-14 text-prairie/45" strokeWidth={1.4} />
+    <span class="empty-plume"><Deco type="plume" class="w-12 text-yolk/45" /></span>
+  </div>
+  <p class="empty-title" data-empty-title>{title}</p>
+  {text !== undefined && <p class="empty-text" data-empty-text>{text}</p>}
+  {
+    action && (
+      <a href={action.href} class="btn-soft btn-sm mt-4" data-empty-action>
+        {action.label}
+      </a>
+    )
+  }
+</div>
+
+<style>
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 3rem 1.5rem 3.25rem;
+    border-radius: var(--radius-lg);
+    background: var(--color-paper);
+    border: 1px dashed var(--color-line-2);
+  }
+  .empty-art {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 132px;
+    height: 92px;
+    margin-bottom: 1rem;
+  }
+  .empty-grain {
+    position: absolute;
+    inset-inline-start: 0;
+    inset-block-end: 0.25rem;
+    transform: rotate(-12deg);
+  }
+  .empty-plume {
+    position: absolute;
+    inset-inline-end: 0;
+    inset-block-start: 0;
+    transform: rotate(14deg);
+  }
+  .empty-title {
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--color-ink);
+  }
+  .empty-text {
+    margin-top: 0.35rem;
+    font-size: 0.925rem;
+    color: var(--color-ink-3);
+    max-width: 34ch;
+  }
+  /* Le paragraphe existe toujours pour que le filtre puisse y écrire ; vide, il
+     ne prend pas de place. */
+  .empty-text:empty {
+    display: none;
+  }
+</style>

@@ -5,10 +5,14 @@ import Base from '@/layouts/Base.astro';
 import ProductCard from '@/components/ProductCard.astro';
 import SectionHead from '@/components/SectionHead.astro';
 import OffersStrip from '@/components/OffersStrip.astro';
+import EmptyState from '@/components/EmptyState.astro';
+import Icon from '@/components/Icon.astro';
 import SearchButton from '@/components/islands/SearchButton';
 import Deco from '@/components/deco/Deco.astro';
 import TornEdge from '@/components/deco/TornEdge.astro';
 import ShopLive, { type CardSeed } from '@/components/islands/ShopLive';
+import ShopControls from '@/components/islands/ShopControls';
+import BackToTop from '@/components/islands/BackToTop';
 import { t, L } from '@/i18n';
 import { href, routes } from '@/lib/paths';
 
@@ -36,6 +40,15 @@ const seed: CardSeed[] = products.map((p) => {
   const price = displayPrice(p.pricing, lang);
   return { id: p.id, amount: price.amount, unit: price.unit, stock: p.stock, badges: p.badges };
 });
+/** Combien de produits par catégorie, pour le montrer sur la barre du haut. */
+const perCategory = new Map<string, number>();
+for (const p of seedProducts) perCategory.set(p.category_id, (perCategory.get(p.category_id) ?? 0) + 1);
+/** Repères de tri posés sur chaque carte, relus par ShopControls. */
+const sortKeys = products.map((p) => ({
+  price: p.pricing.mode === 'per_piece' ? p.pricing.price : p.pricing.price_per_kg,
+  pop: p.badges.includes('best') ? 0 : p.is_featured ? 1 : 2,
+}));
+const shopUrl = href(lang, routes.shop);
 const itemList = {
   '@context': 'https://schema.org',
   '@type': 'ItemList',
@@ -65,12 +78,20 @@ const itemList = {
 
   <div class="cat-bar">
     <nav class="container-x" aria-label={d.shop.filter}>
-      <div class="-mx-4 flex gap-2 overflow-x-auto px-4 py-3 scrollbar-none sm:mx-0 sm:px-0">
-        <a href={href(lang, routes.shop)} class="cat-chip" aria-current={!cat ? 'page' : undefined}>{d.shop.all}</a>
+      <div class="cat-scroll -mx-4 flex gap-2 overflow-x-auto px-4 py-3 scrollbar-none sm:mx-0 sm:px-0" data-cat-scroll>
+        <a href={shopUrl} class="cat-chip" aria-current={!cat ? 'page' : undefined}>
+          {d.shop.all}
+          <span class="cat-n tabular" aria-hidden="true">{seedProducts.length}</span>
+          <span class="sr-only">{d.shop.count(seedProducts.length)}</span>
+        </a>
         {
           cats.map((c) => (
             <a href={href(lang, routes.category(c.slug))} class="cat-chip" aria-current={cat?.id === c.id ? 'page' : undefined}>
               {L(c.name, lang)}
+              <span class="cat-n tabular" aria-hidden="true">
+                {perCategory.get(c.id) ?? 0}
+              </span>
+              <span class="sr-only">{d.shop.count(perCategory.get(c.id) ?? 0)}</span>
             </a>
           ))
         }
@@ -82,17 +103,26 @@ const itemList = {
     <Deco type="poule" class="deco deco-lg start-0 bottom-2 hidden w-20 text-ink/10 lg:block lg:w-24" />
     <div class="container-x">
     {!cat && <OffersStrip lang={lang} class="mb-12 mt-2 sm:mb-14" />}
-    <div class="mb-5 flex flex-wrap items-center justify-between gap-3">
-      <p id="grid-title" class="text-sm font-semibold text-ink-3" data-product-count>{d.shop.count(products.length)}</p>
-      <p class="chip bg-prairie-soft text-prairie-deep normal-case tracking-normal">
-        <span aria-hidden="true">🌿</span> {d.shop.freshNote}
-      </p>
+    <h2 id="grid-title" class="sr-only">{title}</h2>
+    <p class="fresh-note mb-4">
+      <Icon name="aube" class="h-4 w-4 shrink-0 text-prairie" />
+      {d.shop.freshNote}
+    </p>
+    <ShopControls client:idle lang={lang} total={products.length} shopUrl={shopUrl} />
+    <div class="mb-6">
+      <EmptyState title={d.shop.empty} text="" action={{ href: shopUrl, label: d.shop.showAll }} hidden={products.length > 0} />
     </div>
-    <p data-shop-empty hidden={products.length > 0} class="card p-10 text-center text-ink-2">{d.shop.empty}</p>
-    <div class="grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3 xl:grid-cols-4">
+    <div class="shop-grid grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3 xl:grid-cols-4" data-shop-grid data-busy="0">
       {
         products.map((p, i) => (
-          <div data-product-id={p.id} class="flex flex-col [&>article]:flex-1">
+          <div
+            data-product-id={p.id}
+            data-price={sortKeys[i]!.price}
+            data-pop={sortKeys[i]!.pop}
+            data-order={i}
+            data-stock={p.stock}
+            class="flex flex-col [&>article]:flex-1"
+          >
             <ProductCard product={p} lang={lang} index={i} eager={i < 4} />
           </div>
         ))
@@ -103,4 +133,77 @@ const itemList = {
   </section>
 
   <ShopLive client:idle lang={lang} category={cat?.slug} seed={seed} />
+  <BackToTop client:idle lang={lang} />
+
+  <script>
+    /**
+     * La barre de catégories montre où on en est : la catégorie ouverte est
+     * ramenée sous les yeux, même si elle était hors du cadre à droite.
+     */
+    function centerCategory() {
+      const bar = document.querySelector<HTMLElement>('[data-cat-scroll]');
+      const active = bar?.querySelector<HTMLElement>('[aria-current="page"]');
+      if (!bar || !active) return;
+      const target = active.offsetLeft - (bar.clientWidth - active.offsetWidth) / 2;
+      bar.scrollTo({ left: Math.max(0, target), behavior: 'auto' });
+    }
+    centerCategory();
+    document.addEventListener('astro:page-load', centerCategory);
+  </script>
 </Base>
+
+<style>
+  /* Le rappel de fraîcheur, avec un dessin plutôt qu'un émoji. */
+  .fresh-note {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    border-radius: var(--radius-pill);
+    background: var(--color-prairie-soft);
+    color: var(--color-prairie-deep);
+    padding: 0.3rem 0.85rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+  }
+
+  /* Combien de produits derrière chaque catégorie. */
+  .cat-n {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.25rem;
+    height: 1.25rem;
+    margin-inline-start: 0.4rem;
+    border-radius: var(--radius-pill);
+    background: color-mix(in srgb, currentColor 14%, transparent);
+    padding-inline: 0.3rem;
+    font-size: 0.68rem;
+    font-weight: 800;
+  }
+
+  /* Les bords de la barre s'estompent : on voit qu'il y a une suite. */
+  .cat-scroll {
+    mask-image: linear-gradient(to right, transparent, black 3%, black 97%, transparent);
+  }
+  @media (min-width: 640px) {
+    .cat-scroll {
+      mask-image: none;
+    }
+  }
+
+  /* Le temps que la grille se range, elle s'efface d'un souffle. */
+  .shop-grid {
+    transition: opacity 0.18s ease;
+  }
+  .shop-grid[data-busy='1'] {
+    opacity: 0.45;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .shop-grid {
+      transition: none;
+    }
+    .shop-grid[data-busy='1'] {
+      opacity: 1;
+    }
+  }
+</style>

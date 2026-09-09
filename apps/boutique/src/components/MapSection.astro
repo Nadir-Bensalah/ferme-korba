@@ -1,0 +1,54 @@
+---
+import type { Lang } from '@ferme/core';
+import { brand } from '@ferme/core';
+import { t } from '@/i18n';
+import { telLink, whatsappLink } from '@/lib/paths';
+import MapEmbed from '@/components/MapEmbed.astro';
+import Deco from '@/components/deco/Deco.astro';
+
+/** Section « Venir à la ferme » de l'accueil : adresse, horaires, itinéraire et la carte. */
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const d = t(lang);
+const m = d.home.map;
+const directions = `https://www.google.com/maps/dir/?api=1&destination=${brand.geo.lat},${brand.geo.lng}`;
+---
+
+<section class="filigree relative overflow-clip bg-cream py-16 sm:py-20" aria-labelledby="map-title">
+  <Deco type="oranger" class="deco deco-lg -start-6 top-10 w-32 text-prairie/15" />
+  <Deco type="ble" class="deco deco-lg -end-4 bottom-8 w-28 rotate-12 text-yolk/25" />
+  <div class="container-x grid items-center gap-8 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-12">
+    <div class="reveal flex flex-col gap-5">
+      <p class="eyebrow">{m.eyebrow}</p>
+      <h2 id="map-title" class="text-3xl font-extrabold leading-[1.05] sm:text-4xl">{m.title}</h2>
+      <p class="text-lg text-ink-2">{m.text}</p>
+      <ul class="flex flex-col gap-3 text-sm">
+        <li class="flex items-start gap-3">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="mt-0.5 shrink-0 text-prairie"><path d="M12 22s7-7.1 7-12a7 7 0 0 0-14 0c0 4.9 7 12 7 12Z" /><circle cx="12" cy="10" r="2.5" /></svg>
+          <span class="font-semibold text-ink">{brand.address[lang]}</span>
+        </li>
+        <li class="flex items-start gap-3">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="mt-0.5 shrink-0 text-prairie"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>
+          <span class="text-ink-2">{brand.hours[lang]}</span>
+        </li>
+        <li class="flex items-start gap-3">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="mt-0.5 shrink-0 text-prairie rtl:-scale-x-100"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z" /><circle cx="7" cy="18" r="2" /><circle cx="17" cy="18" r="2" /></svg>
+          <span class="text-ink-2">{m.delivery}</span>
+        </li>
+      </ul>
+      <div class="flex flex-wrap gap-3">
+        <a href={directions} class="btn-primary" rel="noopener" target="_blank">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2 2 12l10 10 10-10L12 2Z" /><path d="M9 12h6M12 9l3 3-3 3" class="rtl:-scale-x-100" /></svg>
+          {m.directions}
+        </a>
+        <a href={telLink(brand.phone)} class="btn-ghost">{d.nav.call} · {brand.phoneDisplay}</a>
+        <a href={whatsappLink(brand.whatsapp)} class="btn-soft" rel="noopener" target="_blank">{d.common.whatsapp}</a>
+      </div>
+    </div>
+    <div class="reveal lg:self-stretch" style="--reveal-delay: 120ms">
+      <MapEmbed lang={lang} title={m.mapLabel} class="lg:h-full" />
+    </div>
+  </div>
+</section>

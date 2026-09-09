@@ -6,12 +6,18 @@ import Picture from '@/components/Picture.astro';
 import ProductCard from '@/components/ProductCard.astro';
 import RecipeCard from '@/components/RecipeCard.astro';
 import RecipeCart from '@/components/islands/RecipeCart';
+import RecipeKitchen from '@/components/islands/RecipeKitchen';
 import Deco from '@/components/deco/Deco.astro';
 import TornEdge from '@/components/deco/TornEdge.astro';
 import { t, L } from '@/i18n';
 import { href, routes, asset } from '@/lib/paths';
 
-/** Une recette : photo, ingrédients cochables, étapes, produits de la boutique, autres recettes. */
+/**
+ * Une recette : photo, pastilles illustrées, puis le bloc de cuisine
+ * (portions recalculées, ingrédients cochables, étapes avec minuteur),
+ * les produits de la boutique et d'autres recettes.
+ * La feuille d'impression, en bas de ce fichier, ne garde que la recette.
+ */
 interface Props {
   lang: Lang;
   recipe: RecipeType;
@@ -25,6 +31,14 @@ const products = r.product_slugs.map((slug) => seedProducts.find((p) => p.slug =
 const snapshots = products.map((p) => ({ id: p.id, slug: p.slug, name: p.name, images: p.images, pricing: p.pricing, stock: p.stock }));
 const others = seedRecipes.filter((x) => x.id !== r.id).slice(0, 3);
 const difficulty = d.common.difficulty[r.difficulty - 1] ?? '';
+
+/** « 90 » devient « 1 h 30 ». Sous une heure, on garde les minutes. */
+function duration(min: number): string {
+  if (min < 60) return `${min} ${d.common.minutes}`;
+  const h = Math.floor(min / 60);
+  const rest = min % 60;
+  return rest ? `${h} ${d.recipes.hourShort} ${rest}` : `${h} ${d.recipes.hourShort}`;
+}
 
 const site = Astro.site ? Astro.site.toString().replace(/\/$/, '') : '';
 const jsonLd = {
@@ -48,105 +62,109 @@ const jsonLd = {
 <Base lang={lang} title={L(r.title, lang)} description={L(r.intro, lang)} image={r.image} jsonLd={jsonLd}>
   <div class="relative overflow-clip bg-paper pb-12">
     <Deco type="romarin" class="deco deco-lg end-2 top-3 hidden w-16 rotate-12 text-prairie/20 lg:block lg:w-20" />
-  <article class="container-x py-8 sm:py-12">
-    <nav class="mb-6 text-sm text-ink-3" aria-label={d.common.back}>
-      <a href={href(lang, routes.recipes)} class="inline-flex items-center gap-1.5 font-semibold text-prairie hover:text-prairie-deep">
-        <svg class="rtl:rotate-180" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6" /></svg>
-        {d.recipes.title}
-      </a>
-    </nav>
+    <article class="container-x py-8 sm:py-12">
+      <nav class="no-print mb-6 text-sm text-ink-3" aria-label={d.common.back}>
+        <a href={href(lang, routes.recipes)} class="inline-flex items-center gap-1.5 font-semibold text-prairie hover:text-prairie-deep">
+          <svg class="rtl:rotate-180" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6" /></svg>
+          {d.recipes.title}
+        </a>
+      </nav>
 
-    <header class="grid items-center gap-8 lg:grid-cols-2 lg:gap-14">
-      <div class="blob-2">
-        <Picture src={r.image} alt={L(r.title, lang)} sizes="(min-width: 1024px) 50vw, 100vw" loading="eager" fetchpriority="high" imgClass="aspect-[4/3] w-full object-cover" width={1600} height={1200} transitionName={`recipe-${r.id}`} />
-      </div>
-      <div>
-        <p class="eyebrow">{d.recipes.eyebrow}</p>
-        <h1 class="mt-3 text-3xl font-extrabold leading-[1.05] sm:text-4xl lg:text-5xl">{L(r.title, lang)}</h1>
-        <p class="prose-farm mt-5">{L(r.intro, lang)}</p>
-        <dl class="mt-6 flex flex-wrap gap-2">
-          <div class="flex items-center gap-2 rounded-pill bg-cream px-4 py-2 text-sm font-bold text-ink-2">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>
-            <dt class="sr-only">{d.recipes.duration}</dt>
-            <dd class="tabular">{r.duration_min} {d.common.minutes}</dd>
-          </div>
-          <div class="flex items-center gap-2 rounded-pill bg-cream px-4 py-2 text-sm font-bold text-ink-2">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5" /><path d="M2.5 20a6.5 6.5 0 0 1 13 0" /><circle cx="17" cy="9" r="2.5" /><path d="M15.5 14.5a5 5 0 0 1 6 5" /></svg>
-            <dt class="sr-only">{d.recipes.servingsLabel}</dt>
-            <dd>{d.recipes.forServings(r.servings)}</dd>
-          </div>
-          <div class="flex items-center gap-2 rounded-pill bg-cream px-4 py-2 text-sm font-bold text-ink-2">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-8M22 20H2" /></svg>
-            <dt class="sr-only">{d.recipes.difficultyLabel}</dt>
-            <dd>{difficulty}</dd>
-          </div>
-        </dl>
-      </div>
-    </header>
-
-    <div class="mt-12 grid gap-10 lg:mt-16 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:gap-16">
-      <section class="reveal lg:sticky lg:top-24 lg:self-start" aria-labelledby="ingredients">
-        <div class="rounded-lg bg-cream p-5 sm:p-6">
-          <div class="flex items-end justify-between gap-3">
-            <h2 id="ingredients" class="text-2xl font-extrabold">{d.recipes.ingredients}</h2>
-            <button type="button" class="text-sm font-bold text-prairie hover:text-prairie-deep" data-uncheck={`ferme-korba:recipe:${r.id}`}>{d.recipes.uncheck}</button>
-          </div>
-          <p class="mt-1 text-sm text-ink-3">{d.recipes.checkHint}</p>
-          <ul class="mt-4 flex flex-col divide-y divide-line-2/60" data-ingredients={`ferme-korba:recipe:${r.id}`}>
-            {ingredients.map((ing, i) => (
-              <li class="ingredient">
-                <label class="flex min-h-12 cursor-pointer items-center gap-3 py-2.5">
-                  <input type="checkbox" class="h-5 w-5 shrink-0 accent-prairie" value={i} />
-                  <span class="ingredient-label text-base text-ink transition-colors">{ing}</span>
-                </label>
-              </li>
-            ))}
-          </ul>
+      <header class="grid items-center gap-8 lg:grid-cols-2 lg:gap-14">
+        <div class="recipe-photo blob-2">
+          <Picture src={r.image} alt={L(r.title, lang)} sizes="(min-width: 1024px) 50vw, 100vw" loading="eager" fetchpriority="high" imgClass="aspect-[4/3] w-full object-cover" width={1600} height={1200} transitionName={`recipe-${r.id}`} />
         </div>
-      </section>
+        <div>
+          <p class="eyebrow">{d.recipes.eyebrow}</p>
+          <h1 class="mt-3 text-3xl leading-[1.05] font-extrabold sm:text-4xl lg:text-5xl">{L(r.title, lang)}</h1>
+          <p class="prose-farm mt-5">{L(r.intro, lang)}</p>
 
-      <section class="reveal" aria-labelledby="steps" style="--reveal-delay: 80ms">
-        <h2 id="steps" class="text-2xl font-extrabold">{d.recipes.steps}</h2>
-        <ol class="mt-6 flex flex-col gap-6">
-          {steps.map((s, i) => (
-            <li class="flex gap-4">
-              <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-pill bg-ink font-display text-base font-extrabold text-yolk" aria-hidden="true">
-                {i + 1}
+          {/* Trois pastilles dessinées : le temps, la table, la main. */}
+          <dl class="mt-7 grid grid-cols-3 gap-2.5 sm:max-w-lg sm:gap-3">
+            <div class="fact fact-time">
+              <span class="fact-icon" aria-hidden="true">
+                <svg width="24" height="24" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M9 4h14M9 28h14"></path>
+                  <path d="M10.5 4v4.5c0 3 5.5 5.5 5.5 7.5s-5.5 4.5-5.5 7.5V28M21.5 4v4.5c0 3-5.5 5.5-5.5 7.5s5.5 4.5 5.5 7.5V28"></path>
+                  <path d="M12.6 25.6c.8-2 2.4-3.2 3.4-3.2s2.6 1.2 3.4 3.2z" fill="currentColor" stroke="none"></path>
+                  <path d="M16 17.4v3.2"></path>
+                </svg>
               </span>
-              <div class="pt-1.5">
-                <p class="sr-only">{d.recipes.step(i + 1)}</p>
-                <p class="text-lg leading-relaxed text-ink-2">{s}</p>
-              </div>
-            </li>
-          ))}
-        </ol>
-      </section>
-    </div>
-
-    {
-      products.length > 0 && (
-        <section class="mt-16 rounded-xl bg-moss p-5 sm:p-8 lg:mt-20" aria-labelledby="produits">
-          <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <p class="eyebrow mb-2">{d.nav.shop}</p>
-              <h2 id="produits" class="text-2xl font-extrabold sm:text-3xl">{d.recipes.products}</h2>
-              <p class="mt-2 text-ink-2">{d.recipes.addAllHelp}</p>
+              <span class="fact-body">
+                <dt class="fact-label">{d.recipes.duration}</dt>
+                <dd class="fact-value tabular">{duration(r.duration_min)}</dd>
+              </span>
             </div>
-            <RecipeCart client:visible products={snapshots} lang={lang} />
-          </div>
-          <div class="mt-6 grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-3">
-            {products.map((p, i) => (
-              <ProductCard product={p} lang={lang} index={i} />
-            ))}
-          </div>
-        </section>
-      )
-    }
-  </article>
-    <TornEdge position="bottom" variant="wave" height={28} class="edge-in text-moss" />
+
+            <div class="fact fact-serv">
+              <span class="fact-icon" aria-hidden="true">
+                <svg width="24" height="24" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="16" cy="17" r="8.5"></circle>
+                  <circle cx="16" cy="17" r="4.5"></circle>
+                  <path d="M5.5 6v7.5a2.5 2.5 0 0 0 5 0V6M8 6v7"></path>
+                  <path d="M24.5 6c1.8 0 3 1.6 3 3.6s-1.2 3.4-3 3.4V6zM24.5 13v13"></path>
+                </svg>
+              </span>
+              <span class="fact-body">
+                <dt class="fact-label">{d.recipes.servingsLabel}</dt>
+                <dd class="fact-value tabular">{r.servings} {d.common.servings}</dd>
+              </span>
+            </div>
+
+            <div class="fact fact-diff">
+              <span class="fact-icon" aria-hidden="true">
+                <svg width="24" height="24" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M9 26h14l.8-8H8.2z"></path>
+                  <path d="M8.6 18c-2.6-.6-4.1-2.6-4.1-5 0-2.6 2-4.6 4.6-4.6.4-2.4 2.4-4.1 4.9-4.1 1.6 0 3 .7 3.9 1.9A4.6 4.6 0 0 1 21 5.6c2.5 0 4.5 1.9 4.7 4.3 1.4.7 2.3 2.2 2.3 3.9 0 2.2-1.5 4-3.6 4.4"></path>
+                  <path d="M12.4 26.4 13 18M19.6 26.4 19 18"></path>
+                </svg>
+              </span>
+              <span class="fact-body">
+                <dt class="fact-label">{d.recipes.difficultyLabel}</dt>
+                <dd class="fact-value">{difficulty}</dd>
+                <dd class="mt-1 flex gap-1" aria-hidden="true">
+                  {[1, 2, 3].map((n) => <span class:list={['fact-dot', n <= r.difficulty && 'is-on']}></span>)}
+                </dd>
+              </span>
+            </div>
+          </dl>
+        </div>
+      </header>
+
+      {/* Portions, ingrédients, étapes et minuteurs. Rendu aussi sans JS. */}
+      <RecipeKitchen client:visible lang={lang} recipeId={r.id} ingredients={ingredients} steps={steps} baseServings={r.servings} />
+
+      {/* Sur le papier : d'où vient la recette. */}
+      <p class="print-only recipe-print-foot">
+        {brand.name[lang]} · {brand.address[lang]} · <span dir="ltr">{brand.phoneDisplay}</span>
+      </p>
+
+      {
+        products.length > 0 && (
+          <section class="no-print mt-16 rounded-xl bg-moss p-5 sm:p-8 lg:mt-20" aria-labelledby="produits">
+            <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <p class="eyebrow mb-2">{d.nav.shop}</p>
+                <h2 id="produits" class="text-2xl font-extrabold sm:text-3xl">
+                  {d.recipes.products}
+                </h2>
+                <p class="mt-2 text-ink-2">{d.recipes.addAllHelp}</p>
+              </div>
+              <RecipeCart client:visible products={snapshots} lang={lang} />
+            </div>
+            <div class="mt-6 grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-3">
+              {products.map((p, i) => (
+                <ProductCard product={p} lang={lang} index={i} />
+              ))}
+            </div>
+          </section>
+        )
+      }
+    </article>
+    <TornEdge position="bottom" variant="wave" height={28} class="edge-in no-print text-moss" />
   </div>
 
-  <section class="filigree filigree-green filigree-quiet relative overflow-clip bg-moss pb-20 pt-14 sm:pt-16">
+  <section class="filigree filigree-green filigree-quiet no-print relative overflow-clip bg-moss pt-14 pb-20 sm:pt-16">
     <Deco type="piment" class="deco deco-lg end-3 top-1 hidden w-16 rotate-12 text-paprika/20 lg:block" />
     <Deco type="persil" class="deco deco-lg start-2 bottom-2 hidden w-16 -rotate-6 text-prairie/20 lg:block lg:w-20" />
     <div class="container-x">
@@ -155,52 +173,205 @@ const jsonLd = {
         <a href={href(lang, routes.recipes)} class="font-bold text-prairie hover:text-prairie-deep">{d.common.seeAll}</a>
       </div>
       <div class="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {others.map((o, i) => (
-          <RecipeCard recipe={o} lang={lang} index={i} />
-        ))}
+        {others.map((o, i) => <RecipeCard recipe={o} lang={lang} index={i} />)}
       </div>
     </div>
     <TornEdge position="bottom" variant="torn" height={26} class="edge-in text-cream" />
   </section>
-
-  <script>
-    // Ingrédients cochés, mémorisés par recette sur l'appareil.
-    function setup() {
-      document.querySelectorAll<HTMLElement>('[data-ingredients]:not([data-ready])').forEach((list) => {
-        list.dataset.ready = '1';
-        const key = list.dataset.ingredients ?? '';
-        const inputs = Array.from(list.querySelectorAll<HTMLInputElement>('input[type="checkbox"]'));
-        const read = (): number[] => {
-          try {
-            const v = JSON.parse(localStorage.getItem(key) ?? '[]');
-            return Array.isArray(v) ? v.filter((n) => Number.isInteger(n)) : [];
-          } catch {
-            return [];
-          }
-        };
-        const write = () => {
-          try {
-            const checked = inputs.filter((i) => i.checked).map((i) => Number(i.value));
-            if (checked.length) localStorage.setItem(key, JSON.stringify(checked));
-            else localStorage.removeItem(key);
-          } catch {
-            /* stockage indisponible : on continue sans mémoire */
-          }
-        };
-        const saved = read();
-        inputs.forEach((i) => {
-          i.checked = saved.includes(Number(i.value));
-          i.addEventListener('change', write);
-        });
-        document.querySelectorAll<HTMLButtonElement>(`[data-uncheck="${CSS.escape(key)}"]`).forEach((btn) =>
-          btn.addEventListener('click', () => {
-            inputs.forEach((i) => (i.checked = false));
-            write();
-          }),
-        );
-      });
-    }
-    setup();
-    document.addEventListener('astro:page-load', setup);
-  </script>
 </Base>
+
+<style>
+  /* Pastilles de la recette : un dessin, une étiquette, une valeur. */
+  .fact {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    border-radius: 1rem;
+    background: var(--color-cream);
+    padding: 0.7rem 0.6rem;
+  }
+  .fact-icon {
+    display: flex;
+    height: 2.5rem;
+    width: 2.5rem;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: var(--color-paper);
+    box-shadow: 0 2px 8px -4px rgb(22 32 26 / 0.35);
+  }
+  .fact-time .fact-icon {
+    color: var(--color-yolk-deep);
+  }
+  .fact-serv .fact-icon {
+    color: var(--color-prairie);
+  }
+  .fact-diff .fact-icon {
+    color: var(--color-paprika);
+  }
+  .fact-body {
+    min-width: 0;
+  }
+  .fact-label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-ink-3);
+  }
+  .fact-value {
+    font-size: 0.95rem;
+    font-weight: 800;
+    line-height: 1.2;
+    color: var(--color-ink);
+  }
+  .fact-dot {
+    display: block;
+    height: 0.3rem;
+    width: 0.85rem;
+    border-radius: 999px;
+    background: var(--color-line-2);
+  }
+  .fact-dot.is-on {
+    background: var(--color-paprika);
+  }
+  @media (max-width: 25rem) {
+    .fact {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.4rem;
+    }
+  }
+
+  .print-only {
+    display: none;
+  }
+
+  /* ------------------------------------------------------------------
+     Le bloc de cuisine est un îlot React : ses classes ne reçoivent pas
+     la portée d'Astro, on les écrit donc en global ici. Rien de tout ça
+     ne sort de la page recette.
+     ------------------------------------------------------------------ */
+  :global(.kitchen-step[data-done='1'] .step-text) {
+    color: var(--color-ink-3);
+    text-decoration: line-through;
+    text-decoration-color: var(--color-line-2);
+  }
+  :global(.kitchen-step[data-done='1']) {
+    background: color-mix(in oklab, var(--color-prairie-soft) 45%, transparent);
+  }
+  :global(.kitchen-bar) {
+    transition: width 0.5s var(--ease-out-expo);
+  }
+  :global(.kitchen-pulse) {
+    animation: kitchen-ping 1.8s ease-out infinite;
+  }
+  @keyframes kitchen-ping {
+    0% {
+      transform: scale(0.7);
+      opacity: 0.7;
+    }
+    70%,
+    100% {
+      transform: scale(1.6);
+      opacity: 0;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    :global(.kitchen-bar) {
+      transition: none;
+    }
+    :global(.kitchen-pulse) {
+      animation: none;
+    }
+  }
+
+  /* ------------------------------------------------------------------
+     La recette sur une feuille : le titre, les quantités affichées à
+     l'écran (portions comprises), les étapes. Rien d'autre.
+     ------------------------------------------------------------------ */
+  @media print {
+    :global(body > header),
+    :global(body > footer),
+    :global(body > nav),
+    :global(body > astro-island),
+    :global(.no-print),
+    :global(.deco),
+    :global(.edge-in) {
+      display: none !important;
+    }
+    :global(body) {
+      background: #fff;
+      padding-bottom: 0 !important;
+    }
+    .recipe-photo {
+      display: none;
+    }
+    :global(.kitchen-root) {
+      margin-top: 1.5rem !important;
+      gap: 1.5rem !important;
+    }
+    .print-only {
+      display: block;
+    }
+    .fact {
+      background: transparent;
+      border: 1px solid #bbb;
+      padding: 0.35rem 0.5rem;
+    }
+    .fact-icon {
+      display: none;
+    }
+    .recipe-print-foot {
+      margin-top: 1.4rem;
+      border-top: 1px solid #ccc;
+      padding-top: 0.6rem;
+      font-size: 0.75rem;
+      color: #555;
+    }
+    :global(.kitchen-ing) {
+      position: static !important;
+      break-inside: avoid;
+    }
+    /* Sur le papier, on économise l'encre : plus d'aplats, des filets. */
+    :global(.kitchen-ing > div) {
+      background: transparent !important;
+      border: 1px solid #ccc;
+    }
+    :global(.kitchen-step span[aria-hidden='true']) {
+      background: transparent !important;
+      color: #000 !important;
+      border: 1px solid #999;
+    }
+    :global(.kitchen-step[data-done='1']) {
+      background: transparent !important;
+    }
+    /* Tenir sur le moins de feuilles possible : deux colonnes d'ingrédients,
+       des étapes resserrées, moins d'air entre les blocs. */
+    :global(.kitchen-ing ul) {
+      display: block !important;
+      columns: 2;
+      column-gap: 1.5rem;
+    }
+    :global(.kitchen-ing li) {
+      break-inside: avoid;
+    }
+    :global(.step-text) {
+      font-size: 0.95rem !important;
+      line-height: 1.45 !important;
+    }
+    :global(.kitchen-step) {
+      padding: 0 !important;
+    }
+    :global(.kitchen-ing) ~ section ol {
+      gap: 0.35rem !important;
+    }
+    :global(.kitchen-step) {
+      break-inside: avoid;
+    }
+  }
+  @page {
+    margin: 16mm;
+  }
+</style>

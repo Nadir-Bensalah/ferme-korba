@@ -2,6 +2,8 @@
 import type { Lang } from '@ferme/core';
 import Base from '@/layouts/Base.astro';
 import TrackingPage from '@/components/islands/TrackingPage';
+import TunnelStyles from '@/components/tunnel/TunnelStyles.astro';
+import Deco from '@/components/deco/Deco.astro';
 import { t } from '@/i18n';
 
 interface Props {
@@ -12,7 +14,9 @@ const d = t(lang);
 ---
 
 <Base lang={lang} title={d.tracking.title} description={d.tracking.text} noindex>
-  <section class="container-x py-8 sm:py-12">
+  <TunnelStyles />
+  <section class="container-x relative py-8 sm:py-12">
+    <Deco type="plume" class="deco deco-lg end-6 top-8 hidden w-24 rotate-12 text-prairie/20 xl:block" />
     <div class="mx-auto mb-6 max-w-2xl">
       <h1 class="text-3xl font-extrabold sm:text-4xl">{d.tracking.title}</h1>
       <p class="mt-2 text-lg text-ink-2">{d.tracking.text}</p>

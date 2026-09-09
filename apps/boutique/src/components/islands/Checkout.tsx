@@ -1,12 +1,13 @@
 import { useStore } from '@nanostores/react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { DeliverySlot, DeliveryZone, Lang, OrderInput, Settings } from '@ferme/core';
-import { OrderError, allowedDeliveryDates, deliveryFee, fieldErrors, formatPrice, isEstimated, lineTotal, orderInputSchema, roundMillimes } from '@ferme/core';
+import { OrderError, addressSchema, allowedDeliveryDates, customerSchema, deliveryFee, fieldErrors, formatPrice, isEstimated, lineTotal, orderInputSchema, roundMillimes } from '@ferme/core';
 import { cartHasEstimated, cartLines, cartSubtotal, clearCart } from '@/stores/cart';
 import { data } from '@/lib/data';
 import { href, routes } from '@/lib/paths';
 import { t, L, formatDate, formatHour } from '@/i18n';
 import { ErrorBox, ProductImage, Skeleton, TextField, clearRemembered, isoToday, loadRemembered, localPhone, preferredZoneId, saveRemembered, useMounted, useUser, weekday } from './shared';
+import { IcoCalendar, IcoCash, IcoCheck, IcoClock, IcoPhone, IcoPin, IcoShield, Money, SlotIcon } from './tunnel';
 
 interface Props {
   lang: Lang;
@@ -157,6 +158,13 @@ export default function Checkout({ lang }: Props) {
 
   const zone = zones?.find((z) => z.id === form.zone_id) ?? null;
 
+  // Un bloc s'allume dès que ce qu'il contient est valide.
+  const okYou = useMemo(() => customerSchema.safeParse({ name: form.name, phone: form.phone, email: form.email }).success, [form.name, form.phone, form.email]);
+  const okDelivery = useMemo(
+    () => addressSchema.safeParse({ zone_id: form.zone_id, street: form.street, city: form.city, landmark: form.landmark }).success && Boolean(form.delivery_date) && Boolean(form.slot_id),
+    [form.zone_id, form.street, form.city, form.landmark, form.delivery_date, form.slot_id],
+  );
+
   const dates = useMemo(() => {
     if (!settings || !zone) return [];
     return allowedDeliveryDates({ maxDaysAhead: settings.max_days_ahead, cutoffTime: settings.cutoff_time, closedDays: settings.closed_days, leadDays: zone.lead_days });
@@ -287,20 +295,30 @@ export default function Checkout({ lang }: Props) {
   const tomorrow = isoToday(1);
   const leadLabel = (z: DeliveryZone) => (z.lead_days <= 0 ? d.checkout.leadSame : z.lead_days === 1 ? d.checkout.leadNext : d.checkout.leadDays(z.lead_days));
   const steps = d.checkout.steps;
+  const okAll = okYou && okDelivery;
+  const doneCount = (okYou ? 1 : 0) + (okDelivery ? 1 : 0) + (okAll ? 1 : 0);
+  const stepOk = [okYou, okDelivery, okAll];
+  const slot = daySlots.find((s) => s.id === form.slot_id) ?? null;
 
   return (
     <form ref={formRef} onSubmit={submit} noValidate className="lg:grid lg:grid-cols-[1fr_400px] lg:items-start lg:gap-10">
       <div className="flex flex-col gap-8">
         {/* Ancre de progression */}
-        <nav className="sticky z-30 -mx-4 flex gap-1 overflow-x-auto bg-paper/92 px-4 py-2 backdrop-blur-md scrollbar-none sm:mx-0 sm:px-0" style={{ top: 'var(--header-h)' }} aria-label={d.checkout.progress}>
-          {(['vous', 'livraison', 'recap'] as const).map((id, i) => (
-            <a key={id} href={`#${id}`} className="step-link" aria-current={step === i ? 'step' : undefined}>
-              <span className="step-num" aria-hidden="true">
-                {i + 1}
-              </span>
-              {steps[i]}
-            </a>
-          ))}
+        <nav className="sticky z-30 -mx-4 bg-paper/92 px-4 py-2 backdrop-blur-md sm:mx-0 sm:px-0" style={{ top: 'var(--header-h)' }} aria-label={d.checkout.progress}>
+          <div className="flex gap-1 overflow-x-auto scrollbar-none">
+            {(['vous', 'livraison', 'recap'] as const).map((id, i) => (
+              <a key={id} href={`#${id}`} className={`step-link ${stepOk[i] ? 'is-ok' : ''}`} aria-current={step === i ? 'step' : undefined}>
+                <span className="step-num" aria-hidden="true">
+                  {stepOk[i] ? <IcoCheck size={13} /> : i + 1}
+                </span>
+                {steps[i]}
+                {stepOk[i] && <span className="sr-only"> ({d.checkout.stepDone})</span>}
+              </a>
+            ))}
+          </div>
+          <div className="fk-steps-track mt-1.5" role="progressbar" aria-label={d.checkout.progress} aria-valuemin={0} aria-valuemax={3} aria-valuenow={doneCount} aria-valuetext={d.checkout.progressCount(doneCount, 3)}>
+            <span style={{ width: `${(doneCount / 3) * 100}%` }} />
+          </div>
         </nav>
 
         {closed && (
@@ -349,6 +367,7 @@ export default function Checkout({ lang }: Props) {
                 <div className="grid gap-3 sm:grid-cols-2" role="radiogroup" aria-label={d.checkout.zone}>
                   {zones.map((z) => {
                     const on = form.zone_id === z.id;
+                    const freeNow = z.free_from > 0 && subtotal >= z.free_from;
                     return (
                       <button
                         key={z.id}
@@ -361,14 +380,29 @@ export default function Checkout({ lang }: Props) {
                           preferredZoneId.set(z.id);
                         }}
                       >
-                        <span className="flex items-center justify-between gap-2">
-                          <span className="font-bold">{L(z.name, lang)}</span>
-                          <span className="font-display text-base font-extrabold tabular">{formatPrice(z.fee, lang)}</span>
+                        <span className="flex items-start justify-between gap-2">
+                          <span className="flex items-center gap-1.5 font-bold">
+                            <IcoPin size={17} className="shrink-0 text-prairie" />
+                            {L(z.name, lang)}
+                          </span>
+                          <span className="fk-choice-check" aria-hidden="true">
+                            <IcoCheck size={13} />
+                          </span>
                         </span>
                         <span className="text-xs text-ink-3">{L(z.areas, lang)}</span>
-                        <span className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-xs font-semibold text-prairie-deep">
-                          {z.free_from > 0 && <span>{d.checkout.freeFrom(formatPrice(z.free_from, lang))}</span>}
-                          <span>{leadLabel(z)}</span>
+                        <span className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1.5">
+                          {freeNow ? (
+                            <span className="chip chip-fermier">{d.checkout.zoneFreeNow}</span>
+                          ) : (
+                            <>
+                              <span className="font-display text-base font-extrabold tabular">{formatPrice(z.fee, lang)}</span>
+                              {z.free_from > 0 && <span className="chip bg-cream text-ink-2">{d.checkout.freeFrom(formatPrice(z.free_from, lang))}</span>}
+                            </>
+                          )}
+                          <span className="inline-flex items-center gap-1 text-xs font-semibold text-ink-2">
+                            <IcoClock size={14} />
+                            {leadLabel(z)}
+                          </span>
                         </span>
                       </button>
                     );
@@ -400,13 +434,17 @@ export default function Checkout({ lang }: Props) {
                   <p className="help">{d.checkout.noDates}</p>
                 ) : (
                   <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 scrollbar-none sm:mx-0 sm:flex-wrap sm:px-0" role="radiogroup" aria-label={d.checkout.date}>
-                    {dates.map((iso) => {
+                    {dates.map((iso, i) => {
                       const on = form.delivery_date === iso;
                       const main = iso === today ? d.checkout.today : iso === tomorrow ? d.checkout.tomorrow : formatDate(iso, lang, { weekday: 'long' });
                       const sub = formatDate(iso, lang, { day: 'numeric', month: 'short' });
                       return (
                         <button key={iso} type="button" role="radio" aria-checked={on} className="choice-pill flex-col !items-start gap-0 py-2 leading-tight" onClick={() => set('delivery_date')(iso)}>
-                          <span className="capitalize">{main}</span>
+                          <span className="flex items-center gap-1.5 capitalize">
+                            {i === 0 && dates.length > 1 && <span className="h-1.5 w-1.5 shrink-0 rounded-pill bg-prairie" aria-hidden="true" />}
+                            {main}
+                            {i === 0 && dates.length > 1 && <span className="sr-only"> ({d.checkout.earliest})</span>}
+                          </span>
                           <span className="text-[11px] font-semibold text-ink-3">{sub}</span>
                         </button>
                       );
@@ -429,9 +467,12 @@ export default function Checkout({ lang }: Props) {
                     {daySlots.map((s) => {
                       const on = form.slot_id === s.id;
                       return (
-                        <button key={s.id} type="button" role="radio" aria-checked={on} className="choice-pill flex-col !items-start gap-0 py-2 leading-tight" onClick={() => set('slot_id')(s.id)}>
-                          <span>{L(s.label, lang)}</span>
-                          <span className="text-[11px] font-semibold text-ink-3">{d.checkout.between(formatHour(s.from, lang), formatHour(s.to, lang))}</span>
+                        <button key={s.id} type="button" role="radio" aria-checked={on} className="choice-pill gap-2 !justify-start py-2 leading-tight" onClick={() => set('slot_id')(s.id)}>
+                          <SlotIcon from={s.from} size={20} className={on ? 'text-prairie' : 'text-ink-3'} />
+                          <span className="flex flex-col items-start">
+                            <span>{L(s.label, lang)}</span>
+                            <span className="text-[11px] font-semibold text-ink-3">{d.checkout.between(formatHour(s.from, lang), formatHour(s.to, lang))}</span>
+                          </span>
                         </button>
                       );
                     })}
@@ -443,6 +484,17 @@ export default function Checkout({ lang }: Props) {
                   </p>
                 )}
               </fieldset>
+
+              {form.delivery_date && slot && (
+                <p className="fk-pop flex items-start gap-3 rounded-md bg-prairie-soft px-4 py-3 text-sm text-prairie-deep" aria-live="polite">
+                  <IcoCalendar size={20} className="mt-0.5 shrink-0" />
+                  <span>
+                    <span className="block font-bold">{d.checkout.previewTitle}</span>
+                    <span className="block">{d.checkout.previewLine(formatDate(form.delivery_date, lang), L(slot.label, lang).toLowerCase(), d.checkout.between(formatHour(slot.from, lang), formatHour(slot.to, lang)))}</span>
+                    <span className="mt-0.5 block opacity-80">{d.checkout.previewCall}</span>
+                  </span>
+                </p>
+              )}
 
               <TextField id="notes" label={d.checkout.notes} optionalLabel={d.common.optional} value={form.notes} onChange={(v) => set('notes')(v.slice(0, NOTES_MAX))} onBlur={() => validateField('notes')} error={errors.notes} placeholder={d.checkout.notesPh} textarea maxLength={NOTES_MAX} counter={d.checkout.charsLeft(form.notes.length, NOTES_MAX)} />
 
@@ -484,26 +536,41 @@ export default function Checkout({ lang }: Props) {
         <dl className="flex flex-col gap-2 border-t border-line pt-4 text-sm">
           <div className="flex justify-between gap-3">
             <dt className="text-ink-2">{d.common.subtotal}</dt>
-            <dd className="font-semibold tabular">{formatPrice(subtotal, lang)}</dd>
+            <dd className="font-semibold tabular">
+              <Money value={formatPrice(subtotal, lang)} />
+            </dd>
           </div>
           <div className="flex justify-between gap-3">
             <dt className="text-ink-2">
               {d.common.delivery}
               {zone && <span className="ms-1 text-ink-3">· {L(zone.name, lang)}</span>}
             </dt>
-            <dd className="font-semibold tabular">{fee == null ? '…' : fee === 0 ? d.common.free : formatPrice(fee, lang)}</dd>
+            <dd className={`font-semibold tabular ${fee === 0 ? 'text-prairie-deep' : ''}`}>{fee == null ? '…' : fee === 0 ? d.common.free : <Money value={formatPrice(fee, lang)} />}</dd>
           </div>
           <div className="flex justify-between gap-3 border-t border-line pt-3 text-base">
             <dt className="font-bold">{hasEstimated ? d.cart.estimatedTotal : d.common.total}</dt>
-            <dd className="font-display text-xl font-extrabold tabular" aria-live="polite">
-              {formatPrice(total, lang)}
+            <dd className="font-display text-xl font-extrabold tabular">
+              <Money value={formatPrice(total, lang)} />
             </dd>
           </div>
         </dl>
         {hasEstimated && <p className="text-xs text-ink-3">{d.cart.estimateNote}</p>}
         <div className="rounded-md bg-prairie-soft p-4 text-sm text-prairie-deep">
           <p className="font-bold">{d.checkout.payment}</p>
-          <p className="mt-1">{d.checkout.paymentText}</p>
+          <ul className="mt-2 flex flex-col gap-1.5">
+            <li className="flex items-center gap-2.5">
+              <IcoPhone size={17} className="shrink-0" />
+              {d.checkout.assureCall}
+            </li>
+            <li className="flex items-center gap-2.5">
+              <IcoShield size={17} className="shrink-0" />
+              {d.checkout.assureCheck}
+            </li>
+            <li className="flex items-center gap-2.5">
+              <IcoCash size={17} className="shrink-0" />
+              {d.checkout.assureCash}
+            </li>
+          </ul>
         </div>
         {globalError && (
           <div id="checkout-error" className="rounded-md bg-paprika-soft px-4 py-3 text-sm font-semibold text-paprika" role="alert">

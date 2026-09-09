@@ -1,0 +1,21 @@
+/** Les pictos dessinés disponibles dans Icon.astro. */
+export type IconName =
+  | 'plein-air'
+  | 'aube'
+  | 'camion'
+  | 'especes'
+  | 'panier'
+  | 'telephone'
+  | 'balance'
+  | 'porte'
+  | 'loupe'
+  | 'haut'
+  | 'tri'
+  | 'stock'
+  | 'horloge'
+  | 'personnes'
+  | 'marmite'
+  | 'etoile'
+  | 'citation'
+  | 'panier-vide'
+  | 'fleche';

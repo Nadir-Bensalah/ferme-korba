@@ -6,6 +6,10 @@ import Picture from '@/components/Picture.astro';
 import ProductCard from '@/components/ProductCard.astro';
 import RecipeCard from '@/components/RecipeCard.astro';
 import SectionHead from '@/components/SectionHead.astro';
+import Icon from '@/components/Icon.astro';
+import type { IconName } from '@/components/icons';
+import Cutoff from '@/components/islands/Cutoff';
+import MapSection from '@/components/MapSection.astro';
 import OffersStrip from '@/components/OffersStrip.astro';
 import Deco from '@/components/deco/Deco.astro';
 import TornEdge from '@/components/deco/TornEdge.astro';
@@ -24,6 +28,10 @@ const featured = seedProducts.filter((p) => p.is_featured).slice(0, 6);
 const recipes = seedRecipes.slice(0, 3);
 const zones = seedZones.filter((z) => z.active).sort((a, b) => a.sort - b.sort);
 const trust = [...d.home.trust, ...d.home.trust, ...d.home.trust];
+/** Un dessin par promesse, dans l'ordre de d.home.trust. */
+const trustIcons: IconName[] = ['plein-air', 'aube', 'camion', 'especes'];
+/** Un dessin par étape, dans l'ordre de d.home.howSteps. */
+const stepIcons: IconName[] = ['panier', 'telephone', 'balance', 'porte'];
 
 const site = Astro.site ? Astro.site.toString().replace(/\/$/, '') : '';
 const jsonLd = [
@@ -49,7 +57,6 @@ const jsonLd = [
   },
 ];
 
-const check = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5 10 17.5 19 7"/></svg>`;
 const star = `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 2.5 2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3l-5.9 3.3 1.3-6.6-4.9-4.6 6.6-.8z"/></svg>`;
 ---
 
@@ -103,17 +110,17 @@ const star = `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor
   <div class="marquee relative overflow-hidden bg-prairie-deep py-3.5 text-yolk-soft" aria-label={d.home.trust.join(', ')}>
     <div class="marquee-track animate-marquee flex w-max">
       <ul class="flex shrink-0 items-center gap-10 pe-10">
-        {trust.map((item) => (
+        {trust.map((item, i) => (
           <li class="flex items-center gap-2.5 whitespace-nowrap text-sm font-bold uppercase tracking-wide">
-            <span class="text-yolk" set:html={check} />
+            <Icon name={trustIcons[i % trustIcons.length]!} class="h-6 w-6 shrink-0 text-yolk" strokeWidth={1.5} />
             {item}
           </li>
         ))}
       </ul>
       <ul class="flex shrink-0 items-center gap-10 pe-10" aria-hidden="true">
-        {trust.map((item) => (
+        {trust.map((item, i) => (
           <li class="flex items-center gap-2.5 whitespace-nowrap text-sm font-bold uppercase tracking-wide">
-            <span class="text-yolk" set:html={check} />
+            <Icon name={trustIcons[i % trustIcons.length]!} class="h-6 w-6 shrink-0 text-yolk" strokeWidth={1.5} />
             {item}
           </li>
         ))}
@@ -182,14 +189,15 @@ const star = `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor
         <svg class="draw-path pointer-events-none absolute start-6 top-4 block h-[calc(100%-2rem)] w-px lg:hidden" viewBox="0 0 2 100" preserveAspectRatio="none" aria-hidden="true" data-draw>
           <path d="M1 0V100" pathLength="1" stroke="var(--color-yolk)" stroke-width="3" fill="none" vector-effect="non-scaling-stroke" />
         </svg>
-        <svg class="draw-path pointer-events-none absolute inset-x-0 top-7 hidden h-10 w-full rtl:-scale-x-100 lg:block" viewBox="0 0 1000 40" preserveAspectRatio="none" aria-hidden="true" data-draw>
+        <svg class="draw-path pointer-events-none absolute inset-x-0 top-8 hidden h-10 w-full rtl:-scale-x-100 lg:block" viewBox="0 0 1000 40" preserveAspectRatio="none" aria-hidden="true" data-draw>
           <path d="M60 20 C 200 -10, 300 50, 440 20 S 700 -10, 940 20" pathLength="1" stroke="var(--color-yolk)" stroke-width="3" fill="none" vector-effect="non-scaling-stroke" />
         </svg>
         <ol class="relative grid gap-8 lg:grid-cols-4 lg:gap-6">
           {d.home.howSteps.map((s, i) => (
             <li class="reveal relative flex gap-5 lg:flex-col lg:items-center lg:text-center" style={`--reveal-delay:${i * 120}ms`}>
-              <span class="relative z-10 flex h-12 w-12 shrink-0 items-center justify-center rounded-pill bg-ink font-display text-lg font-extrabold text-yolk shadow-card ring-4 ring-moss lg:h-14 lg:w-14 lg:text-xl" aria-hidden="true">
-                {i + 1}
+              <span class="step-badge" aria-hidden="true">
+                <Icon name={stepIcons[i]!} class="h-6 w-6 text-prairie-deep lg:h-8 lg:w-8" strokeWidth={1.6} />
+                <span class="step-rank">{i + 1}</span>
               </span>
               <div class="pt-2 lg:pt-0">
                 <p class="eyebrow mb-1">{d.home.stepLabel(i + 1)}</p>
@@ -258,18 +266,22 @@ const star = `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor
     </div>
     <ul class="scrollbar-none mt-8 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 sm:px-6 lg:mx-auto lg:grid lg:max-w-7xl lg:grid-cols-3 lg:gap-6 lg:overflow-visible lg:px-8">
       {d.home.reviews.map((r, i) => (
-        <li class="reveal w-[85vw] max-w-sm shrink-0 snap-center rounded-lg bg-paper p-6 shadow-card lg:w-auto lg:max-w-none" style={`--reveal-delay:${i * 90}ms`}>
-          <div class="flex items-center gap-0.5 text-yolk" role="img" aria-label={d.home.reviewStars}>
+        <li class="review reveal relative w-[85vw] max-w-sm shrink-0 snap-center overflow-hidden rounded-lg bg-paper p-6 shadow-card lg:w-auto lg:max-w-none" style={`--reveal-delay:${i * 90}ms`}>
+          <Icon name="citation" class="pointer-events-none absolute end-4 top-4 h-12 w-12 text-cream-2" />
+          <div class="relative flex items-center gap-0.5 text-yolk" role="img" aria-label={d.home.reviewStars}>
             {[0, 1, 2, 3, 4].map(() => (
               <span set:html={star} />
             ))}
           </div>
-          <p class="mt-4 text-lg leading-relaxed text-ink">« {r.text} »</p>
-          <footer class="mt-5 flex items-center gap-3">
-            <span class="flex h-10 w-10 items-center justify-center rounded-pill bg-prairie-soft font-display text-base font-extrabold text-prairie-deep" aria-hidden="true">
+          <p class="relative mt-4 text-lg leading-relaxed text-ink">« {r.text} »</p>
+          <footer class="relative mt-5 flex items-center gap-3">
+            <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-pill bg-prairie-soft font-display text-base font-extrabold text-prairie-deep" aria-hidden="true">
               {r.name.charAt(0)}
             </span>
-            <cite class="text-sm font-bold not-italic text-ink-2">{r.name}</cite>
+            <span class="min-w-0">
+              <cite class="block truncate text-sm font-bold not-italic text-ink-2">{r.name}</cite>
+              <span class="text-xs text-ink-3">{d.home.reviewSource}</span>
+            </span>
           </footer>
         </li>
       ))}
@@ -303,6 +315,9 @@ const star = `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor
     <TornEdge position="bottom" variant="torn" height={26} class="edge-in text-moss" />
   </section>
 
+  <!-- Venir à la ferme : carte et itinéraire -->
+  <MapSection lang={lang} />
+
   <!-- Appel final -->
   <section class="relative overflow-hidden bg-moss pb-20 pt-20 sm:pb-24 sm:pt-24">
     <Deco type="ble" class="deco deco-lg start-2 top-2 hidden w-16 -rotate-12 text-prairie/25 lg:block" />
@@ -311,7 +326,10 @@ const star = `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor
         <div class="reveal relative">
           <h2 class="mx-auto max-w-3xl text-3xl font-extrabold leading-[1.05] text-yolk sm:text-4xl lg:text-5xl">{d.home.ctaTitle}</h2>
           <p class="mx-auto mt-4 max-w-xl text-lg text-paper/85">{d.home.ctaText}</p>
-          <a href={href(lang, routes.shop)} class="btn-yolk btn-lg mt-8">
+          <div class="mt-6 flex justify-center">
+            <Cutoff client:idle lang={lang} variant="banner" fallback={d.shop.deliveredTomorrow} />
+          </div>
+          <a href={href(lang, routes.shop)} class="btn-yolk btn-lg mt-6">
             {d.home.ctaButton}
             <svg class="rtl:rotate-180" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
           </a>
@@ -327,6 +345,70 @@ const star = `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor
 </Base>
 
 <style>
+  /* Chaque étape porte son dessin dans une pastille claire, le numéro se pose
+     dans le coin : on garde le compte, on gagne l'image. */
+  .step-badge {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-pill);
+    background: var(--color-paper);
+    box-shadow: var(--shadow-card);
+    outline: 4px solid var(--color-moss);
+  }
+  .step-rank {
+    position: absolute;
+    inset-block-start: -6px;
+    inset-inline-end: -6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: var(--radius-pill);
+    background: var(--color-ink);
+    color: var(--color-yolk);
+    font-family: var(--font-display);
+    font-size: 0.72rem;
+    font-weight: 800;
+    line-height: 1;
+  }
+  @media (min-width: 1024px) {
+    .step-badge {
+      width: 64px;
+      height: 64px;
+    }
+    .step-rank {
+      width: 24px;
+      height: 24px;
+      font-size: 0.78rem;
+    }
+  }
+
+  /* Les avis se soulèvent doucement au survol, comme les cartes produits. */
+  .review {
+    transition:
+      transform 0.35s var(--ease-out-expo),
+      box-shadow 0.35s var(--ease-out-expo);
+  }
+  .review:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-float);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .review {
+      transition: none;
+    }
+    .review:hover {
+      transform: none;
+    }
+  }
+
   /* Cartes de catégories : légère élévation au survol, la flèche avance dans le sens de lecture. */
   .cat-card {
     transition:

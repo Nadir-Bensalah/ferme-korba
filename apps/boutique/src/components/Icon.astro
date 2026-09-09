@@ -1,0 +1,219 @@
+---
+/**
+ * Les pictos dessinés à la main du site marchand : bande de confiance, étapes
+ * de commande, tri de la boutique, repères de la fiche produit.
+ *
+ *   <Icon name="camion" class="h-6 w-6 text-prairie" />
+ *
+ * Tous au même gabarit (24 × 24, trait de 1,7, bouts ronds) pour qu'ils
+ * forment une famille. Ils sont décoratifs par défaut : quand un picto porte
+ * du sens à lui seul, on lui donne un `label` et il devient une image nommée.
+ */
+import type { IconName } from './icons';
+
+interface Props {
+  name: IconName;
+  class?: string;
+  /** Nom lu à voix haute. Sans lui, le picto est décoratif. */
+  label?: string;
+  strokeWidth?: number;
+}
+const { name, class: cls = '', label, strokeWidth = 1.7 } = Astro.props;
+const a: { role?: 'img'; 'aria-label'?: string; 'aria-hidden'?: 'true' } = label
+  ? { role: 'img', 'aria-label': label }
+  : { 'aria-hidden': 'true' };
+---
+
+<svg
+  class={cls}
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width={strokeWidth}
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  focusable="false"
+  {...a}
+>
+  {/* Une poule dehors, l'herbe et le soleil : élevé en plein air. */}
+  {
+    name === 'plein-air' && (
+      <g>
+        <circle cx="18.5" cy="5.5" r="2.2" />
+        <path d="M18.5 1.6v.9M18.5 8.5v.9M22.4 5.5h-.9M15.5 5.5h-.9M21.3 2.7l-.6.6M16.3 7.7l-.6.6" />
+        <path d="M6.2 18.5c-2 0-3.4-1.5-3.4-3.4 0-2.4 1.9-4.3 4.3-4.3.5-1.5 1.9-2.5 3.5-2.5 2.1 0 3.8 1.7 3.8 3.8v1.2c1.3.5 2.1 1.7 2.1 3 0 .8-.3 1.6-.8 2.2" />
+        <path d="M8.2 8.4c0-.9-.4-1.6-1.1-2 .8-.4 1.6-.2 2.1.4" />
+        <path d="M6.6 18.5v2.6M11 18.6v2.5M15 18.4v2.7" />
+        <path d="M1.5 21.6h21" />
+        <path d="M4 21.6c0-1.3.5-2.2 1.2-2.8M20 21.6c0-1.3-.5-2.2-1.2-2.8" />
+      </g>
+    )
+  }
+  {/* Un soleil qui se lève sur l'horizon : préparé le matin même. */}
+  {
+    name === 'aube' && (
+      <g>
+        <path d="M2.5 18.5h19" />
+        <path d="M5.5 15.2h13" />
+        <path d="M7.5 18.5a4.5 4.5 0 0 1 9 0" />
+        <path d="M12 5.2v2.6M4.9 8.1l1.8 1.8M19.1 8.1l-1.8 1.8M2.5 12.4h1.9M19.6 12.4h1.9" />
+      </g>
+    )
+  }
+  {/* La camionnette de la ferme. */}
+  {
+    name === 'camion' && (
+      <g>
+        <path d="M2.5 6.5h11v9h-11z" />
+        <path d="M13.5 9.5h3.6l3.4 3.4v2.6h-7z" />
+        <circle cx="7" cy="18" r="2.1" />
+        <circle cx="17" cy="18" r="2.1" />
+        <path d="M9.1 18h5.8M2.5 18h2.4M19.1 18h2.4" />
+      </g>
+    )
+  }
+  {/* Des billets et une pièce : payé à la porte. */}
+  {
+    name === 'especes' && (
+      <g>
+        <rect x="2.4" y="6.6" width="14.5" height="9" rx="1.6" />
+        <circle cx="9.6" cy="11.1" r="2.2" />
+        <path d="M5.3 11.1h.1M14 11.1h.1" />
+        <path d="M19.5 9.4c1.3.5 2.1 1.6 2.1 2.9v4.5c0 1.7-1.4 2.8-3.1 2.8H7.1c-1.3 0-2.4-.7-2.9-1.8" />
+      </g>
+    )
+  }
+  {/* Le panier de la boutique : vous choisissez. */}
+  {
+    name === 'panier' && (
+      <g>
+        <path d="M3 8.4h18l-1.7 10.2a2 2 0 0 1-2 1.7H6.7a2 2 0 0 1-2-1.7z" />
+        <path d="M8 8.4 10.4 3.6M16 8.4 13.6 3.6" />
+        <path d="M9.4 12.2v4M14.6 12.2v4" />
+      </g>
+    )
+  }
+  {/* Un combiné : on vous appelle. */}
+  {
+    name === 'telephone' && (
+      <g>
+        <path d="M21.5 16.9v2.9a2 2 0 0 1-2.2 2 19.6 19.6 0 0 1-8.6-3 19.3 19.3 0 0 1-6-6 19.6 19.6 0 0 1-3-8.6 2 2 0 0 1 2-2.2h2.9a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L7.6 9.9a16 16 0 0 0 6 6l1.3-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z" />
+      </g>
+    )
+  }
+  {/* La balance : on pèse devant vous le matin. */}
+  {
+    name === 'balance' && (
+      <g>
+        <path d="M12 3.2v3.4M8.6 4.4h6.8" />
+        <path d="M12 6.6 5.4 9.1M12 6.6l6.6 2.5" />
+        <path d="M2.3 13.4a3.1 3.1 0 0 0 6.2 0L5.4 9.1zM15.5 13.4a3.1 3.1 0 0 0 6.2 0l-3.1-4.3z" />
+        <path d="M9 20.8h6M12 6.6v14.2" />
+      </g>
+    )
+  }
+  {/* Une porte d'entrée : vous payez à la porte. */}
+  {
+    name === 'porte' && (
+      <g>
+        <path d="M5.4 20.9V4.6a1.6 1.6 0 0 1 1.6-1.6h10a1.6 1.6 0 0 1 1.6 1.6v16.3" />
+        <path d="M3.2 20.9h17.6" />
+        <circle cx="14.9" cy="12.4" r="1" />
+        <path d="M8.6 6.6h3.2" />
+      </g>
+    )
+  }
+  {/* Loupe avec un plus : voir la photo en grand. */}
+  {
+    name === 'loupe' && (
+      <g>
+        <circle cx="10.6" cy="10.6" r="6.6" />
+        <path d="M15.4 15.4 21 21" />
+        <path d="M10.6 7.8v5.6M7.8 10.6h5.6" />
+      </g>
+    )
+  }
+  {/* Flèche vers le haut : retour en haut de page. */}
+  {
+    name === 'haut' && (
+      <g>
+        <path d="M12 20V5.4M6.4 11 12 5.4 17.6 11" />
+      </g>
+    )
+  }
+  {/* Deux flèches opposées : le tri. */}
+  {
+    name === 'tri' && (
+      <g>
+        <path d="M7 20V4.6M3.6 8 7 4.6 10.4 8" />
+        <path d="M17 4v15.4M13.6 16l3.4 3.4 3.4-3.4" />
+      </g>
+    )
+  }
+  {/* Une caisse pleine : en stock. */}
+  {
+    name === 'stock' && (
+      <g>
+        <path d="M3 7.4 12 3l9 4.4v9.2L12 21l-9-4.4z" />
+        <path d="M3 7.4 12 12l9-4.6M12 12v9" />
+      </g>
+    )
+  }
+  {/* L'horloge de l'heure limite. */}
+  {
+    name === 'horloge' && (
+      <g>
+        <circle cx="12" cy="12.6" r="8.4" />
+        <path d="M12 7.6v5l3.2 2.1" />
+        <path d="M9.4 2.4h5.2" />
+      </g>
+    )
+  }
+  {/* Deux convives : la quantité conseillée. */}
+  {
+    name === 'personnes' && (
+      <g>
+        <circle cx="8.8" cy="7.6" r="3.2" />
+        <path d="M2.6 20.4a6.2 6.2 0 0 1 12.4 0" />
+        <circle cx="17.4" cy="9" r="2.4" />
+        <path d="M15.8 14.4a4.9 4.9 0 0 1 5.6 5" />
+      </g>
+    )
+  }
+  {/* Une marmite qui fume : les recettes. */}
+  {
+    name === 'marmite' && (
+      <g>
+        <path d="M3.6 10.4h16.8v4.2a5.4 5.4 0 0 1-5.4 5.4H9a5.4 5.4 0 0 1-5.4-5.4z" />
+        <path d="M2 12.6h1.6M20.4 12.6H22" />
+        <path d="M9 7.4c0-1.2 1.2-1.6 1.2-2.8M14 7.4c0-1.2 1.2-1.6 1.2-2.8" />
+      </g>
+    )
+  }
+  {/* L'étoile pleine des avis. */}
+  {
+    name === 'etoile' && <path d="m12 3 2.8 5.9 6.4.8-4.7 4.5 1.2 6.4L12 17.4l-5.7 3.2 1.2-6.4-4.7-4.5 6.4-.8z" fill="currentColor" stroke="none" />
+  }
+  {/* Guillemets ouvrants, dessinés : les avis. */}
+  {
+    name === 'citation' && (
+      <g fill="currentColor" stroke="none">
+        <path d="M9.4 5.6c-3.6 1.3-5.8 4.1-5.8 7.6 0 3 1.7 5 4.2 5 2.1 0 3.7-1.5 3.7-3.5 0-1.9-1.3-3.2-3.1-3.2-.3 0-.6 0-.9.1.5-1.7 1.8-3 3.6-3.9zM20.2 5.6c-3.6 1.3-5.8 4.1-5.8 7.6 0 3 1.7 5 4.2 5 2.1 0 3.7-1.5 3.7-3.5 0-1.9-1.3-3.2-3.1-3.2-.3 0-.6 0-.9.1.5-1.7 1.8-3 3.6-3.9z" />
+      </g>
+    )
+  }
+  {/* Un panier renversé : rien à afficher. */}
+  {
+    name === 'panier-vide' && (
+      <g>
+        <path d="M2.6 9.6h18.8l-1.6 8.2a2.2 2.2 0 0 1-2.2 1.8H6.4a2.2 2.2 0 0 1-2.2-1.8z" />
+        <path d="M7.6 9.6 10 4.4M16.4 9.6 14 4.4" />
+        <path d="M9.6 13.4l4.8 3.4M14.4 13.4l-4.8 3.4" />
+      </g>
+    )
+  }
+  {/* Flèche de lecture, à retourner en arabe avec rtl:rotate-180. */}
+  {
+    name === 'fleche' && <path d="M4.6 12h14.8M13.4 6l6 6-6 6" />
+  }
+</svg>

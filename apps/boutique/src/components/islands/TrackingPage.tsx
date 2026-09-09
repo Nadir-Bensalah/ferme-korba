@@ -5,7 +5,8 @@ import { data } from '@/lib/data';
 import { href, routes } from '@/lib/paths';
 import { replaceCart } from '@/stores/cart';
 import { t, L, formatDate, formatDateTime, formatHour } from '@/i18n';
-import { ErrorBox, Notice, ProductImage, Skeleton, TextField } from './shared';
+import { ErrorBox, Notice, ProductImage, Skeleton, TextField, isoToday } from './shared';
+import { IcoTruck, Money } from './tunnel';
 
 interface Props {
   lang: Lang;
@@ -100,6 +101,7 @@ export function OrderResult({ order, lang }: { order: OrderSummaryForCustomer; l
     return { status: s, state: i < idx ? 'done' : i === idx ? 'current' : 'todo' };
   });
   const visible = terminalOff ? [...steps.filter((s) => s.state === 'done'), { status: order.status, state: 'off' as const }] : steps;
+  const dayChip = order.delivery_date === isoToday() ? d.tracking.today : order.delivery_date === isoToday(1) ? d.tracking.tomorrow : null;
 
   const reorder = async () => {
     if (busy) return;
@@ -129,13 +131,21 @@ export function OrderResult({ order, lang }: { order: OrderSummaryForCustomer; l
           </p>
         </div>
         <p className="text-sm text-ink-3">{d.tracking.orderedOn(formatDateTime(order.created_at, lang))}</p>
-        <ol className="timeline flex flex-col gap-5">
+        {!terminalOff && idx >= 0 && (
+          <div className="flex flex-col gap-1.5">
+            <p className="text-xs font-bold text-prairie-deep">{d.tracking.stepOf(idx + 1, MAIN.length)}</p>
+            <div className="fk-steps-track" role="progressbar" aria-valuemin={1} aria-valuemax={MAIN.length} aria-valuenow={idx + 1}>
+              <span style={{ width: `${((idx + 1) / MAIN.length) * 100}%` }} />
+            </div>
+          </div>
+        )}
+        <ol className="timeline fk-timeline flex flex-col gap-5">
           {visible.map((s) => {
             const when = at(s.status);
             const current = s.state === 'current' || s.state === 'off';
             return (
               <li key={s.status} className="relative">
-                <span className={`timeline-dot ${s.state === 'done' ? 'is-done' : s.state === 'current' ? 'is-current' : s.state === 'off' ? 'is-off' : ''}`} aria-hidden="true">
+                <span className={`timeline-dot ${s.state === 'done' ? 'is-done' : s.state === 'current' ? 'is-current fk-breath' : s.state === 'off' ? 'is-off' : ''}`} aria-hidden="true">
                   {s.state === 'done' && (
                     <svg viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="h-full w-full p-1">
                       <path d="M5 12.5 10 17.5 19 7" />
@@ -152,14 +162,21 @@ export function OrderResult({ order, lang }: { order: OrderSummaryForCustomer; l
             );
           })}
         </ol>
-        <div className="rounded-md bg-cream p-4 text-sm">
-          <p className="font-bold">{d.tracking.deliveryOn}</p>
-          <p className="capitalize">
-            {formatDate(order.delivery_date, lang)}, {L(order.slot.label, lang)} ({formatHour(order.slot.from, lang)} · {formatHour(order.slot.to, lang)})
-          </p>
-          <p className="mt-1 text-ink-2">
-            {order.address.street}, {order.address.city} · {L(order.address.zone_name, lang)}
-          </p>
+        <div className="flex items-start gap-3 rounded-md bg-cream p-4 text-sm">
+          <IcoTruck size={22} className="mt-0.5 shrink-0 text-prairie" />
+          <div className="min-w-0">
+            <p className="flex flex-wrap items-center gap-2">
+              <span className="font-bold">{d.tracking.etaTitle}</span>
+              {dayChip && <span className="chip chip-best">{dayChip}</span>}
+            </p>
+            <p className="first-letter:uppercase">
+              {formatDate(order.delivery_date, lang)}, {L(order.slot.label, lang)}
+            </p>
+            <p className="font-semibold text-prairie-deep">{d.tracking.eta(d.tracking.between(formatHour(order.slot.from, lang), formatHour(order.slot.to, lang)))}</p>
+            <p className="mt-1 text-ink-2">
+              {order.address.street}, {order.address.city} · {L(order.address.zone_name, lang)}
+            </p>
+          </div>
         </div>
       </section>
 
@@ -195,12 +212,17 @@ export function OrderResult({ order, lang }: { order: OrderSummaryForCustomer; l
           </div>
           <div className="flex justify-between gap-3 border-t border-line pt-3 text-base">
             <dt className="font-bold">{est ? d.tracking.estimatedTotal : d.common.total}</dt>
-            <dd className="font-display text-xl font-extrabold tabular">{formatPrice(order.total, lang)}</dd>
+            <dd className="font-display text-xl font-extrabold tabular">
+              <Money value={formatPrice(order.total, lang)} />
+            </dd>
           </div>
           {order.final_total != null && (
-            <div className="flex justify-between gap-3 rounded-md bg-prairie-soft px-3 py-2 text-base text-prairie-deep">
+            <div className="fk-pop flex flex-wrap items-baseline justify-between gap-x-3 rounded-md bg-prairie-soft px-3 py-2 text-base text-prairie-deep">
               <dt className="font-bold">{d.tracking.finalTotal}</dt>
-              <dd className="font-display text-xl font-extrabold tabular">{formatPrice(order.final_total, lang)}</dd>
+              <dd className="font-display text-xl font-extrabold tabular">
+                <Money value={formatPrice(order.final_total, lang)} />
+              </dd>
+              <dd className="w-full text-xs font-medium opacity-80">{d.tracking.finalNote}</dd>
             </div>
           )}
         </dl>

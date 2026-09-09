@@ -6,6 +6,7 @@ import { href, routes } from '@/lib/paths';
 import { t, L, formatDate, formatDateTime } from '@/i18n';
 import { OrderResult } from './TrackingPage';
 import { ErrorBox, Notice, Skeleton, TextField, errorMessage, localPhone, useUser } from './shared';
+import { EmptyState, IcoChevron, IcoPin, IcoTicket } from './tunnel';
 
 interface Props {
   lang: Lang;
@@ -218,34 +219,42 @@ function Orders({ lang }: { lang: Lang }) {
           <Skeleton className="h-20" />
         </div>
       ) : orders.length === 0 ? (
-        <div className="flex flex-col items-start gap-3">
-          <p className="text-sm text-ink-3">{d.account.noOrders}</p>
-          <a href={href(lang, routes.shop)} className="btn-soft btn-sm">
+        <EmptyState art="oeufs" title={d.account.noOrders} text={d.account.noOrdersText}>
+          <a href={href(lang, routes.shop)} className="btn-soft mt-1">
             {d.cart.emptyCta}
           </a>
-        </div>
+        </EmptyState>
       ) : (
-        <ul className="flex flex-col gap-3">
+        <ul className="flex flex-col gap-4">
           {orders.map((o) => {
             const isOpen = open === o.number;
             return (
-              <li key={o.number} className="rounded-lg border border-line">
-                <button type="button" className="flex w-full flex-wrap items-center justify-between gap-2 p-4 text-start" aria-expanded={isOpen} aria-controls={`order-${o.number}`} onClick={() => setOpen(isOpen ? null : o.number)}>
-                  <span className="flex flex-col gap-0.5">
-                    <span className="font-bold tabular" dir="ltr">
-                      {o.number}
+              <li key={o.number} className="fk-ticket">
+                <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 p-4 pb-3">
+                  <span className="flex items-center gap-2.5">
+                    <IcoTicket size={20} className="shrink-0 text-ink-3" />
+                    <span className="flex flex-col leading-tight">
+                      <span className="font-bold tabular" dir="ltr">
+                        {o.number}
+                      </span>
+                      <span className="text-xs text-ink-3">{formatDateTime(o.created_at, lang)}</span>
                     </span>
+                  </span>
+                  <span className={`chip ${tone(o.status)}`}>{d.tracking.statuses[o.status]}</span>
+                </div>
+                <div className="fk-ticket-dash" />
+                <button type="button" className="fk-ticket-open" aria-expanded={isOpen} aria-controls={`order-${o.number}`} onClick={() => setOpen(isOpen ? null : o.number)}>
+                  <span className="flex min-w-0 flex-1 flex-col leading-tight">
                     <span className="text-xs text-ink-3">
-                      {formatDateTime(o.created_at, lang)} · {d.tracking.deliveryOn} {formatDate(o.delivery_date, lang, { day: 'numeric', month: 'short' })}
+                      {d.tracking.deliveryOn} {formatDate(o.delivery_date, lang, { day: 'numeric', month: 'short' })}
                     </span>
+                    <span className="text-sm font-bold text-prairie-deep">{isOpen ? d.account.ticketHide : d.account.ticketDetail}</span>
                   </span>
-                  <span className="flex items-center gap-3">
-                    <span className={`chip ${tone(o.status)}`}>{d.tracking.statuses[o.status]}</span>
-                    <span className="font-display text-lg font-extrabold tabular">{formatPrice(o.final_total ?? o.total, lang)}</span>
-                  </span>
+                  <span className="font-display text-lg font-extrabold tabular">{formatPrice(o.final_total ?? o.total, lang)}</span>
+                  <IcoChevron size={16} className="fk-ticket-chevron shrink-0 text-ink-3" />
                 </button>
                 {isOpen && (
-                  <div id={`order-${o.number}`} className="border-t border-line bg-cream/60 p-3 sm:p-4">
+                  <div id={`order-${o.number}`} className="rounded-b-[11px] border-t border-line bg-paper p-3 sm:p-4">
                     <OrderResult order={o} lang={lang} />
                   </div>
                 )}
@@ -356,7 +365,12 @@ function Address({ lang, user }: { lang: Lang; user: CustomerProfile }) {
       <h3 id="addr-title" className="text-xl font-extrabold">
         {d.account.address}
       </h3>
-      {!a && <p className="text-sm text-ink-3">{d.account.noAddress}</p>}
+      {!a && (
+        <p className="flex items-center gap-2.5 rounded-md bg-cream px-4 py-3 text-sm text-ink-2">
+          <IcoPin size={18} className="shrink-0 text-ink-3" />
+          {d.account.noAddress}
+        </p>
+      )}
       <form onSubmit={submit} noValidate className="flex flex-col gap-4">
         <div>
           <label htmlFor="addr-zone_id" className="label">

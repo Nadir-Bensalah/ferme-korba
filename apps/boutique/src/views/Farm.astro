@@ -4,12 +4,13 @@ import { brand } from '@ferme/core';
 import Base from '@/layouts/Base.astro';
 import Picture from '@/components/Picture.astro';
 import SectionHead from '@/components/SectionHead.astro';
+import MapEmbed from '@/components/MapEmbed.astro';
 import Deco from '@/components/deco/Deco.astro';
 import TornEdge from '@/components/deco/TornEdge.astro';
 import { t } from '@/i18n';
-import { href, routes } from '@/lib/paths';
+import { href, routes, telLink } from '@/lib/paths';
 
-/** La ferme : récit en quatre temps, chiffres, frise de l'année, appel. */
+/** La ferme : récit en quatre temps, exergues, chiffres, frise, galerie, carte, appel. */
 interface Props {
   lang: Lang;
 }
@@ -18,10 +19,28 @@ const d = t(lang);
 
 const photos = ['/images/farm/hero-ferme.jpg', '/images/farm/poules-plein-air.jpg', '/images/farm/fermier.jpg', '/images/products/merguez.jpg'];
 const sections = d.farm.sections.map((s, i) => ({ ...s, photo: photos[i] ?? photos[0]!, alt: d.farm.sectionAlts[i] ?? '' }));
+
+/** Une phrase du récit reprise en grand, après ces articles. */
+const quoteAfter: Record<number, string | undefined> = { 1: d.farm.quotes[0], 3: d.farm.quotes[1] };
+
+/** Galerie : six photos, deux hauteurs alternées pour que ça respire. */
+const galleryPhotos = ['/images/farm/hero-ferme.jpg', '/images/farm/poules-plein-air.jpg', '/images/farm/fermier.jpg', '/images/products/oeufs.jpg', '/images/products/poulet-entier.jpg', '/images/products/merguez.jpg'];
+const gallery = d.farm.gallery.map((g, i) => ({ ...g, photo: galleryPhotos[i] ?? galleryPhotos[0]!, tall: i % 3 === 0 }));
+
+/** Un dessin par chiffre : le soleil, la caisse vide, l'horloge, la pousse. */
+const numberIcons = [
+  '<circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/>',
+  '<path d="M3 8h18l-1.5 12H4.5z"/><path d="M3 8l2.5-4h13L21 8"/><path d="M9 12.5h6"/>',
+  '<circle cx="12" cy="13" r="8"/><path d="M12 8.5V13l3 2"/><path d="M9 2h6"/>',
+  '<path d="M12 21v-7"/><path d="M12 14C7 14 4 11 4 6c5 0 8 3 8 8z"/><path d="M12 14c0-4 2.5-7 7-7 0 4-2.5 7-7 7z"/>',
+];
+const numbers = d.farm.numbers.map((n, i) => ({ ...n, icon: numberIcons[i] ?? numberIcons[0]! }));
+
+const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${brand.geo.lat},${brand.geo.lng}`;
 ---
 
 <Base lang={lang} title={d.farm.title} description={d.farm.lead} image="/images/farm/fermier.jpg">
-  <section class="relative overflow-clip bg-paper pb-16 pt-12 sm:pt-16">
+  <section class="relative overflow-clip bg-paper pt-12 pb-16 sm:pt-16">
     <Deco type="oranger" class="deco deco-lg end-2 top-6 hidden w-20 rotate-6 text-yolk/25 lg:block lg:w-24" />
     <div class="container-x">
       <SectionHead as="h1" eyebrow={d.farm.eyebrow} title={d.farm.title} text={d.farm.lead} align="center" />
@@ -36,25 +55,42 @@ const sections = d.farm.sections.map((s, i) => ({ ...s, photo: photos[i] ?? phot
     <Deco type="ble" class="deco deco-lg end-4 top-3 hidden w-16 rotate-12 text-yolk/25 lg:block lg:w-20" />
     <Deco type="plume" class="deco deco-lg start-2 bottom-2 hidden w-16 -rotate-12 text-prairie/20 lg:block lg:w-20" />
     <div class="container-x flex flex-col gap-16 sm:gap-24">
-      {sections.map((s, i) => (
-        <article class="grid items-center gap-8 lg:grid-cols-2 lg:gap-16">
-          <div class:list={['reveal', i % 2 === 1 && 'lg:order-2']}>
-            <div
-              class:list={[
-                i === 0 ? 'blob' : i === 2 ? 'blob-2' : 'overflow-hidden rounded-xl shadow-card',
-                i % 2 === 1 ? 'ltr:-rotate-1 rtl:rotate-1' : 'ltr:rotate-1 rtl:-rotate-1',
-              ]}
-            >
-              <Picture src={s.photo} alt={s.alt} sizes="(min-width: 1024px) 50vw, 100vw" imgClass="aspect-[4/3] w-full object-cover" width={1600} height={1200} />
-            </div>
-          </div>
-          <div class:list={['reveal', i % 2 === 1 && 'lg:order-1']} style="--reveal-delay: 100ms">
-            <p class="eyebrow mb-3">{String(i + 1).padStart(2, '0')}</p>
-            <h2 class="text-3xl font-extrabold leading-[1.05] sm:text-4xl">{s.title}</h2>
-            <p class="prose-farm mt-5">{s.text}</p>
-          </div>
-        </article>
-      ))}
+      {
+        sections.map((s, i) => (
+          <>
+            <article class="grid items-center gap-8 lg:grid-cols-2 lg:gap-16">
+              <div class:list={['reveal', i % 2 === 1 && 'lg:order-2']}>
+                <div
+                  class:list={[
+                    i === 0 ? 'blob' : i === 2 ? 'blob-2' : 'overflow-hidden rounded-xl shadow-card',
+                    i % 2 === 1 ? 'ltr:-rotate-1 rtl:rotate-1' : 'ltr:rotate-1 rtl:-rotate-1',
+                  ]}
+                >
+                  <Picture src={s.photo} alt={s.alt} sizes="(min-width: 1024px) 50vw, 100vw" imgClass="aspect-[4/3] w-full object-cover" width={1600} height={1200} />
+                </div>
+              </div>
+              <div class:list={['reveal', i % 2 === 1 && 'lg:order-1']} style="--reveal-delay: 100ms">
+                <p class="eyebrow mb-3">{String(i + 1).padStart(2, '0')}</p>
+                <h2 class="text-3xl leading-[1.05] font-extrabold sm:text-4xl">{s.title}</h2>
+                <p class="prose-farm mt-5">{s.text}</p>
+              </div>
+            </article>
+
+            {quoteAfter[i] && (
+              <figure class="quote reveal mx-auto max-w-3xl text-center">
+                <svg class="quote-mark mx-auto" width="46" height="34" viewBox="0 0 46 34" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M18 4C9.5 6.5 4 13 4 21c0 5 3 8.5 7.5 8.5S19 26.5 19 22c0-4-2.8-7-6.6-7-.7 0-1.4.1-2 .3" />
+                  <path d="M42 4c-8.5 2.5-14 9-14 17 0 5 3 8.5 7.5 8.5S43 26.5 43 22c0-4-2.8-7-6.6-7-.7 0-1.4.1-2 .3" />
+                </svg>
+                <blockquote class="mt-4">
+                  <p class="font-display text-3xl leading-[1.15] font-extrabold text-prairie-deep sm:text-4xl lg:text-5xl">{quoteAfter[i]}</p>
+                </blockquote>
+                <span class="quote-rule mt-6 block" aria-hidden="true"></span>
+              </figure>
+            )}
+          </>
+        ))
+      }
     </div>
     <TornEdge position="bottom" variant="torn" height={26} class="edge-in text-prairie-deep" />
   </section>
@@ -63,14 +99,19 @@ const sections = d.farm.sections.map((s, i) => ({ ...s, photo: photos[i] ?? phot
     <div class="container-x">
       <h2 class="reveal text-center font-display text-2xl font-extrabold text-yolk sm:text-3xl">{d.farm.numbersTitle}</h2>
       <ul class="mt-10 grid grid-cols-2 gap-6 lg:grid-cols-4">
-        {d.farm.numbers.map((n, i) => (
-          <li class="reveal text-center" style={`--reveal-delay:${i * 90}ms`}>
-            <p class="font-display text-5xl font-extrabold text-paper tabular sm:text-6xl" data-count={n.value}>
-              {n.value}
-            </p>
-            <p class="mt-2 text-sm font-semibold text-paper/75 sm:text-base">{n.label}</p>
-          </li>
-        ))}
+        {
+          numbers.map((n, i) => (
+            <li class="reveal text-center" style={`--reveal-delay:${i * 90}ms`}>
+              <span class="num-icon mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-pill text-yolk" aria-hidden="true">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" set:html={n.icon} />
+              </span>
+              <p class="tabular font-display text-5xl font-extrabold text-paper sm:text-6xl" data-count={n.value}>
+                {n.value}
+              </p>
+              <p class="mt-2 text-sm font-semibold text-paper/75 sm:text-base">{n.label}</p>
+            </li>
+          ))
+        }
       </ul>
     </div>
     <TornEdge position="bottom" variant="wave" height={28} class="edge-in text-paper" />
@@ -82,45 +123,136 @@ const sections = d.farm.sections.map((s, i) => ({ ...s, photo: photos[i] ?? phot
       <SectionHead eyebrow={d.farm.timelineEyebrow} title={d.farm.timelineTitle} text={d.farm.timelineText} align="center" />
       <div class="relative mt-12">
         <svg class="draw-path pointer-events-none absolute start-6 top-4 block h-[calc(100%-2rem)] w-px lg:hidden" viewBox="0 0 2 100" preserveAspectRatio="none" aria-hidden="true" data-draw>
-          <path d="M1 0V100" pathLength="1" stroke="var(--color-prairie)" stroke-width="3" fill="none" vector-effect="non-scaling-stroke" />
+          <path d="M1 0V100" pathLength="1" stroke="var(--color-prairie)" stroke-width="3" fill="none" vector-effect="non-scaling-stroke"></path>
         </svg>
         <svg class="draw-path pointer-events-none absolute inset-x-0 top-7 hidden h-[2px] w-full rtl:-scale-x-100 lg:block" viewBox="0 0 1000 2" preserveAspectRatio="none" aria-hidden="true" data-draw>
-          <path d="M60 1H940" pathLength="1" stroke="var(--color-prairie)" stroke-width="3" fill="none" vector-effect="non-scaling-stroke" />
+          <path d="M60 1H940" pathLength="1" stroke="var(--color-prairie)" stroke-width="3" fill="none" vector-effect="non-scaling-stroke"></path>
         </svg>
         <ol class="relative grid gap-8 lg:grid-cols-4 lg:gap-6">
-          {d.farm.timeline.map((step, i) => (
-            <li class="reveal relative flex gap-5 lg:flex-col lg:items-center lg:text-center" style={`--reveal-delay:${i * 120}ms`}>
-              <span class="relative z-10 flex h-12 w-12 shrink-0 items-center justify-center rounded-pill bg-prairie text-paper shadow-card ring-4 ring-paper lg:h-14 lg:w-14" aria-hidden="true">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                  {i === 0 && <path d="M12 3c-3.5 0-6 4-6 9a6 6 0 0 0 12 0c0-5-2.5-9-6-9z" />}
-                  {i === 1 && <path d="M3 18c4-1 7-4 9-10 2 6 5 9 9 10M12 8v13" />}
-                  {i === 2 && <><circle cx="12" cy="12" r="4" /><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1" /></>}
-                  {i === 3 && <><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z" /><circle cx="7" cy="18" r="2" /><circle cx="17" cy="18" r="2" /></>}
-                </svg>
-              </span>
-              <div class="pt-2 lg:pt-0">
-                <p class="eyebrow mb-1">{step.when}</p>
-                <h3 class="text-xl font-bold leading-tight">{step.title}</h3>
-                <p class="mt-2 text-ink-2">{step.text}</p>
-              </div>
-            </li>
-          ))}
+          {
+            d.farm.timeline.map((step, i) => (
+              <li class="reveal relative flex gap-5 lg:flex-col lg:items-center lg:text-center" style={`--reveal-delay:${i * 120}ms`}>
+                <span class="relative z-10 flex h-12 w-12 shrink-0 items-center justify-center rounded-pill bg-prairie text-paper shadow-card ring-4 ring-paper lg:h-14 lg:w-14" aria-hidden="true">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    {i === 0 && <path d="M12 3c-3.5 0-6 4-6 9a6 6 0 0 0 12 0c0-5-2.5-9-6-9z" />}
+                    {i === 1 && <path d="M3 18c4-1 7-4 9-10 2 6 5 9 9 10M12 8v13" />}
+                    {i === 2 && (
+                      <>
+                        <circle cx="12" cy="12" r="4" />
+                        <path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1" />
+                      </>
+                    )}
+                    {i === 3 && (
+                      <>
+                        <path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z" />
+                        <circle cx="7" cy="18" r="2" />
+                        <circle cx="17" cy="18" r="2" />
+                      </>
+                    )}
+                  </svg>
+                </span>
+                <div class="pt-2 lg:pt-0">
+                  <p class="eyebrow mb-1">{step.when}</p>
+                  <h3 class="text-xl leading-tight font-bold">{step.title}</h3>
+                  <p class="mt-2 text-ink-2">{step.text}</p>
+                </div>
+              </li>
+            ))
+          }
         </ol>
       </div>
+    </div>
+    <TornEdge position="bottom" variant="torn" height={26} class="edge-in text-cream" />
+  </section>
+
+  {/* La galerie : des photos posées comme sur une table, avec de l'air autour. */}
+  <section class="filigree filigree-quiet relative overflow-clip bg-cream py-16 sm:py-24">
+    <Deco type="grain" class="deco deco-lg end-3 top-8 hidden w-16 -rotate-12 text-yolk/30 lg:block lg:w-20" />
+    <Deco type="coriandre" class="deco deco-lg start-2 bottom-6 hidden w-16 rotate-6 text-prairie/20 lg:block lg:w-20" />
+    <div class="container-x">
+      <SectionHead eyebrow={d.farm.galleryEyebrow} title={d.farm.galleryTitle} text={d.farm.galleryText} align="center" />
+      <div class="gallery mt-12">
+        {
+          gallery.map((g, i) => (
+            <figure class="gal-item reveal" style={`--reveal-delay:${(i % 3) * 90}ms`}>
+              <div class:list={['gal-photo overflow-hidden rounded-lg shadow-card', i % 2 === 0 ? 'ltr:-rotate-1 rtl:rotate-1' : 'ltr:rotate-1 rtl:-rotate-1']}>
+                <Picture
+                  src={g.photo}
+                  alt={g.alt}
+                  sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                  imgClass={`w-full object-cover ${g.tall ? 'aspect-[4/5]' : 'aspect-[4/3]'}`}
+                  width={1600}
+                  height={1200}
+                />
+              </div>
+              <figcaption class="mt-3 text-center text-sm font-semibold text-ink-3">{g.caption}</figcaption>
+            </figure>
+          ))
+        }
+      </div>
+    </div>
+    <TornEdge position="bottom" variant="wave" height={28} class="edge-in text-paper" />
+  </section>
+
+  {/* Où c'est : la carte, l'adresse, les horaires. */}
+  <section class="relative overflow-clip bg-paper py-16 sm:py-24">
+    <Deco type="oranger" class="deco deco-sway deco-lg start-1 top-10 hidden w-20 -rotate-6 text-yolk/25 lg:block lg:w-24" />
+    <div class="container-x grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
+      <div class="reveal">
+        <p class="eyebrow mb-2">{d.farm.visitEyebrow}</p>
+        <h2 class="text-3xl leading-[1.05] font-extrabold sm:text-4xl">{d.farm.visitTitle}</h2>
+        <p class="prose-farm mt-4">{d.farm.visitText}</p>
+        <dl class="mt-6 flex flex-col gap-4">
+          <div class="flex gap-3">
+            <span class="mt-0.5 text-prairie" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s7-6.5 7-12a7 7 0 0 0-14 0c0 5.5 7 12 7 12z"></path><circle cx="12" cy="10" r="2.5"></circle></svg>
+            </span>
+            <div>
+              <dt class="sr-only">{d.contact.address}</dt>
+              <dd class="font-bold">{brand.name[lang]}</dd>
+              <dd class="text-ink-2">{brand.address[lang]}</dd>
+            </div>
+          </div>
+          <div class="flex gap-3">
+            <span class="mt-0.5 text-prairie" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>
+            </span>
+            <div>
+              <dt class="sr-only">{d.contact.hours}</dt>
+              <dd class="text-ink-2">{brand.hours[lang]}</dd>
+            </div>
+          </div>
+        </dl>
+        <div class="mt-7 flex flex-wrap gap-3">
+          <a href={telLink(brand.phone)} class="btn-primary btn-lg">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+            <span dir="ltr">{brand.phoneDisplay}</span>
+          </a>
+          <a href={mapsUrl} class="btn-soft btn-lg" rel="noopener" target="_blank">
+            {d.contact.directions}
+            <svg class="rtl:rotate-180" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"></path></svg>
+          </a>
+        </div>
+        <a href={href(lang, routes.contact)} class="mt-4 inline-flex items-center gap-1.5 font-bold text-prairie hover:text-prairie-deep">
+          {d.farm.visitCta}
+          <svg class="rtl:rotate-180" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+        </a>
+      </div>
+      <div class="reveal" style="--reveal-delay: 120ms"><MapEmbed lang={lang} title={d.farm.mapLabel} /></div>
     </div>
     <TornEdge position="bottom" variant="torn" height={26} class="edge-in text-moss" />
   </section>
 
-  <section class="relative overflow-clip bg-moss pb-20 pt-20 sm:pb-24 sm:pt-24">
+  <section class="relative overflow-clip bg-moss pt-20 pb-20 sm:pt-24 sm:pb-24">
     <div class="container-x">
       <div class="grain relative overflow-hidden rounded-xl bg-prairie-deep px-6 py-14 text-center sm:px-12 sm:py-20">
         <div class="reveal relative">
-          <h2 class="mx-auto max-w-3xl text-3xl font-extrabold leading-[1.05] text-yolk sm:text-4xl lg:text-5xl">{d.farm.ctaTitle}</h2>
+          <h2 class="mx-auto max-w-3xl text-3xl leading-[1.05] font-extrabold text-yolk sm:text-4xl lg:text-5xl">{d.farm.ctaTitle}</h2>
           <p class="mx-auto mt-4 max-w-xl text-lg text-paper/85">{d.farm.ctaText}</p>
           <div class="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <a href={href(lang, routes.shop)} class="btn-yolk btn-lg">
               {d.farm.cta}
-              <svg class="rtl:rotate-180" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+              <svg class="rtl:rotate-180" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
             </a>
             <a href={href(lang, routes.contact)} class="btn btn-lg border border-paper/40 bg-paper/10 text-paper hover:bg-paper/20">{d.nav.contact} · {brand.phoneDisplay}</a>
           </div>
@@ -134,3 +266,54 @@ const sections = d.farm.sections.map((s, i) => ({ ...s, photo: photos[i] ?? phot
     import '@/scripts/vitrine';
   </script>
 </Base>
+
+<style>
+  /* Exergue : une phrase du récit, posée entre deux histoires. */
+  .quote-mark {
+    color: var(--color-yolk);
+  }
+  .quote-rule {
+    height: 2px;
+    width: 4rem;
+    margin-inline: auto;
+    border-radius: 999px;
+    background: color-mix(in oklab, var(--color-prairie) 35%, transparent);
+  }
+
+  /* Chiffres : le dessin sur un rond à peine plus clair que le fond. */
+  .num-icon {
+    background: color-mix(in oklab, var(--color-paper) 12%, transparent);
+  }
+
+  /* Galerie en colonnes : les photos gardent leur hauteur, l'œil circule. */
+  .gallery {
+    columns: 1;
+    column-gap: 1.5rem;
+  }
+  .gal-item {
+    break-inside: avoid;
+    margin-bottom: 2rem;
+  }
+  .gal-photo {
+    transition: transform 0.5s var(--ease-out-expo);
+  }
+  .gal-item:hover .gal-photo {
+    transform: rotate(0);
+  }
+  @media (width >= 40rem) {
+    .gallery {
+      columns: 2;
+    }
+  }
+  @media (width >= 64rem) {
+    .gallery {
+      columns: 3;
+      column-gap: 2rem;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .gal-photo {
+      transition: none;
+    }
+  }
+</style>

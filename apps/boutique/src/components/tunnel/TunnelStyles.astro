@@ -1,0 +1,409 @@
+---
+/**
+ * Les styles du parcours d'achat : panier, commande, confirmation, suivi,
+ * compte. Ils vivent ici, dans les pages du tunnel, et pas dans global.css.
+ * Tout ce qui bouge s'arrête quand l'utilisateur réduit les animations.
+ */
+---
+
+<style is:global>
+  /* --------------------------------------------------------------
+     Barre vers la livraison offerte
+     -------------------------------------------------------------- */
+  .fk-bar {
+    position: relative;
+    height: 10px;
+    border-radius: 999px;
+    background: var(--color-cream-2);
+    overflow: visible;
+  }
+  .fk-bar-fill {
+    position: relative;
+    height: 100%;
+    min-width: 10px;
+    border-radius: 999px;
+    overflow: hidden;
+    background: linear-gradient(90deg, var(--color-yolk), var(--color-yolk-deep));
+    transition:
+      width 0.7s var(--ease-out-expo),
+      background 0.4s ease;
+  }
+  .fk-bar-fill[data-full='true'] {
+    background: linear-gradient(90deg, var(--color-prairie), #2f9d55);
+  }
+  .fk-bar-shine {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: -40%;
+    width: 40%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.65), transparent);
+    animation: fk-shine 2.6s ease-in-out infinite;
+  }
+  @keyframes fk-shine {
+    0% {
+      transform: translateX(0);
+    }
+    60%,
+    100% {
+      transform: translateX(350%);
+    }
+  }
+  html[dir='rtl'] .fk-bar-shine {
+    animation-name: fk-shine-rtl;
+  }
+  @keyframes fk-shine-rtl {
+    0% {
+      transform: translateX(0);
+    }
+    60%,
+    100% {
+      transform: translateX(-350%);
+    }
+  }
+  /* L'éclat au moment où le seuil est atteint. */
+  .fk-burst {
+    position: absolute;
+    inset-inline-end: -6px;
+    top: 50%;
+    color: var(--color-yolk);
+    transform-origin: center;
+    animation: fk-burst 1.1s var(--ease-spring) forwards;
+  }
+  @keyframes fk-burst {
+    0% {
+      transform: translateY(-50%) scale(0.2) rotate(-30deg);
+      opacity: 0;
+    }
+    35% {
+      transform: translateY(-50%) scale(1.15) rotate(10deg);
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(-140%) scale(0.9) rotate(25deg);
+      opacity: 0;
+    }
+  }
+
+  /* --------------------------------------------------------------
+     Compte à rebours de l'heure limite
+     -------------------------------------------------------------- */
+  .fk-cutoff {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-line);
+    background: var(--color-cream);
+    padding: 0.75rem 1rem;
+    min-height: 48px;
+  }
+  .fk-cutoff .fk-cutoff-ico {
+    color: var(--color-prairie);
+    flex: none;
+  }
+  .fk-cutoff.is-urgent {
+    border-color: color-mix(in srgb, var(--color-yolk) 45%, transparent);
+    background: var(--color-yolk-soft);
+  }
+  .fk-cutoff.is-urgent .fk-cutoff-ico {
+    color: var(--color-yolk-deep);
+    animation: fk-tick 2s steps(2, end) infinite;
+  }
+  @keyframes fk-tick {
+    0%,
+    100% {
+      transform: rotate(-6deg);
+    }
+    50% {
+      transform: rotate(6deg);
+    }
+  }
+  .fk-cutoff.is-past {
+    background: var(--color-paper);
+  }
+  .fk-strong {
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* --------------------------------------------------------------
+     Résumé collant en bas d'écran (panier)
+     -------------------------------------------------------------- */
+  .fk-sticky {
+    position: fixed;
+    inset-inline: 0;
+    bottom: calc(var(--fk-sticky-bottom, var(--bottom-bar-h)) + env(safe-area-inset-bottom));
+    z-index: 35;
+    border-top: 1px solid var(--color-line);
+    background: color-mix(in srgb, var(--color-paper) 94%, transparent);
+    backdrop-filter: blur(12px);
+    padding: 0.625rem 1rem;
+    box-shadow: 0 -8px 24px -16px rgba(22, 32, 26, 0.5);
+    transition:
+      transform 0.35s var(--ease-out-expo),
+      opacity 0.25s ease;
+  }
+  .fk-sticky[data-off='true'] {
+    transform: translateY(130%);
+    opacity: 0;
+    pointer-events: none;
+  }
+  @media (width >= 1024px) {
+    .fk-sticky {
+      display: none;
+    }
+  }
+
+  /* --------------------------------------------------------------
+     Suggestions du panier
+     -------------------------------------------------------------- */
+  .fk-suggest {
+    display: flex;
+    width: 15rem;
+    flex: none;
+    align-items: center;
+    gap: 0.75rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-line);
+    background: var(--color-paper);
+    padding: 0.5rem;
+    transition:
+      border-color 0.2s,
+      transform 0.2s;
+  }
+  .fk-suggest:hover {
+    border-color: var(--color-line-2);
+    transform: translateY(-2px);
+  }
+  .fk-suggest-add {
+    display: inline-flex;
+    height: 44px;
+    width: 44px;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: var(--color-prairie-soft);
+    color: var(--color-prairie-deep);
+    transition:
+      background 0.2s,
+      transform 0.2s;
+  }
+  .fk-suggest-add:hover {
+    background: var(--color-prairie);
+    color: #fff;
+  }
+  .fk-suggest-add:active {
+    transform: scale(0.92);
+  }
+
+  /* --------------------------------------------------------------
+     États vides illustrés
+     -------------------------------------------------------------- */
+  .fk-empty-art {
+    position: relative;
+    display: grid;
+    place-items: center;
+    height: 6.5rem;
+    width: 6.5rem;
+  }
+  .fk-empty-art::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 999px;
+    background: var(--color-cream);
+  }
+
+  /* --------------------------------------------------------------
+     Progression du tunnel de commande
+     -------------------------------------------------------------- */
+  .fk-steps-track {
+    position: relative;
+    height: 3px;
+    border-radius: 999px;
+    background: var(--color-line);
+    overflow: hidden;
+  }
+  .fk-steps-track > span {
+    display: block;
+    height: 100%;
+    border-radius: 999px;
+    background: var(--color-prairie);
+    transition: width 0.6s var(--ease-out-expo);
+  }
+  .step-link.is-ok .step-num {
+    background: var(--color-prairie);
+    color: #fff;
+  }
+  .step-link.is-ok {
+    color: var(--color-prairie-deep);
+  }
+
+  /* Cartes de choix : la coche du choix retenu. */
+  .fk-choice-check {
+    display: inline-flex;
+    height: 22px;
+    width: 22px;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    border: 2px solid var(--color-line-2);
+    color: transparent;
+    transition:
+      background 0.2s,
+      border-color 0.2s,
+      color 0.2s;
+  }
+  [aria-checked='true'] .fk-choice-check {
+    border-color: var(--color-prairie);
+    background: var(--color-prairie);
+    color: #fff;
+  }
+
+  /* --------------------------------------------------------------
+     Confirmation : les trois étapes qui suivent
+     -------------------------------------------------------------- */
+  .fk-next {
+    position: relative;
+    padding-inline-start: 3.25rem;
+    min-height: 3rem;
+  }
+  .fk-next::before {
+    content: '';
+    position: absolute;
+    inset-inline-start: 1.24rem;
+    top: 2.75rem;
+    bottom: -1.25rem;
+    width: 2px;
+    background: var(--color-line);
+  }
+  .fk-next:last-child::before {
+    display: none;
+  }
+  .fk-next-ico {
+    position: absolute;
+    inset-inline-start: 0;
+    top: 0;
+    display: inline-flex;
+    height: 2.5rem;
+    width: 2.5rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: var(--color-prairie-soft);
+    color: var(--color-prairie-deep);
+  }
+
+  /* --------------------------------------------------------------
+     Suivi : la frise
+     -------------------------------------------------------------- */
+  /* La pastille se posait sur la première lettre du statut : le retrait de la
+     liste décale son bloc, il faut la ramener dans la marge, sur le trait. */
+  .fk-timeline .timeline-dot {
+    inset-inline-start: -2rem;
+  }
+
+  /* L'étape en cours respire. */
+  .timeline-dot.is-current.fk-breath {
+    animation: fk-breath 2.4s ease-in-out infinite;
+  }
+  @keyframes fk-breath {
+    0%,
+    100% {
+      box-shadow: 0 0 0 4px var(--color-prairie-soft);
+    }
+    50% {
+      box-shadow: 0 0 0 9px color-mix(in srgb, var(--color-prairie-soft) 55%, transparent);
+    }
+  }
+
+  /* --------------------------------------------------------------
+     Compte : les commandes en tickets
+     -------------------------------------------------------------- */
+  .fk-ticket {
+    position: relative;
+    border-radius: var(--radius-md);
+    background: var(--color-cream);
+    border: 1px solid var(--color-line);
+  }
+  /* La ligne pointillée porte ses deux encoches : elles restent alignées,
+     quelle que soit la hauteur de l'en-tête du ticket. */
+  .fk-ticket-dash {
+    position: relative;
+    border-top: 2px dashed var(--color-line-2);
+    margin-inline: 0.75rem;
+  }
+  .fk-ticket-dash::before,
+  .fk-ticket-dash::after {
+    content: '';
+    position: absolute;
+    top: -11px;
+    height: 20px;
+    width: 20px;
+    border-radius: 999px;
+    background: var(--color-paper);
+    border: 1px solid var(--color-line);
+  }
+  .fk-ticket-dash::before {
+    left: -22px;
+  }
+  .fk-ticket-dash::after {
+    right: -22px;
+  }
+  .fk-ticket-open {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.875rem 1rem;
+    text-align: start;
+    min-height: 48px;
+  }
+  .fk-ticket-chevron {
+    transition: transform 0.25s var(--ease-out-expo);
+  }
+  [aria-expanded='true'] .fk-ticket-chevron {
+    transform: rotate(90deg);
+  }
+  html[dir='rtl'] .fk-ticket-chevron {
+    transform: rotate(180deg);
+  }
+  html[dir='rtl'] [aria-expanded='true'] .fk-ticket-chevron {
+    transform: rotate(90deg);
+  }
+
+  /* Petite entrée douce, réutilisée par les blocs qui apparaissent. */
+  .fk-pop {
+    animation: fk-pop 0.4s var(--ease-spring) both;
+  }
+  @keyframes fk-pop {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .fk-bar-shine,
+    .fk-burst,
+    .fk-cutoff.is-urgent .fk-cutoff-ico,
+    .timeline-dot.is-current.fk-breath,
+    .fk-pop {
+      animation: none;
+    }
+    .fk-bar-shine {
+      display: none;
+    }
+    .fk-sticky,
+    .fk-bar-fill,
+    .fk-steps-track > span {
+      transition: none;
+    }
+  }
+</style>

@@ -1,0 +1,394 @@
+---
+import type { Lang } from '@ferme/core';
+import Picture from '@/components/Picture.astro';
+import Icon from '@/components/Icon.astro';
+import { t } from '@/i18n';
+import { asset } from '@/lib/paths';
+
+/**
+ * Les photos de la fiche produit : une grande, les vignettes en dessous quand
+ * il y en a plusieurs, et l'agrandissement au clic dans une vraie fenêtre
+ * modale du navigateur (<dialog>), qui apporte le piège de focus et la touche
+ * Échap sans une ligne de code.
+ *
+ * Sans JavaScript la grande photo reste affichée et le bouton d'agrandissement
+ * est désactivé : rien ne casse, aucun bouton mort.
+ */
+interface Props {
+  images: string[];
+  alt: string;
+  lang: Lang;
+  /** Produit en rupture : la photo passe en gris. */
+  grayscale?: boolean;
+  /** Nom de transition partagé avec la carte produit. */
+  transitionName?: string;
+}
+const { images, alt, lang, grayscale = false, transitionName } = Astro.props;
+const d = t(lang);
+const photos = images.length ? images : ['/images/products/poulet-entier.jpg'];
+const main = photos[0]!;
+const many = photos.length > 1;
+
+/** Même règle que Picture : WebP 480/960/1600, repli JPEG. */
+const variants = photos.map((src) => {
+  const local = src.startsWith('/images/');
+  const stem = src.replace(/\.(jpe?g|png|webp)$/i, '');
+  return {
+    src,
+    fallback: local ? asset(src) : src,
+    srcset: local ? [480, 960, 1600].map((w) => `${asset(`${stem}-${w}.webp`)} ${w}w`).join(', ') : '',
+    big: local ? asset(`${stem}-1600.webp`) : src,
+  };
+});
+---
+
+<div class="pg" data-gallery>
+  <div class="pg-stage relative aspect-square overflow-hidden rounded-xl bg-cream" data-pg-frame>
+    <Picture
+      src={main}
+      alt={alt}
+      sizes="(min-width: 1024px) 50vw, 100vw"
+      class="block h-full w-full"
+      imgClass={`h-full w-full object-cover ${grayscale ? 'grayscale' : ''}`}
+      loading="eager"
+      fetchpriority="high"
+      width={1200}
+      height={1200}
+      transitionName={transitionName}
+    />
+
+    <slot name="overlay" />
+
+    <button type="button" class="pg-zoom" data-pg-open disabled aria-label={d.shop.gallery.zoom}>
+      <Icon name="loupe" class="h-5 w-5" />
+      <span class="pg-zoom-text">{d.shop.gallery.zoom}</span>
+    </button>
+
+    {many && <p class="pg-counter tabular" data-pg-counter aria-hidden="true">1/{photos.length}</p>}
+  </div>
+
+  {
+    many && (
+      <ul class="pg-thumbs scrollbar-none" aria-label={d.shop.gallery.thumbs}>
+        {variants.map((v, i) => (
+          <li>
+            <button
+              type="button"
+              class="pg-thumb"
+              data-pg-thumb
+              data-src={v.fallback}
+              data-srcset={v.srcset}
+              data-big={v.big}
+              data-index={i}
+              aria-pressed={i === 0 ? 'true' : 'false'}
+              aria-label={d.shop.gallery.photo(i + 1, photos.length)}
+            >
+              <img src={v.fallback} alt="" width="120" height="120" loading="lazy" decoding="async" />
+            </button>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+
+  <dialog class="pg-lightbox" data-pg-dialog aria-label={d.shop.gallery.zoom}>
+    <form method="dialog" class="pg-close-form">
+      <button class="pg-close" aria-label={d.common.close}>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg>
+      </button>
+    </form>
+    <img data-pg-big alt={alt} width="1600" height="1600" />
+    {
+      many && (
+        <div class="pg-nav">
+          <button type="button" data-pg-prev aria-label={d.common.previous}>
+            <svg class="rtl:rotate-180" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M15 5 8 12l7 7" />
+            </svg>
+          </button>
+          <span class="pg-nav-count tabular" data-pg-big-counter aria-hidden="true" />
+          <button type="button" data-pg-next aria-label={d.common.next}>
+            <svg class="rtl:rotate-180" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="m9 5 7 7-7 7" />
+            </svg>
+          </button>
+        </div>
+      )
+    }
+  </dialog>
+</div>
+
+<style>
+  .pg-stage {
+    box-shadow: var(--shadow-card);
+  }
+  /* Le bouton d'agrandissement n'apparaît qu'une fois le script en place. */
+  .pg-zoom {
+    position: absolute;
+    inset-block-end: 0.75rem;
+    inset-inline-end: 0.75rem;
+    z-index: 3;
+    display: none;
+    align-items: center;
+    gap: 0.4rem;
+    min-height: 48px;
+    padding-inline: 0.9rem;
+    border-radius: var(--radius-pill);
+    background: color-mix(in srgb, var(--color-paper) 92%, transparent);
+    color: var(--color-ink);
+    font-size: 0.8rem;
+    font-weight: 700;
+    box-shadow: var(--shadow-card);
+    backdrop-filter: blur(6px);
+    transition:
+      transform 0.25s var(--ease-out-expo),
+      background-color 0.2s;
+  }
+  .pg-zoom:not([disabled]) {
+    display: inline-flex;
+  }
+  .pg-zoom:hover {
+    background: var(--color-paper);
+    transform: translateY(-2px);
+  }
+  .pg-zoom:active {
+    transform: scale(0.96);
+  }
+  .pg-zoom-text {
+    display: none;
+  }
+  @media (min-width: 640px) {
+    .pg-zoom-text {
+      display: inline;
+    }
+  }
+  .pg-counter {
+    position: absolute;
+    inset-block-start: 0.75rem;
+    inset-inline-end: 0.75rem;
+    z-index: 3;
+    border-radius: var(--radius-pill);
+    background: color-mix(in srgb, var(--color-ink) 62%, transparent);
+    color: var(--color-paper);
+    padding: 0.15rem 0.6rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+  }
+
+  .pg-thumbs {
+    display: flex;
+    gap: 0.6rem;
+    margin-top: 0.75rem;
+    overflow-x: auto;
+    padding-block-end: 0.25rem;
+  }
+  .pg-thumb {
+    display: block;
+    width: 64px;
+    height: 64px;
+    padding: 3px;
+    border-radius: var(--radius-md);
+    background: var(--color-cream);
+    box-shadow: inset 0 0 0 2px transparent;
+    transition:
+      box-shadow 0.2s,
+      transform 0.25s var(--ease-out-expo);
+  }
+  .pg-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 9px;
+  }
+  .pg-thumb[aria-pressed='true'] {
+    box-shadow: inset 0 0 0 2px var(--color-prairie);
+  }
+  .pg-thumb:hover {
+    transform: translateY(-2px);
+  }
+  @media (min-width: 640px) {
+    .pg-thumb {
+      width: 76px;
+      height: 76px;
+    }
+  }
+
+  /* La fenêtre d'agrandissement : le navigateur gère le focus et Échap. */
+  .pg-lightbox {
+    /* Tailwind remet toutes les marges à zéro : sans ce margin, la fenêtre
+       modale se colle en haut à gauche au lieu de se centrer. */
+    margin: auto;
+    width: min(96vw, 1100px);
+    max-width: none;
+    max-height: 92dvh;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-lg);
+    background: var(--color-ink);
+    overflow: visible;
+  }
+  .pg-lightbox::backdrop {
+    background: rgba(22, 32, 26, 0.82);
+    backdrop-filter: blur(3px);
+  }
+  .pg-lightbox[open] {
+    animation: pg-in 0.28s var(--ease-out-expo) both;
+  }
+  @keyframes pg-in {
+    from {
+      opacity: 0;
+      transform: scale(0.97);
+    }
+  }
+  .pg-lightbox img {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 92dvh;
+    object-fit: contain;
+    border-radius: var(--radius-lg);
+  }
+  .pg-close-form {
+    position: absolute;
+    inset-block-start: 0.5rem;
+    inset-inline-end: 0.5rem;
+    z-index: 2;
+  }
+  .pg-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-pill);
+    background: color-mix(in srgb, var(--color-paper) 90%, transparent);
+    color: var(--color-ink);
+  }
+  .pg-close:hover {
+    background: var(--color-paper);
+  }
+  .pg-nav {
+    position: absolute;
+    inset-block-end: 0.75rem;
+    inset-inline-start: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-radius: var(--radius-pill);
+    background: color-mix(in srgb, var(--color-paper) 90%, transparent);
+    padding: 0.25rem;
+  }
+  .pg-nav button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-pill);
+    color: var(--color-ink);
+  }
+  .pg-nav button:hover {
+    background: var(--color-cream);
+  }
+  .pg-nav-count {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--color-ink-2);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pg-zoom,
+    .pg-thumb {
+      transition: none;
+    }
+    .pg-zoom:hover,
+    .pg-thumb:hover {
+      transform: none;
+    }
+    .pg-lightbox[open] {
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  /**
+   * Vignettes et agrandissement. Le bouton d'agrandissement naît désactivé :
+   * il ne s'allume qu'ici, donc sans JavaScript personne ne clique dans le vide.
+   */
+  function armGallery() {
+    document.querySelectorAll<HTMLElement>('[data-gallery]').forEach((root) => {
+      if (root.dataset.armed) return;
+      root.dataset.armed = '1';
+
+      const frame = root.querySelector<HTMLElement>('[data-pg-frame]');
+      const img = frame?.querySelector<HTMLImageElement>('img');
+      const source = frame?.querySelector<HTMLSourceElement>('source');
+      const dialog = root.querySelector<HTMLDialogElement>('[data-pg-dialog]');
+      const big = root.querySelector<HTMLImageElement>('[data-pg-big]');
+      const open = root.querySelector<HTMLButtonElement>('[data-pg-open]');
+      const thumbs = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-pg-thumb]'));
+      const counter = root.querySelector<HTMLElement>('[data-pg-counter]');
+      const bigCounter = root.querySelector<HTMLElement>('[data-pg-big-counter]');
+      if (!img || !dialog || !big || !open) return;
+
+      const bigs = thumbs.length ? thumbs.map((b) => b.dataset.big ?? '') : [img.currentSrc || img.src];
+      let index = 0;
+
+      const showBig = () => {
+        big.src = bigs[index] ?? '';
+        if (bigCounter) bigCounter.textContent = `${index + 1}/${bigs.length}`;
+      };
+
+      const select = (i: number) => {
+        const b = thumbs[i];
+        if (!b) return;
+        index = i;
+        if (source && b.dataset.srcset) source.srcset = b.dataset.srcset;
+        if (b.dataset.src) img.src = b.dataset.src;
+        thumbs.forEach((x, j) => x.setAttribute('aria-pressed', j === i ? 'true' : 'false'));
+        if (counter) counter.textContent = `${i + 1}/${thumbs.length}`;
+      };
+
+      thumbs.forEach((b, i) => b.addEventListener('click', () => select(i)));
+
+      open.disabled = false;
+      open.addEventListener('click', () => {
+        showBig();
+        dialog.showModal();
+      });
+
+      // Un clic à côté de la photo referme, comme partout ailleurs.
+      dialog.addEventListener('click', (e) => {
+        if (e.target === dialog) dialog.close();
+      });
+
+      root.querySelector('[data-pg-prev]')?.addEventListener('click', () => {
+        index = (index - 1 + bigs.length) % bigs.length;
+        showBig();
+        select(index);
+      });
+      root.querySelector('[data-pg-next]')?.addEventListener('click', () => {
+        index = (index + 1) % bigs.length;
+        showBig();
+        select(index);
+      });
+      dialog.addEventListener('keydown', (e) => {
+        if (bigs.length < 2) return;
+        const rtl = document.documentElement.dir === 'rtl';
+        const back = rtl ? 'ArrowRight' : 'ArrowLeft';
+        const fwd = rtl ? 'ArrowLeft' : 'ArrowRight';
+        if (e.key === back || e.key === fwd) {
+          e.preventDefault();
+          index = (index + (e.key === fwd ? 1 : -1) + bigs.length) % bigs.length;
+          showBig();
+          select(index);
+        }
+      });
+    });
+  }
+
+  armGallery();
+  document.addEventListener('astro:page-load', armGallery);
+</script>

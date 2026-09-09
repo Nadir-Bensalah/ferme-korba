@@ -4,7 +4,9 @@ import { brand, fieldErrors, formatPrice, formatQty, isEstimated, registerSchema
 import { auth, data } from '@/lib/data';
 import { href, routes, whatsappLink } from '@/lib/paths';
 import { t, L, formatDate, formatHour } from '@/i18n';
-import { ErrorBox, Notice, ProductImage, Skeleton, TextField, errorMessage, localPhone, reducedMotion, useUser } from './shared';
+import { ErrorBox, Notice, ProductImage, Skeleton, TextField, errorMessage, isoToday, localPhone, reducedMotion, useUser } from './shared';
+import { DecoArt, IcoBookmark, IcoCalendar, IcoChat, IcoPhone, IcoTruck, buildIcs, downloadIcs } from './tunnel';
+import type { Dictionary } from '@/i18n/fr';
 
 interface Props {
   lang: Lang;
@@ -116,15 +118,21 @@ export default function ConfirmationPage({ lang }: Props) {
         <p className="font-display text-3xl font-extrabold tracking-tight tabular" dir="ltr">
           {order.number}
         </p>
-        <p className="text-sm text-ink-2">
-          <span className="font-semibold">{d.tracking.deliveryOn} :</span> {formatDate(order.delivery_date, lang)}, {L(order.slot.label, lang).toLowerCase()} ({formatHour(order.slot.from, lang)} · {formatHour(order.slot.to, lang)})
-        </p>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <p className="text-sm text-ink-2">
+            <span className="font-semibold">{d.tracking.deliveryOn} :</span> {formatDate(order.delivery_date, lang)}, {L(order.slot.label, lang).toLowerCase()} ({formatHour(order.slot.from, lang)} · {formatHour(order.slot.to, lang)})
+          </p>
+          <CalendarButton order={order} lang={lang} url={trackingUrl} />
+        </div>
         <div className="flex flex-col gap-2 border-t border-line pt-4">
           <p className="text-sm font-semibold">{d.confirmation.linkLabel}</p>
           <a href={trackingUrl} className="break-all text-sm text-prairie underline" dir="ltr">
             {trackingUrl}
           </a>
-          <p className="text-xs text-ink-3">{d.confirmation.trackHelp}</p>
+          <p className="flex items-start gap-2.5 rounded-md bg-yolk-soft px-3 py-2.5 text-xs font-semibold text-yolk-deep">
+            <IcoBookmark size={16} className="mt-px shrink-0" />
+            {d.confirmation.trackHelp}
+          </p>
           <div className="mt-1 flex flex-wrap gap-2">
             <button type="button" onClick={copy} className="btn-ghost btn-sm" aria-live="polite">
               {copied ? d.confirmation.copied : d.confirmation.copy}
@@ -140,6 +148,8 @@ export default function ConfirmationPage({ lang }: Props) {
           </div>
         </div>
       </section>
+
+      <NextSteps order={order} lang={lang} d={d} />
 
       <section className="card flex flex-col gap-4 p-5 sm:p-6" aria-labelledby="recap-title">
         <h2 id="recap-title" className="text-xl font-extrabold">
@@ -170,13 +180,71 @@ export default function ConfirmationPage({ lang }: Props) {
 
       <div className="flex flex-col gap-3 sm:flex-row">
         <a href={wa} className="btn-primary btn-lg flex-1" target="_blank" rel="noopener">
-          <span aria-hidden="true">💬</span> {d.confirmation.whatsappUs}
+          <IcoChat size={20} /> {d.confirmation.whatsappUs}
         </a>
         <a href={href(lang)} className="btn-ghost btn-lg flex-1">
           {d.confirmation.backHome}
         </a>
       </div>
     </div>
+  );
+}
+
+/** Ce qui se passe ensuite, en trois temps, avec une heure indicative. */
+function NextSteps({ order, lang, d }: { order: OrderSummaryForCustomer; lang: Lang; d: Dictionary }) {
+  const late = new Date().getHours() >= 18;
+  const steps = [
+    { ico: <IcoPhone size={20} />, title: d.confirmation.next1, text: d.confirmation.next1Text, when: late ? d.confirmation.next1WhenLate : d.confirmation.next1When },
+    { ico: <DecoArt type="plume" className="h-6 w-6" />, title: d.confirmation.next2, text: d.confirmation.next2Text, when: d.confirmation.next2When },
+    { ico: <IcoTruck size={20} />, title: d.confirmation.next3, text: d.confirmation.next3Text, when: d.tracking.between(formatHour(order.slot.from, lang), formatHour(order.slot.to, lang)) },
+  ];
+  return (
+    <section className="card flex flex-col gap-5 p-5 sm:p-6" aria-labelledby="next-title">
+      <h2 id="next-title" className="text-xl font-extrabold">
+        {d.confirmation.nextTitle}
+      </h2>
+      <ol className="flex flex-col gap-5">
+        {steps.map((s, i) => (
+          <li key={i} className="fk-next">
+            <span className="fk-next-ico" aria-hidden="true">
+              {s.ico}
+            </span>
+            <div className="flex flex-wrap items-baseline justify-between gap-x-3">
+              <p className="font-bold">{s.title}</p>
+              <p className="text-xs font-semibold text-prairie-deep">{s.when}</p>
+            </div>
+            <p className="mt-0.5 text-sm text-ink-2">{s.text}</p>
+          </li>
+        ))}
+      </ol>
+    </section>
+  );
+}
+
+/** Fichier .ics fabriqué dans le navigateur : rien ne part au serveur. */
+function CalendarButton({ order, lang, url }: { order: OrderSummaryForCustomer; lang: Lang; url: string }) {
+  const d = t(lang);
+  const add = () => {
+    const ics = buildIcs({
+      uid: order.number,
+      date: order.delivery_date,
+      from: order.slot.from,
+      to: order.slot.to,
+      summary: d.confirmation.calendarSummary(order.number),
+      description: d.confirmation.calendarDesc(url),
+      location: `${order.address.street}, ${order.address.city}`,
+    });
+    downloadIcs(ics, `${order.number}.ics`);
+  };
+  if (order.delivery_date < isoToday()) return null;
+  return (
+    <span className="flex flex-col items-start gap-1">
+      <button type="button" onClick={add} className="btn-ghost btn-sm">
+        <IcoCalendar size={18} />
+        {d.confirmation.addToCalendar}
+      </button>
+      <span className="text-[11px] text-ink-3">{d.confirmation.calendarHelp}</span>
+    </span>
   );
 }
 

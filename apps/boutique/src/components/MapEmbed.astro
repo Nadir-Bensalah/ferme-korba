@@ -1,0 +1,44 @@
+---
+import type { Lang } from '@ferme/core';
+import { brand } from '@ferme/core';
+
+/**
+ * La carte de la ferme (Google Maps, sans clé), posée dans un cadre vert un
+ * peu de travers comme les cartes produits. Chargée seulement quand elle
+ * approche de l'écran.
+ */
+interface Props {
+  lang: Lang;
+  title: string;
+  class?: string;
+}
+const { lang, title, class: cls = '' } = Astro.props;
+const src = `https://maps.google.com/maps?q=${brand.geo.lat},${brand.geo.lng}&z=14&hl=${lang}&output=embed`;
+---
+
+<div class:list={['map-frame relative rounded-lg bg-prairie p-2 shadow-[0_14px_36px_-16px_rgba(20,83,45,.7)]', cls]}>
+  <div class="map-inner overflow-hidden rounded-md bg-moss">
+    <iframe src={src} title={title} loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen class="block h-72 w-full border-0 sm:h-80 lg:h-full lg:min-h-96"></iframe>
+  </div>
+</div>
+
+<style>
+  .map-frame {
+    transform: rotate(-1.5deg);
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .map-inner {
+    transform: rotate(1.5deg);
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .map-frame:hover,
+  .map-frame:hover .map-inner {
+    transform: rotate(0);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .map-frame,
+    .map-inner {
+      transition: none;
+    }
+  }
+</style>

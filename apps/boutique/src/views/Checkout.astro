@@ -3,6 +3,7 @@ import type { Lang } from '@ferme/core';
 import Base from '@/layouts/Base.astro';
 import DemoBanner from '@/components/DemoBanner.astro';
 import Checkout from '@/components/islands/Checkout';
+import TunnelStyles from '@/components/tunnel/TunnelStyles.astro';
 import { t } from '@/i18n';
 import { href, routes } from '@/lib/paths';
 
@@ -14,6 +15,7 @@ const d = t(lang);
 ---
 
 <Base lang={lang} title={d.checkout.title} noindex noBottomBar slimFooter>
+  <TunnelStyles />
   <section class="container-x py-6 sm:py-10">
     <DemoBanner lang={lang} class="mb-5" />
     <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
