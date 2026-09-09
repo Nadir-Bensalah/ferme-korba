@@ -441,23 +441,23 @@ function Suggestions({ lang, d, picks }: { lang: Lang; d: Dictionary; picks: Pro
           </svg>
         </a>
       </div>
-      <ul className="-mx-4 mt-4 flex gap-3 overflow-x-auto px-4 pb-1 scrollbar-none sm:mx-0 sm:grid sm:grid-cols-2 sm:px-0 xl:grid-cols-4">
+      <ul className="-mx-4 mt-4 flex gap-3 overflow-x-auto px-4 pb-1 scrollbar-none sm:mx-0 sm:grid sm:grid-cols-2 sm:px-0 lg:grid-cols-2 xl:grid-cols-4">
         {picks.map((p) => {
           const price = displayPrice(p.pricing, lang);
           return (
             <li key={p.id} className="fk-suggest fk-pop w-60 sm:w-auto">
-              <a href={href(lang, routes.product(p.slug))} className="block h-[4.5rem] w-[4.5rem] shrink-0 overflow-hidden rounded-md bg-cream" tabIndex={-1} aria-hidden="true">
+              <a href={href(lang, routes.product(p.slug))} className="block h-14 w-14 shrink-0 overflow-hidden rounded-md bg-cream" tabIndex={-1} aria-hidden="true">
                 <ProductImage src={p.images[0] ?? ''} className="h-full w-full" />
               </a>
               <div className="min-w-0 flex-1">
-                <a href={href(lang, routes.product(p.slug))} className="line-clamp-1 text-sm font-bold leading-tight">
+                <a href={href(lang, routes.product(p.slug))} className="line-clamp-2 text-[13px] font-bold leading-tight">
                   {L(p.name, lang)}
                 </a>
-                <p className="mt-1 whitespace-nowrap font-display text-base font-extrabold tabular">
+                <p className="mt-1 whitespace-nowrap font-display text-sm font-extrabold tabular">
                   {price.amount} <span className="text-xs font-semibold text-ink-3">{price.unit}</span>
                 </p>
               </div>
-              <button type="button" className="fk-suggest-add is-solid" onClick={() => addToCart(p)} aria-label={`${d.common.add} · ${L(p.name, lang)}`}>
+              <button type="button" className="fk-suggest-add is-solid is-compact" onClick={() => addToCart(p)} aria-label={`${d.common.add} · ${L(p.name, lang)}`}>
                 <IcoPlus size={20} />
               </button>
             </li>
