@@ -6,6 +6,7 @@ import Picture from '@/components/Picture.astro';
 import ProductCard from '@/components/ProductCard.astro';
 import RecipeCard from '@/components/RecipeCard.astro';
 import SectionHead from '@/components/SectionHead.astro';
+import OffersStrip from '@/components/OffersStrip.astro';
 import Deco from '@/components/deco/Deco.astro';
 import TornEdge from '@/components/deco/TornEdge.astro';
 import { t, L } from '@/i18n';
@@ -120,23 +121,36 @@ const star = `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor
     </div>
   </div>
 
+  <!-- Offres du moment -->
+  <section class="relative overflow-hidden bg-paper pb-14 pt-14 sm:pb-16 sm:pt-16">
+    <TornEdge position="top" variant="wave" height={22} class="edge-in-top text-prairie-deep" />
+    <div class="container-x">
+      <OffersStrip lang={lang} />
+    </div>
+    <TornEdge position="bottom" variant="torn" height={26} class="edge-in text-cream" />
+  </section>
+
   <!-- Catégories -->
   <section class="filigree relative overflow-hidden bg-cream py-16 sm:py-20">
-    <TornEdge position="top" variant="wave" height={22} class="edge-in-top text-prairie-deep" />
     <Deco type="oeufs" class="deco deco-lg end-0 top-4 hidden w-20 rotate-6 text-yolk/30 lg:block lg:w-24" />
     <div class="container-x">
       <SectionHead eyebrow={d.home.categoriesEyebrow} title={d.home.categoriesTitle} text={d.home.categoriesText} link={{ href: href(lang, routes.shop), label: d.common.seeAll }} />
-      <ul class="mt-8 grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3">
+      <ul class="mt-8 grid gap-3 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3">
         {categories.map((c, i) => (
           <li class="reveal" style={`--reveal-delay:${i * 60}ms`}>
-            <a href={href(lang, routes.category(c.slug))} class="group relative block overflow-hidden rounded-lg bg-paper shadow-card transition-shadow hover:shadow-float">
-              <div class="aspect-[4/3] overflow-hidden">
-                <Picture src={c.image} alt="" sizes="(min-width: 768px) 33vw, 50vw" imgClass="h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105" width={1600} height={1200} />
+            <a href={href(lang, routes.category(c.slug))} class="cat-card group flex items-center gap-3 rounded-xl bg-cream-2 p-3 pe-4 shadow-card sm:gap-4 sm:p-4 sm:pe-5">
+              <div class="w-[42%] shrink-0">
+                <div class={i % 2 ? 'blob-2' : 'blob'}>
+                  <Picture src={c.image} alt="" sizes="(min-width: 1024px) 180px, (min-width: 640px) 22vw, 40vw" imgClass="aspect-square w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105" width={800} height={800} />
+                </div>
               </div>
-              <div class="p-3 sm:p-4">
-                <h3 class="text-base font-bold leading-tight sm:text-lg">{L(c.name, lang)}</h3>
-                <p class="mt-1 line-clamp-2 text-sm text-ink-3">{L(c.description, lang)}</p>
+              <div class="min-w-0 flex-1">
+                <h3 class="text-lg font-bold leading-tight sm:text-xl">{L(c.name, lang)}</h3>
+                <p class="mt-1 truncate text-sm text-ink-3">{d.home.categoryTaglines[c.slug] ?? L(c.description, lang)}</p>
               </div>
+              <span class="cat-arrow flex h-11 w-11 shrink-0 items-center justify-center rounded-pill bg-paper text-prairie-deep shadow-card group-hover:bg-prairie group-hover:text-white" aria-hidden="true">
+                <svg class="rtl:rotate-180" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+              </span>
             </a>
           </li>
         ))}
@@ -311,3 +325,37 @@ const star = `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor
     import '@/scripts/vitrine';
   </script>
 </Base>
+
+<style>
+  /* Cartes de catégories : légère élévation au survol, la flèche avance dans le sens de lecture. */
+  .cat-card {
+    transition:
+      transform 0.35s var(--ease-out-expo),
+      box-shadow 0.35s var(--ease-out-expo);
+  }
+  .cat-card:hover,
+  .cat-card:focus-visible {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-float);
+  }
+  .cat-arrow {
+    transition:
+      transform 0.35s var(--ease-out-expo),
+      background-color 0.2s,
+      color 0.2s;
+  }
+  .cat-card:hover .cat-arrow,
+  .cat-card:focus-visible .cat-arrow {
+    transform: translateX(4px);
+  }
+  :global(html[dir='rtl']) .cat-card:hover .cat-arrow,
+  :global(html[dir='rtl']) .cat-card:focus-visible .cat-arrow {
+    transform: translateX(-4px);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .cat-card:hover,
+    .cat-card:hover .cat-arrow {
+      transform: none;
+    }
+  }
+</style>

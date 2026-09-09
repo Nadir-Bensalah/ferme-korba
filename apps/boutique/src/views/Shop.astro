@@ -4,6 +4,7 @@ import { displayPrice, seedCategories, seedProducts } from '@ferme/core';
 import Base from '@/layouts/Base.astro';
 import ProductCard from '@/components/ProductCard.astro';
 import SectionHead from '@/components/SectionHead.astro';
+import OffersStrip from '@/components/OffersStrip.astro';
 import SearchButton from '@/components/islands/SearchButton';
 import Deco from '@/components/deco/Deco.astro';
 import TornEdge from '@/components/deco/TornEdge.astro';
@@ -80,6 +81,7 @@ const itemList = {
   <section class="relative overflow-clip bg-paper pb-24 pt-6 sm:pt-8" aria-labelledby="grid-title">
     <Deco type="poule" class="deco deco-lg start-0 bottom-2 hidden w-20 text-ink/10 lg:block lg:w-24" />
     <div class="container-x">
+    {!cat && <OffersStrip lang={lang} class="mb-12 mt-2 sm:mb-14" />}
     <div class="mb-5 flex flex-wrap items-center justify-between gap-3">
       <p id="grid-title" class="text-sm font-semibold text-ink-3" data-product-count>{d.shop.count(products.length)}</p>
       <p class="chip bg-prairie-soft text-prairie-deep normal-case tracking-normal">

@@ -1,0 +1,36 @@
+---
+import type { Lang } from '@ferme/core';
+import { seedOffers, seedSettings } from '@ferme/core';
+import Offers from '@/components/islands/Offers';
+import { t } from '@/i18n';
+
+/**
+ * « Les offres du moment » : un titre discret et la bande de cartes (îlot
+ * Offers). Construite avec les offres actives du jeu de données ; l'îlot les
+ * relit à l'exécution. Sans offre active, rien n'est rendu.
+ */
+interface Props {
+  lang: Lang;
+  class?: string;
+}
+const { lang, class: cls = '' } = Astro.props;
+const d = t(lang);
+const offers = seedOffers.filter((o) => o.active).sort((a, b) => a.sort - b.sort);
+---
+
+{
+  offers.length > 0 && (
+    <section class:list={['offers-strip', cls]} data-offers-strip aria-labelledby="offers-title">
+      <div class="reveal">
+        <p class="eyebrow mb-1.5">{d.offers.eyebrow}</p>
+        <h2 id="offers-title" class="text-2xl font-extrabold leading-tight sm:text-3xl">
+          {d.offers.title}
+        </h2>
+      </div>
+      <div class="reveal mt-5" style="--reveal-delay: 80ms">
+        <Offers client:idle lang={lang} offers={offers} cutoff={seedSettings.cutoff_time} />
+      </div>
+    </section>
+  )
+}
+

@@ -94,6 +94,15 @@ export const fr = {
     trust: ['Élevé en plein air', 'Abattu le jour même', 'Livré en 24 h', 'Payé à la livraison'],
     categoriesTitle: 'Qu’est-ce qu’on vous prépare ?',
     categoriesText: 'Tout part de la ferme le matin de votre livraison.',
+    /** Accroche courte sous le nom de chaque catégorie, sur l'accueil. Repli : la description. */
+    categoryTaglines: {
+      'volailles-entieres': 'Abattu le matin',
+      decoupes: 'À la demande',
+      dinde: 'Tendre et maigre',
+      oeufs: 'Du jour même',
+      charcuterie: 'Fait à la ferme',
+      marines: 'Prêt à cuire',
+    } as Record<string, string>,
     featuredTitle: 'Les incontournables',
     featuredText: 'Ce que nos clients recommandent chaque semaine.',
     howTitle: 'Commander, c’est simple',
@@ -786,6 +795,17 @@ export const fr = {
     text: 'Elle n’existe pas ou plus. Retournez à l’accueil ou faites un tour à la boutique.',
     home: 'Accueil',
     shop: 'Boutique',
+  },
+  offers: {
+    eyebrow: 'Offres',
+    title: 'Les offres du moment',
+    list: 'Offres du moment',
+    endsIn: 'Se termine dans',
+    hours: 'H',
+    minutes: 'MIN',
+    seconds: 'SEC',
+    ms: 'MS',
+    slide: (n: number, total: number) => `Offre ${n} sur ${total}`,
   },
   announcement: {
     closed: 'La boutique est fermée aujourd’hui. Les commandes reprennent demain.',
