@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { Lang, OrderSummaryForCustomer } from '@ferme/core';
 import { brand, fieldErrors, formatPrice, formatQty, isEstimated, registerSchema } from '@ferme/core';
 import { auth, data } from '@/lib/data';
-import { href, routes, whatsappLink } from '@/lib/paths';
+import { asset, href, routes, whatsappLink } from '@/lib/paths';
 import { t, L, formatDate, formatHour } from '@/i18n';
 import { ErrorBox, Notice, ProductImage, Skeleton, TextField, errorMessage, isoToday, localPhone, reducedMotion, useUser } from './shared';
 import { DecoArt, IcoBookmark, IcoCalendar, IcoChat, IcoPhone, IcoTruck, buildIcs, downloadIcs } from './tunnel';
@@ -109,7 +109,7 @@ export default function ConfirmationPage({ lang }: Props) {
 
   return (
     <div className="mx-auto flex max-w-2xl flex-col gap-8">
-      <SuccessHeader title={d.confirmation.title} text={d.confirmation.text(firstName)} />
+      <SuccessHeader lang={lang} title={d.confirmation.title} text={d.confirmation.text(firstName)} />
 
       <section className="card flex flex-col gap-4 p-5 sm:p-6" aria-labelledby="num-title">
         <p id="num-title" className="eyebrow">
@@ -272,7 +272,7 @@ function Totals({ order, lang }: { order: OrderSummaryForCustomer; lang: Lang })
   );
 }
 
-function SuccessHeader({ title, text }: { title: string; text: string }) {
+function SuccessHeader({ lang, title, text }: { lang: Lang; title: string; text: string }) {
   const pieces = useMemo(() => {
     if (reducedMotion()) return [];
     return Array.from({ length: 22 }, (_, i) => ({
@@ -291,10 +291,10 @@ function SuccessHeader({ title, text }: { title: string; text: string }) {
           <span key={i} className="confetti" style={{ left: p.left, background: p.color, '--confetti-delay': p.delay, '--confetti-x': p.x, '--confetti-y': p.y, '--confetti-r': p.r } as React.CSSProperties} />
         ))}
       </div>
-      <svg width="96" height="96" viewBox="0 0 96 96" fill="none" aria-hidden="true" className="animate-pop">
-        <circle cx="48" cy="48" r="40" stroke="var(--color-prairie)" strokeWidth="5" className="check-ring" strokeLinecap="round" />
-        <path d="M30 49 43 62 67 36" stroke="var(--color-prairie)" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" className="check-mark" />
-      </svg>
+      <picture className="block w-40 animate-pop sm:w-48">
+        <source type="image/webp" srcSet={`${asset('/images/art/merci-' + lang + '-400.webp')} 400w, ${asset('/images/art/merci-' + lang + '-800.webp')} 800w`} sizes="192px" />
+        <img src={asset(`/images/art/merci-${lang}.png`)} alt="" width={192} height={192} className="h-full w-full object-contain" aria-hidden="true" />
+      </picture>
       <h1 className="text-3xl font-extrabold sm:text-4xl">{title}</h1>
       <p className="text-lg text-ink-2">{text}</p>
     </div>

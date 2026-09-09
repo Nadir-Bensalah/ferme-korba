@@ -126,6 +126,7 @@ export const ar: Dictionary = {
     } as Record<string, string>,
     featuredTitle: 'الأكثر طلباً',
     featuredText: 'ما ينصح به زبائننا كل أسبوع.',
+    codNote: 'لا تدفع شيئاً قبل أن تتسلّم طلبك بيديك.',
     howTitle: 'الطلب سهل',
     howSteps: [
       { title: 'تختار', text: 'منتجاتك بالكيلو أو بالقطعة، في دقيقتين من هاتفك.' },

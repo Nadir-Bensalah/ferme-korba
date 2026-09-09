@@ -1,0 +1,38 @@
+---
+import { asset } from '@/lib/paths';
+
+/**
+ * Une illustration détourée de la ferme (fond transparent), déclinée en WebP
+ * par `node scripts/art.mjs`. Décorative par défaut : sans texte de
+ * remplacement, elle est masquée aux lecteurs d'écran.
+ *
+ *   <Art name="poussin-eclosion" class="w-40" />
+ */
+import type { ArtName } from './art';
+
+interface Props {
+  name: ArtName;
+  /** Texte de remplacement. Vide (par défaut) = image décorative. */
+  alt?: string;
+  class?: string;
+  width?: number;
+  height?: number;
+  loading?: 'lazy' | 'eager';
+  sizes?: string;
+}
+const { name, alt = '', class: cls = '', width = 400, height = 400, loading = 'lazy', sizes = '400px' } = Astro.props;
+---
+
+<picture class:list={['block', cls]}>
+  <source type="image/webp" srcset={`${asset(`/images/art/${name}-400.webp`)} 400w, ${asset(`/images/art/${name}-800.webp`)} 800w`} sizes={sizes} />
+  <img
+    src={asset(`/images/art/${name}.png`)}
+    alt={alt}
+    width={width}
+    height={height}
+    loading={loading}
+    decoding="async"
+    class="h-full w-full object-contain"
+    aria-hidden={alt ? undefined : 'true'}
+  />
+</picture>

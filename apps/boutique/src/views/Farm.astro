@@ -24,7 +24,7 @@ const sections = d.farm.sections.map((s, i) => ({ ...s, photo: photos[i] ?? phot
 const quoteAfter: Record<number, string | undefined> = { 1: d.farm.quotes[0], 3: d.farm.quotes[1] };
 
 /** Galerie : six photos, deux hauteurs alternées pour que ça respire. */
-const galleryPhotos = ['/images/farm/hero-ferme.jpg', '/images/farm/poules-plein-air.jpg', '/images/farm/fermier.jpg', '/images/products/oeufs.jpg', '/images/products/poulet-entier.jpg', '/images/products/merguez.jpg'];
+const galleryPhotos = ['/images/farm/ferme-coucher.jpg', '/images/farm/poules-plein-air.jpg', '/images/farm/ferme-prairie.jpg', '/images/products/oeufs.jpg', '/images/farm/ferme-cour.jpg', '/images/farm/fermier.jpg'];
 const gallery = d.farm.gallery.map((g, i) => ({ ...g, photo: galleryPhotos[i] ?? galleryPhotos[0]!, tall: i % 3 === 0 }));
 
 /** Un dessin par chiffre : le soleil, la caisse vide, l'horloge, la pousse. */

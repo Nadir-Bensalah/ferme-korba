@@ -1,5 +1,6 @@
 ---
 import Base from '@/layouts/Base.astro';
+import Picture from '@/components/Picture.astro';
 import { t } from '@/i18n';
 import { href, routes } from '@/lib/paths';
 
@@ -11,14 +12,16 @@ const arrow = `<svg class="rtl:rotate-180" width="20" height="20" viewBox="0 0 2
 
 <Base lang="fr" title={fr.notFound.title} description={fr.notFound.text} noindex>
   <section class="container-x flex flex-col items-center py-16 text-center sm:py-24">
-    <svg class="text-yolk" width="120" height="120" viewBox="0 0 48 48" fill="none" aria-hidden="true">
-      <path d="M14 27c0-6 5-10.5 11-10.5 3 0 5.5 1 7.2 2.8l3.3-1.3-1.6 3.8c.7 1.4 1.1 3 1.1 4.7 0 6.5-5.2 10.5-11 10.5S14 33.5 14 27Z" fill="#eaf3ea" stroke="#1e7a3c" stroke-width="1.5" />
-      <path d="M30.5 15.5c1.3-2.5 3.3-3.7 5.8-3.4-.5 2.4-2 4.2-4.6 4.9l-1.2-1.5Z" fill="#c8442b" />
-      <path d="M36.2 20.2 40 20.5l-2.7 2.4" fill="#f2a900" />
-      <circle cx="32.2" cy="20.4" r="1.3" fill="#16201a" />
-      <ellipse cx="20.5" cy="34.5" rx="3.6" ry="4.4" fill="#f2a900" />
-      <path d="M8 40h32" stroke="#d3d0c4" stroke-width="2" stroke-linecap="round" stroke-dasharray="3 5" />
-    </svg>
+    <Picture
+      src="/images/farm/poules-drole.jpg"
+      alt=""
+      sizes="(min-width: 640px) 420px, 90vw"
+      class="block w-full max-w-md"
+      imgClass="blob aspect-[16/10] w-full object-cover"
+      loading="eager"
+      width={800}
+      height={500}
+    />
     <p class="eyebrow mt-6">{fr.notFound.eyebrow}</p>
     <h1 class="mt-3 max-w-2xl text-4xl font-extrabold leading-[1.05] sm:text-5xl">{fr.notFound.title}</h1>
     <p class="mt-4 max-w-xl text-lg text-ink-2">{fr.notFound.text}</p>

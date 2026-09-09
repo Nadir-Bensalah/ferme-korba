@@ -101,3 +101,32 @@ export function replaceCart(lines: Omit<CartLine, 'added_at'>[]): void {
   const now = Date.now();
   cartLines.set(lines.map((l, i) => ({ ...l, qty: clampQty(l.pricing, l.qty), added_at: now + i })));
 }
+
+/* ------------------------------------------------------------------ */
+/* Panneau de panier                                                   */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Le panneau qui glisse depuis le bord. Les deux boutons panier (en-tête et
+ * barre du bas) l'ouvrent, l'îlot de l'en-tête l'affiche. Il n'est pas
+ * persisté : chaque page démarre panneau fermé.
+ */
+export const cartDrawerOpen = atom(false);
+
+export function openCartDrawer(): void {
+  cartDrawerOpen.set(true);
+}
+
+export function closeCartDrawer(): void {
+  cartDrawerOpen.set(false);
+}
+
+/**
+ * Vrai quand la page affichée est déjà la page panier : le bouton reprend son
+ * rôle de lien, il n'y a rien à ouvrir par-dessus.
+ */
+export function onCartPage(cartHref: string): boolean {
+  if (typeof window === 'undefined') return true;
+  const strip = (p: string) => p.replace(/\/+$/, '');
+  return strip(window.location.pathname) === strip(cartHref);
+}

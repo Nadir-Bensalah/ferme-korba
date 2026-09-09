@@ -5,6 +5,8 @@ import Base from '@/layouts/Base.astro';
 import Picture from '@/components/Picture.astro';
 import SectionHead from '@/components/SectionHead.astro';
 import Deco from '@/components/deco/Deco.astro';
+import Art from '@/components/Art.astro';
+import type { ArtName } from '@/components/art';
 import TornEdge from '@/components/deco/TornEdge.astro';
 import { t } from '@/i18n';
 import { href, routes } from '@/lib/paths';
@@ -23,13 +25,17 @@ const d = t(lang);
 /** Dessins de la bibliothèque `Deco`, nommés ici pour ne pas importer un type depuis un .astro. */
 type DecoName = 'oeufs' | 'poussin' | 'grain' | 'ble' | 'poule' | 'plume' | 'persil' | 'oeuf' | 'coriandre';
 
-/** Photo et dessin de chaque étape. L'éclosion n'a pas de photo : le dessin prend sa place. */
-const storyArt: { photo: string; deco: DecoName; mask: string }[] = [
-  { photo: '/images/products/oeufs.jpg', deco: 'oeufs', mask: 'blob' },
-  { photo: '', deco: 'poussin', mask: 'blob-2' },
-  { photo: '/images/farm/hero-ferme.jpg', deco: 'grain', mask: 'blob-2' },
+/**
+ * Illustration, photo et dessin de chaque étape. Une illustration détourée
+ * (`art`) passe devant la photo quand elle raconte mieux le moment : l'œuf
+ * ramassé, l'éclosion, le poussin des premières semaines, la famille au grain.
+ */
+const storyArt: { art?: ArtName; photo: string; deco: DecoName; mask: string }[] = [
+  { art: 'panier-oeufs', photo: '/images/products/oeufs.jpg', deco: 'oeufs', mask: 'blob' },
+  { art: 'poussin-eclosion', photo: '', deco: 'poussin', mask: 'blob-2' },
+  { art: 'poussin', photo: '/images/farm/hero-ferme.jpg', deco: 'grain', mask: 'blob-2' },
   { photo: '/images/farm/poules-plein-air.jpg', deco: 'ble', mask: 'blob' },
-  { photo: '/images/farm/fermier.jpg', deco: 'poule', mask: 'blob-2' },
+  { art: 'famille-volaille', photo: '/images/farm/fermier.jpg', deco: 'poule', mask: 'blob-2' },
   { photo: '/images/products/poulet-entier.jpg', deco: 'plume', mask: 'blob' },
 ];
 const story = d.quality.story.map((s, i) => ({ ...s, ...(storyArt[i] ?? storyArt[0]!) }));
@@ -371,7 +377,9 @@ const jsonLd = {
                       <span class="story-num shrink-0" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
                     </div>
                     <div class="relative mt-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-5">
-                      {s.photo ? (
+                      {s.art ? (
+                        <Art name={s.art} alt={s.alt} class="h-28 w-28 shrink-0 sm:h-32 sm:w-32" sizes="(min-width: 640px) 128px, 112px" />
+                      ) : s.photo ? (
                         <Picture
                           src={s.photo}
                           alt={s.alt}

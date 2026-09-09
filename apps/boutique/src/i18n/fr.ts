@@ -125,6 +125,7 @@ export const fr = {
     } as Record<string, string>,
     featuredTitle: 'Les incontournables',
     featuredText: 'Ce que nos clients recommandent chaque semaine.',
+    codNote: 'Vous ne payez rien avant d’avoir votre commande dans les mains.',
     howTitle: 'Commander, c’est simple',
     howSteps: [
       { title: 'Vous choisissez', text: 'Vos produits, au kilo ou à la pièce, en deux minutes sur votre téléphone.' },

@@ -1,7 +1,7 @@
 import { useStore } from '@nanostores/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { Lang, Product } from '@ferme/core';
-import { addToCart, cartLines } from '@/stores/cart';
+import { addToCart, cartLines, openCartDrawer } from '@/stores/cart';
 import { t } from '@/i18n';
 
 type Snapshot = Pick<Product, 'id' | 'slug' | 'name' | 'images' | 'pricing' | 'stock'>;
@@ -25,7 +25,12 @@ export default function AddButton({ product, lang, compact = false, qty, classNa
   const inCart = lines.some((l) => l.product_id === product.id);
   const [state, setState] = useState<'idle' | 'added'>('idle');
   const btn = useRef<HTMLButtonElement>(null);
+  const drawerTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const soldOut = product.stock === 'rupture';
+
+  useEffect(() => () => {
+    if (drawerTimer.current) clearTimeout(drawerTimer.current);
+  }, []);
 
   useEffect(() => {
     if (state !== 'added') return;
@@ -74,6 +79,14 @@ export default function AddButton({ product, lang, compact = false, qty, classNa
     fly();
     addToCart(product, qty);
     setState('added');
+    // Sur une fiche produit, l'ajout est un geste unique et réfléchi : le
+    // panneau s'ouvre pour montrer le panier, une fois la photo arrivée.
+    // Sur les cartes de la boutique, il se mettrait en travers de celui qui
+    // remplit vite son panier : la photo qui vole et le compteur suffisent.
+    if (!compact) {
+      if (drawerTimer.current) clearTimeout(drawerTimer.current);
+      drawerTimer.current = setTimeout(openCartDrawer, 450);
+    }
   };
 
   if (compact) {
