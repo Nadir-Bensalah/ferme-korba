@@ -24,6 +24,26 @@ for (const f of readdirSync(join(root, 'assets/art')).filter((f) => f.endsWith('
   console.log('art', name);
 }
 
+// Le paysage du pied de page en panorama : l'image d'origine encadrée de deux
+// copies en miroir, pour couvrir n'importe quelle largeur d'écran sans jamais
+// rogner le haut des arbres (object-fit: cover ne coupe alors que les côtés).
+{
+  const src = join(root, 'assets/art/footer-collines.png');
+  const meta = await sharp(src).metadata();
+  const flipped = await sharp(src).flop().png().toBuffer();
+  const pano = sharp({ create: { width: meta.width * 3, height: meta.height, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } } }).composite([
+    { input: flipped, left: 0, top: 0 },
+    { input: src, left: meta.width, top: 0 },
+    { input: flipped, left: meta.width * 2, top: 0 },
+  ]);
+  const buf = await pano.png().toBuffer();
+  for (const w of [1600, 3200, 4800]) {
+    await sharp(buf).resize({ width: w, withoutEnlargement: true }).webp({ quality: 82 }).toFile(join(outArt, `footer-collines-pano-${w}.webp`));
+  }
+  await sharp(buf).resize({ width: 3200, withoutEnlargement: true }).png({ compressionLevel: 9, palette: true, quality: 84 }).toFile(join(outArt, 'footer-collines-pano.png'));
+  console.log('art footer-collines-pano');
+}
+
 // Photos de ferme ajoutées : mêmes déclinaisons que les autres photos du site.
 for (const name of ['ferme-coucher', 'ferme-prairie', 'ferme-cour', 'poules-drole']) {
   const src = join(root, 'assets/photos', `${name}.jpg`);

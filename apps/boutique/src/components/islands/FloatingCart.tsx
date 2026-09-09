@@ -34,6 +34,8 @@ export default function FloatingCart({ lang }: Props) {
   }, [added]);
 
   // Même seuil que le bouton « retour en haut » : quand il est là, on monte.
+  // Et quand le rond du pied de page entre à l'écran, on monte aussi, pour
+  // ne pas le recouvrir. Mesure directe à chaque défilement : simple et sûre.
   useEffect(() => {
     const hasBackToTop = () => Boolean(document.querySelector('[data-back-to-top]'));
     const footerTopVisible = () => {
@@ -42,13 +44,15 @@ export default function FloatingCart({ lang }: Props) {
       const r = el.getBoundingClientRect();
       return r.top < window.innerHeight && r.bottom > 0;
     };
-    const onScroll = () => setLifted((hasBackToTop() && window.scrollY > window.innerHeight * 1.5) || footerTopVisible());
-    onScroll();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    document.addEventListener('astro:page-load', onScroll);
+    const update = () => setLifted((hasBackToTop() && window.scrollY > window.innerHeight * 1.5) || footerTopVisible());
+    update();
+    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    document.addEventListener('astro:page-load', update);
     return () => {
-      window.removeEventListener('scroll', onScroll);
-      document.removeEventListener('astro:page-load', onScroll);
+      window.removeEventListener('scroll', update);
+      window.removeEventListener('resize', update);
+      document.removeEventListener('astro:page-load', update);
     };
   }, []);
 
