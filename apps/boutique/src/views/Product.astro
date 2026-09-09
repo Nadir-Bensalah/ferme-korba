@@ -96,7 +96,7 @@ const parent = crumbs[crumbs.length - 2] ?? crumbs[0]!;
 ---
 
 <Base lang={lang} title={L(p.name, lang)} description={L(p.short, lang)} image={image} jsonLd={[productLd, breadcrumbLd]}>
-  <div class="relative overflow-clip bg-paper pb-20">
+  <div class="relative bg-paper pb-20">
     <Deco type="plume" class="deco deco-lg end-2 top-4 hidden w-16 rotate-12 text-prairie/20 lg:block lg:w-20" />
     <Deco type="grain" class="deco deco-lg start-1 bottom-2 hidden w-16 -rotate-6 text-ink/10 lg:block lg:w-20" />
     <div class="container-x pt-5 sm:pt-8">
@@ -128,8 +128,11 @@ const parent = crumbs[crumbs.length - 2] ?? crumbs[0]!;
       </ol>
     </nav>
 
-    <article class="mt-6 grid gap-8 lg:grid-cols-2 lg:gap-12">
-      <div>
+    <article class="mt-6 grid items-start gap-8 lg:grid-cols-2 lg:gap-12">
+      <!-- La photo reste en place pendant que la colonne de droite défile, et
+           repart quand celle-ci est finie. Le collage n'opère qu'à partir de
+           1024 px : en dessous, les deux colonnes sont l'une sous l'autre. -->
+      <div class="product-sticky lg:sticky lg:self-start">
         <ProductGallery images={p.images} alt={L(p.name, lang)} lang={lang} grayscale={p.stock === 'rupture'} transitionName={`product-${p.id}`}>
           <div slot="overlay" class="pointer-events-none absolute start-3 top-3 z-[2] flex flex-col items-start gap-1.5">
             <span id="live-badges" class="flex flex-col items-start gap-1.5"><Badges badges={p.badges} lang={lang} /></span>
@@ -298,6 +301,18 @@ const parent = crumbs[crumbs.length - 2] ?? crumbs[0]!;
     }
     .crumb-back:hover {
       transform: none;
+    }
+  }
+</style>
+
+<style>
+  /* Le haut de la photo se cale sous l'en-tête collant, avec un peu d'air. */
+  .product-sticky {
+    top: calc(var(--header-h) + 1rem);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .product-sticky {
+      position: static;
     }
   }
 </style>
