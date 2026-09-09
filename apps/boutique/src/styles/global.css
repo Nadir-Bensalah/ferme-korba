@@ -321,8 +321,16 @@
   .safe-bottom {
     padding-bottom: max(env(safe-area-inset-bottom), 0px);
   }
+  /* Place pour la barre du bas, qui n'existe que sous 1024 px. Le point de
+     rupture est écrit ici même : une classe `lg:pb-0` posée à côté perdait
+     contre cette règle, déclarée plus tard dans la même couche. */
   .pb-bottom-bar {
     padding-bottom: calc(var(--bottom-bar-h) + env(safe-area-inset-bottom));
+  }
+  @media (width >= 64rem) {
+    .pb-bottom-bar {
+      padding-bottom: 0;
+    }
   }
   .mask-fade-x {
     mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
