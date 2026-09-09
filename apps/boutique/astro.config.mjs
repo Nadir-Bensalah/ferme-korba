@@ -16,7 +16,11 @@ export default defineConfig({
   base: base || undefined,
   trailingSlash: 'ignore',
   output: 'static',
-  build: { format: 'directory', inlineStylesheets: 'auto' },
+  // Les styles sont écrits dans chaque page plutôt que dans un fichier à
+  // empreinte : une page restée en cache pendant une publication (GitHub Pages
+  // garde le HTML dix minutes) pointait vers une feuille de style disparue et
+  // s'affichait sans aucun style.
+  build: { format: 'directory', inlineStylesheets: 'always' },
   i18n: {
     defaultLocale: 'fr',
     locales: ['fr', 'ar'],
