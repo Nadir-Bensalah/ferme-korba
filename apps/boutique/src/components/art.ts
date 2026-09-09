@@ -15,5 +15,6 @@ export type ArtName =
   | 'footer-droite'
   | 'footer-collines'
   | 'footer-olivier'
+  | 'footer-olivier-brin'
   | 'footer-oeufs-heureux'
   | 'footer-gout-local';
