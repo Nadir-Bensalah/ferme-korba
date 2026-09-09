@@ -17,10 +17,10 @@ mkdirSync(outFarm, { recursive: true });
 for (const f of readdirSync(join(root, 'assets/art')).filter((f) => f.endsWith('.png'))) {
   const name = f.replace(/\.png$/, '');
   const src = join(root, 'assets/art', f);
-  for (const w of [400, 800]) {
+  for (const w of [400, 800, 1600]) {
     await sharp(src).resize({ width: w, withoutEnlargement: true }).webp({ quality: 88 }).toFile(join(outArt, `${name}-${w}.webp`));
   }
-  await sharp(src).resize({ width: 800, withoutEnlargement: true }).png({ compressionLevel: 9 }).toFile(join(outArt, `${name}.png`));
+  await sharp(src).resize({ width: 1600, withoutEnlargement: true }).png({ compressionLevel: 9, palette: true, quality: 84 }).toFile(join(outArt, `${name}.png`));
   console.log('art', name);
 }
 

@@ -36,7 +36,13 @@ export default function FloatingCart({ lang }: Props) {
   // Même seuil que le bouton « retour en haut » : quand il est là, on monte.
   useEffect(() => {
     const hasBackToTop = () => Boolean(document.querySelector('[data-back-to-top]'));
-    const onScroll = () => setLifted(hasBackToTop() && window.scrollY > window.innerHeight * 1.5);
+    const footerTopVisible = () => {
+      const el = document.querySelector('[data-footer-top]');
+      if (!el) return false;
+      const r = el.getBoundingClientRect();
+      return r.top < window.innerHeight && r.bottom > 0;
+    };
+    const onScroll = () => setLifted((hasBackToTop() && window.scrollY > window.innerHeight * 1.5) || footerTopVisible());
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
     document.addEventListener('astro:page-load', onScroll);

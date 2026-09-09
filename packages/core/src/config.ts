@@ -27,6 +27,7 @@ export const brand = {
     facebook: 'https://facebook.com/',
     instagram: 'https://instagram.com/',
     tiktok: '',
+    youtube: '',
   },
   /** Année de création, affichée dans « la ferme ». */
   since: 1998,

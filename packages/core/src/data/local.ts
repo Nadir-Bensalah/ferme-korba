@@ -40,6 +40,7 @@ interface DemoState {
   session: string | null;
   adminSession: boolean;
   contacts: { id: string; name: string; phone: string; message: string; created_at: string; read: boolean }[];
+  newsletter: { email: string; lang: 'fr' | 'ar'; created_at: string }[];
 }
 
 const listeners = new Set<(o: Order) => void>();
@@ -71,6 +72,7 @@ function fresh(): DemoState {
     session: null,
     adminSession: false,
     contacts: [],
+    newsletter: [],
   };
 }
 
@@ -208,6 +210,13 @@ export function createLocalPublicSource(): PublicDataSource {
       await delay(300);
       const state = load();
       state.contacts.unshift({ id: uuid(), ...input, created_at: new Date().toISOString(), read: false });
+      save(state);
+    },
+    async subscribeNewsletter(email, lang) {
+      await delay(300);
+      const state = load();
+      const clean = email.trim().toLowerCase();
+      if (!state.newsletter.some((n) => n.email === clean)) state.newsletter.push({ email: clean, lang, created_at: new Date().toISOString() });
       save(state);
     },
   };

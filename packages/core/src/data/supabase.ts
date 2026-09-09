@@ -684,6 +684,10 @@ export function createSupabasePublicSource(env: Required<DataEnv>): PublicDataSo
       });
       if (error) throw toOrderError(error);
     },
+    async subscribeNewsletter(email, lang) {
+      const { error } = await db.rpc('subscribe_newsletter', { p_email: email.trim().toLowerCase(), p_lang: lang });
+      if (error) fail(error);
+    },
   };
 }
 

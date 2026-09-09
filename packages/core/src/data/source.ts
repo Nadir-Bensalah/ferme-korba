@@ -39,6 +39,8 @@ export interface PublicDataSource {
   getOrderByToken(number: string, token: string): Promise<OrderSummaryForCustomer | null>;
   /** Message du formulaire de contact. */
   sendContact(input: { name: string; phone: string; message: string }): Promise<void>;
+  /** Inscription à la lettre d'information. Doublon = succès silencieux. */
+  subscribeNewsletter(email: string, lang: 'fr' | 'ar'): Promise<void>;
 }
 
 export interface CustomerAuth {

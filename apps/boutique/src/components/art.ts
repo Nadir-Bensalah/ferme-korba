@@ -10,4 +10,10 @@ export type ArtName =
   | 'paiement-ar'
   | 'panier-oeufs'
   | 'medaille-premium'
-  | 'badges-confiance';
+  | 'badges-confiance'
+  | 'footer-gauche'
+  | 'footer-droite'
+  | 'footer-collines'
+  | 'footer-olivier'
+  | 'footer-oeufs-heureux'
+  | 'footer-gout-local';
