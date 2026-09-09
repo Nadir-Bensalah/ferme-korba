@@ -450,10 +450,10 @@ function Suggestions({ lang, d, picks }: { lang: Lang; d: Dictionary; picks: Pro
                 <ProductImage src={p.images[0] ?? ''} className="h-full w-full" />
               </a>
               <div className="min-w-0 flex-1">
-                <a href={href(lang, routes.product(p.slug))} className="line-clamp-2 text-sm font-bold leading-tight">
+                <a href={href(lang, routes.product(p.slug))} className="line-clamp-1 text-sm font-bold leading-tight">
                   {L(p.name, lang)}
                 </a>
-                <p className="mt-1 font-display text-base font-extrabold tabular">
+                <p className="mt-1 whitespace-nowrap font-display text-base font-extrabold tabular">
                   {price.amount} <span className="text-xs font-semibold text-ink-3">{price.unit}</span>
                 </p>
               </div>
