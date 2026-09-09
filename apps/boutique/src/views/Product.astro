@@ -1,0 +1,182 @@
+---
+import type { Lang, Product } from '@ferme/core';
+import { brand, displayPrice, formatPrice, seedCategories, seedProducts } from '@ferme/core';
+import Base from '@/layouts/Base.astro';
+import Picture from '@/components/Picture.astro';
+import Badges from '@/components/Badges.astro';
+import ProductCard from '@/components/ProductCard.astro';
+import SectionHead from '@/components/SectionHead.astro';
+import ProductBuy from '@/components/islands/ProductBuy';
+import { t, L, locale } from '@/i18n';
+import { href, routes, asset } from '@/lib/paths';
+
+/**
+ * Fiche produit. Le prix, le stock et les badges sont posés à la construction
+ * puis corrigés à l'exécution par ProductBuy (éléments #live-*).
+ */
+interface Props {
+  lang: Lang;
+  product: Product;
+}
+const { lang, product: p } = Astro.props;
+const d = t(lang);
+const cat = seedCategories.find((c) => c.id === p.category_id) ?? null;
+const price = displayPrice(p.pricing, lang);
+const estimated = p.pricing.mode === 'per_kg_estimated';
+const compare = p.compare_at ? formatPrice(p.compare_at, lang) : null;
+const image = p.images[0] ?? '/images/products/poulet-entier.jpg';
+const nf = new Intl.NumberFormat(locale(lang), { maximumFractionDigits: 2 });
+const modeText =
+  p.pricing.mode === 'per_piece'
+    ? d.shop.modePiece
+    : p.pricing.mode === 'per_kg'
+      ? d.shop.modeKg(`${nf.format(p.pricing.step_kg)} ${d.shop.kgLabel}`)
+      : d.shop.modeEstimated(nf.format(p.pricing.est_weight_kg));
+const rangeText =
+  p.pricing.mode === 'per_kg_estimated' && p.pricing.min_weight_kg && p.pricing.max_weight_kg
+    ? d.shop.weightRange(nf.format(p.pricing.min_weight_kg), nf.format(p.pricing.max_weight_kg))
+    : null;
+const related = seedProducts
+  .filter((x) => x.category_id === p.category_id && x.id !== p.id)
+  .sort((a, b) => a.sort - b.sort)
+  .slice(0, 4);
+
+const site = Astro.site ? Astro.site.toString().replace(/\/$/, '') : '';
+const url = `${site}${href(lang, routes.product(p.slug))}`;
+const unitPrice = p.pricing.mode === 'per_piece' ? p.pricing.price : p.pricing.price_per_kg;
+const availability = p.stock === 'rupture' ? 'https://schema.org/OutOfStock' : p.stock === 'bientot' ? 'https://schema.org/PreOrder' : 'https://schema.org/InStock';
+const productLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Product',
+  name: L(p.name, lang),
+  description: L(p.short, lang),
+  image: [`${site}${asset(image)}`],
+  sku: p.id,
+  category: cat ? L(cat.name, lang) : undefined,
+  brand: { '@type': 'Brand', name: brand.name[lang] },
+  offers: {
+    '@type': 'Offer',
+    url,
+    priceCurrency: 'TND',
+    price: unitPrice.toFixed(3),
+    availability,
+    itemCondition: 'https://schema.org/NewCondition',
+    ...(p.pricing.mode !== 'per_piece' && {
+      priceSpecification: { '@type': 'UnitPriceSpecification', price: unitPrice.toFixed(3), priceCurrency: 'TND', unitCode: 'KGM' },
+    }),
+  },
+};
+const crumbs = [
+  { name: d.nav.home, url: `${site}${href(lang)}` },
+  { name: d.shop.breadcrumbShop, url: `${site}${href(lang, routes.shop)}` },
+  ...(cat ? [{ name: L(cat.name, lang), url: `${site}${href(lang, routes.category(cat.slug))}` }] : []),
+  { name: L(p.name, lang), url },
+];
+const breadcrumbLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: crumbs.map((c, i) => ({ '@type': 'ListItem', position: i + 1, name: c.name, item: c.url })),
+};
+const sep = 'text-ink-3 select-none';
+---
+
+<Base lang={lang} title={L(p.name, lang)} description={L(p.short, lang)} image={image} jsonLd={[productLd, breadcrumbLd]}>
+  <div class="container-x pt-5 sm:pt-8">
+    <nav aria-label={d.shop.breadcrumb} class="text-sm text-ink-3">
+      <ol class="flex flex-wrap items-center gap-1.5">
+        {
+          crumbs.map((c, i) => (
+            <li class="flex items-center gap-1.5">
+              {i > 0 && (
+                <span class={sep} aria-hidden="true">
+                  /
+                </span>
+              )}
+              {i === crumbs.length - 1 ? (
+                <span aria-current="page" class="font-semibold text-ink">
+                  {c.name}
+                </span>
+              ) : (
+                <a href={c.url.slice(site.length)} class="hover:text-ink">
+                  {c.name}
+                </a>
+              )}
+            </li>
+          ))
+        }
+      </ol>
+    </nav>
+
+    <article class="mt-6 grid gap-8 lg:grid-cols-2 lg:gap-12">
+      <div class="relative aspect-square overflow-hidden rounded-xl bg-cream">
+        <Picture
+          src={image}
+          alt={L(p.name, lang)}
+          sizes="(min-width: 1024px) 50vw, 100vw"
+          imgClass={`h-full w-full object-cover ${p.stock === 'rupture' ? 'grayscale' : ''}`}
+          loading="eager"
+          fetchpriority="high"
+          width={1200}
+          height={1200}
+          transitionName={`product-${p.id}`}
+        />
+        <div class="absolute start-3 top-3 flex flex-col items-start gap-1.5">
+          <span id="live-badges" class="flex flex-col items-start gap-1.5"><Badges badges={p.badges} lang={lang} /></span>
+          <span id="live-stock" class={p.stock === 'rupture' ? 'chip bg-ink text-paper' : 'chip bg-paper/90 text-ink-2'} hidden={p.stock === 'en_stock'}>
+            {p.stock === 'rupture' ? d.common.outOfStock : d.common.soon}
+          </span>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-5">
+        <div class="flex flex-col gap-2">
+          <h1 class="text-3xl font-extrabold leading-tight sm:text-4xl">{L(p.name, lang)}</h1>
+          <p class="text-lg text-ink-2">{L(p.short, lang)}</p>
+        </div>
+        <div class="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+          {estimated && <span class="text-xs font-semibold uppercase tracking-wide text-ink-3">{d.common.from}</span>}
+          <span id="live-price-amount" class="font-display text-3xl font-extrabold tabular">{price.amount}</span>
+          <span id="live-price-unit" class="font-semibold text-ink-3">{price.unit}</span>
+          {compare && <span class="text-sm text-ink-3 line-through tabular">{compare}</span>}
+        </div>
+        <p class="rounded-md bg-cream px-4 py-3 text-sm text-ink-2">
+          {modeText}
+          {rangeText && <span class="block text-ink-3">{rangeText}</span>}
+        </p>
+
+        <ProductBuy client:load product={{ id: p.id, slug: p.slug, name: p.name, images: p.images, pricing: p.pricing, stock: p.stock, badges: p.badges }} lang={lang} />
+
+        <p class="flex items-center gap-2 text-sm font-semibold text-prairie-deep">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="rtl:-scale-x-100"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z" /><circle cx="7" cy="18" r="2" /><circle cx="17" cy="18" r="2" /></svg>
+          {d.shop.deliveredTomorrow}
+        </p>
+
+        <div class="prose-farm text-base">
+          <p>{L(p.description, lang)}</p>
+        </div>
+
+        {
+          p.tips && (
+            <div class="rounded-lg bg-yolk-soft p-4">
+              <h2 class="text-base font-extrabold">{d.shop.tips}</h2>
+              <p class="mt-1 text-sm text-ink-2">{L(p.tips, lang)}</p>
+            </div>
+          )
+        }
+      </div>
+    </article>
+  </div>
+
+  {
+    related.length > 0 && cat && (
+      <section class="container-x mt-16" aria-label={d.shop.inCategory}>
+        <SectionHead title={d.shop.inCategory} link={{ href: href(lang, routes.category(cat.slug)), label: d.common.seeAll }} />
+        <div class="mt-8 grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3 xl:grid-cols-4">
+          {related.map((r, i) => (
+            <ProductCard product={r} lang={lang} index={i} />
+          ))}
+        </div>
+      </section>
+    )
+  }
+</Base>

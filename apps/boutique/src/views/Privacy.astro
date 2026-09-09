@@ -1,0 +1,16 @@
+---
+import type { Lang } from '@ferme/core';
+import LegalPage from '@/components/LegalPage.astro';
+import { t } from '@/i18n';
+import { legalVars } from '@/views/legalVars';
+
+/** Politique de confidentialité : données, finalité, durée, droits (loi 2004-63, INPDP), stockage local. */
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const d = t(lang);
+const sections = d.legal.privacySections(legalVars(lang));
+---
+
+<LegalPage lang={lang} title={d.legal.privacyTitle} intro={d.legal.privacyIntro} sections={sections} />

@@ -1,0 +1,22 @@
+---
+import type { Lang } from '@ferme/core';
+import Base from '@/layouts/Base.astro';
+import TrackingPage from '@/components/islands/TrackingPage';
+import { t } from '@/i18n';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const d = t(lang);
+---
+
+<Base lang={lang} title={d.tracking.title} description={d.tracking.text} noindex>
+  <section class="container-x py-8 sm:py-12">
+    <div class="mx-auto mb-6 max-w-2xl">
+      <h1 class="text-3xl font-extrabold sm:text-4xl">{d.tracking.title}</h1>
+      <p class="mt-2 text-lg text-ink-2">{d.tracking.text}</p>
+    </div>
+    <TrackingPage client:load lang={lang} />
+  </section>
+</Base>

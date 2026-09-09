@@ -153,7 +153,9 @@ export function isDeliveryDateAllowed(
   if (Number.isNaN(date.getTime())) return false;
   const [ch, cm] = opts.cutoffTime.split(':').map(Number) as [number, number];
   const pastCutoff = now.getHours() > ch || (now.getHours() === ch && now.getMinutes() >= cm);
-  const firstOffset = Math.max(opts.leadDays, pastCutoff ? 1 : 0);
+  // Le délai de la zone part du premier jour ouvré possible : passé l'heure
+  // limite, la préparation ne peut plus commencer aujourd'hui, tout glisse d'un jour.
+  const firstOffset = opts.leadDays + (pastCutoff ? 1 : 0);
   const first = new Date(today);
   first.setDate(first.getDate() + firstOffset);
   const last = new Date(today);

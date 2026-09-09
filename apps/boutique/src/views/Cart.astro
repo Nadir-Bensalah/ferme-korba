@@ -1,0 +1,23 @@
+---
+import type { Lang } from '@ferme/core';
+import Base from '@/layouts/Base.astro';
+import DemoBanner from '@/components/DemoBanner.astro';
+import CartPage from '@/components/islands/CartPage';
+import { t } from '@/i18n';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const d = t(lang);
+---
+
+<Base lang={lang} title={d.cart.title} noindex>
+  <section class="container-x py-8 sm:py-12">
+    <DemoBanner lang={lang} class="mb-5" />
+    <h1 class="text-3xl font-extrabold sm:text-4xl">{d.cart.title}</h1>
+    <div class="mt-6">
+      <CartPage client:load lang={lang} />
+    </div>
+  </section>
+</Base>

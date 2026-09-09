@@ -1,0 +1,12 @@
+---
+import type { Product } from '@ferme/core';
+import { seedProducts } from '@ferme/core';
+import ProductView from '@/views/Product.astro';
+
+export function getStaticPaths() {
+  return seedProducts.map((p) => ({ params: { slug: p.slug }, props: { product: p } }));
+}
+const { product } = Astro.props as { product: Product };
+---
+
+<ProductView lang="ar" product={product} />

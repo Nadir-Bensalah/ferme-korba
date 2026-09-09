@@ -63,8 +63,29 @@ export const fr = {
     error: 'Une erreur est survenue. Réessayez dans un instant.',
     retry: 'Réessayer',
     demo: 'Site de démonstration : les commandes ne sont pas réelles.',
+    increase: 'Augmenter',
+    decrease: 'Diminuer',
   },
   home: {
+    heroAlt: 'Poules rousses qui picorent dans l’herbe, en plein soleil, à la ferme de Korba',
+    heroCard: { eyebrow: 'Livraison', title: 'Commandé avant 18 h', text: 'Livré demain, payé à la porte' },
+    categoriesEyebrow: 'La boutique',
+    featuredEyebrow: 'Nos produits',
+    howEyebrow: 'Comment ça marche',
+    howText: 'Quatre étapes, aucune carte bancaire, et un coup de fil pour tout confirmer.',
+    stepLabel: (n: number) => `Étape ${n}`,
+    farmEyebrow: 'La ferme',
+    farmAlt: 'Le fermier nourrit ses volailles en plein air',
+    recipesEyebrow: 'Recettes',
+    reviewsEyebrow: 'Avis',
+    reviewsText: 'Trois mots de clients, recueillis à la livraison.',
+    reviewStars: '5 étoiles sur 5',
+    zonesEyebrow: 'Livraison',
+    zoneFee: 'Livraison',
+    zoneFreeFrom: (amount: string) => `Offerte dès ${amount}`,
+    zoneSameDay: 'Le jour même',
+    zoneNextDay: 'Le lendemain',
+    ctaButton: 'Commander maintenant',
     heroEyebrow: 'Élevage familial à Korba depuis 1998',
     heroTitle: 'Le poulet fermier, comme avant.',
     heroText: 'Élevé en plein air, abattu le matin même, livré chez vous l’après-midi. Vous payez à la porte.',
@@ -124,6 +145,11 @@ export const fr = {
     deliveredTomorrow: 'Commandé avant 18 h, livré demain',
     freshNote: 'Préparé le matin de la livraison',
     kgLabel: 'kg',
+    modePiece: 'Vendu à la pièce. Le prix est fixe.',
+    modeKg: (step: string) => `Vendu au poids, par pas de ${step}. Le prix est au kilo.`,
+    modeEstimated: (kg: string) => `Vendu à la pièce, pesé le matin de la livraison : environ ${kg} kg la pièce, prix ajusté à la pesée.`,
+    weightRange: (min: string, max: string) => `Entre ${min} et ${max} kg la pièce.`,
+    breadcrumb: 'Fil d’Ariane',
   },
   cart: {
     title: 'Votre panier',
@@ -143,6 +169,10 @@ export const fr = {
     estimateNote: 'Les produits pesés sont indiqués « environ ». Le montant final est ajusté à la pesée.',
     undo: 'Annuler',
     removed: 'Article retiré',
+    summary: 'Récapitulatif',
+    zone: (name: string) => `Zone : ${name}`,
+    estimatedTotal: 'Total estimé',
+    progressLabel: 'Progression vers la livraison offerte',
   },
   checkout: {
     title: 'Finaliser la commande',
@@ -182,6 +212,20 @@ export const fr = {
     loggedAs: (name: string) => `Connecté en tant que ${name}`,
     useSaved: 'Utiliser mon adresse enregistrée',
     closed: 'La boutique est fermée pour le moment. Revenez bientôt.',
+    backToCart: 'Retour au panier',
+    emptyCart: 'Votre panier est vide.',
+    progress: 'Étapes de la commande',
+    leadSame: 'Livré le jour même',
+    leadNext: 'Livré le lendemain',
+    leadDays: (n: number) => `Livré sous ${n} jours`,
+    freeFrom: (amount: string) => `Offerte dès ${amount}`,
+    noDates: 'Aucun jour disponible pour cette zone en ce moment.',
+    noSlots: 'Aucun créneau ce jour-là. Choisissez un autre jour.',
+    chooseZoneFirst: 'Choisissez d’abord une zone de livraison.',
+    between: (from: string, to: string) => `de ${from} à ${to}`,
+    charsLeft: (n: number, max: number) => `${n} / ${max}`,
+    itemsTitle: 'Vos produits',
+    editCart: 'Modifier le panier',
     errors: {
       'name.short': 'Indiquez votre nom complet.',
       'name.long': 'Le nom est trop long.',
@@ -227,6 +271,12 @@ export const fr = {
     copied: 'Lien copié',
     share: 'Partager',
     whatsappUs: 'Nous écrire sur WhatsApp',
+    notFound: 'Commande introuvable. Vérifiez le lien.',
+    accountCreated: 'Compte créé. Vos infos sont enregistrées.',
+    goToAccount: 'Voir mon compte',
+    whatsappText: (n: string) => `Bonjour, je viens de passer la commande ${n} sur le site.`,
+    yourOrder: 'Votre commande',
+    linkLabel: 'Lien de suivi',
   },
   tracking: {
     title: 'Suivre ma commande',
@@ -260,6 +310,11 @@ export const fr = {
     },
     finalTotal: 'Montant final après pesée',
     reorder: 'Commander à nouveau',
+    orderedOn: (date: string) => `Commandée le ${date}`,
+    items: 'Produits',
+    searching: 'Recherche…',
+    estimatedTotal: 'Total estimé',
+    current: 'Étape en cours',
   },
   account: {
     title: 'Mon compte',
@@ -286,12 +341,31 @@ export const fr = {
       'password.short': 'Le mot de passe doit faire 8 caractères.',
       'password.long': 'Le mot de passe est trop long.',
       'password.required': 'Entrez votre mot de passe.',
+      not_logged_in: 'Vous n’êtes plus connecté.',
     },
     welcome: (name: string) => `Bonjour ${name}`,
     reorder: 'Commander à nouveau',
     reordered: 'Les produits sont dans votre panier.',
+    noAddress: 'Aucune adresse enregistrée pour le moment.',
+    passwordChanged: 'Mot de passe modifié.',
+    seeOrder: 'Voir le suivi',
+    registerText: 'Un compte pour retrouver vos commandes et commander à nouveau en un clic.',
   },
   contact: {
+    eyebrow: 'On vous répond',
+    address: 'Adresse',
+    directions: 'Itinéraire',
+    callHelp: 'Du lundi au samedi, de 8 h à 19 h',
+    whatsappHelp: 'Réponse dans la journée',
+    visitHelp: 'Ouvrir dans Google Maps',
+    whatsappMessage: 'Bonjour, je vous écris depuis le site de la ferme.',
+    formText: 'Une question sur un produit, une grosse commande pour une fête, un restaurant à fournir : écrivez-nous.',
+    namePh: 'Ex. : Salma Ben Ali',
+    phonePh: 'Ex. : 51 788 518',
+    phoneHelp: 'On vous rappelle sur ce numéro.',
+    sending: 'Envoi…',
+    sentText: 'Merci. On vous rappelle dans la journée, du lundi au samedi.',
+    again: 'Envoyer un autre message',
     title: 'Contact',
     text: 'Une question, une commande spéciale pour une fête ? Appelez-nous ou écrivez-nous.',
     call: 'Appeler la ferme',
@@ -312,6 +386,19 @@ export const fr = {
     map: 'Voir sur la carte',
   },
   farm: {
+    sectionAlts: ['Poules dans l’herbe, au soleil', 'Poule rousse en plein air', 'Le fermier nourrit ses volailles', 'Merguez et saucisses sur la grille'],
+    numbersTitle: 'La ferme en chiffres',
+    timelineEyebrow: 'Du poussin à votre table',
+    timelineTitle: 'Une année à la ferme',
+    timelineText: 'Ce qui se passe entre la couvée et votre porte.',
+    timeline: [
+      { when: 'Jour 1', title: 'La couvée', text: 'Les poussins naissent à la ferme et passent leurs premières semaines au chaud, sous la lampe.' },
+      { when: 'Jusqu’au jour 90', title: 'Le plein air', text: 'Dès que les plumes le permettent, tout le monde sort. Herbe, grain de la région, lumière du jour, abri la nuit.' },
+      { when: 'Le matin de la livraison', title: 'L’abattage', text: 'Tôt, à la ferme, sous contrôle vétérinaire. Découpe et pesée dans la foulée, rien n’attend au frigo.' },
+      { when: 'L’après-midi', title: 'La livraison', text: 'Le véhicule frigorifique part vers midi. Vous vérifiez, vous pesez si vous voulez, vous payez.' },
+    ],
+    ctaTitle: 'Venez goûter ce que 90 jours changent.',
+    ctaText: 'Un poulet, une boîte d’œufs, un kilo de merguez : commencez petit.',
     title: 'La ferme',
     eyebrow: 'Korba, Cap Bon',
     lead: 'Une ferme familiale entre les orangers et la mer, où les poules vivent dehors.',
@@ -342,6 +429,11 @@ export const fr = {
     cta: 'Goûter la différence',
   },
   quality: {
+    eyebrow: 'Nos engagements',
+    faqText: 'Ce qu’on nous demande le plus souvent, au téléphone et à la porte.',
+    ctaTitle: 'Le reste se juge dans l’assiette.',
+    ctaText: 'Commandez une fois. On vous rappelle pour confirmer, vous payez à la porte.',
+    cta: 'Voir la boutique',
     title: 'Notre qualité',
     lead: 'Ce qu’on s’engage à faire, et ce qu’on refuse.',
     items: [
@@ -361,6 +453,16 @@ export const fr = {
     ],
   },
   recipes: {
+    eyebrow: 'En cuisine',
+    duration: 'Durée',
+    servingsLabel: 'Personnes',
+    difficultyLabel: 'Difficulté',
+    forServings: (n: number) => `Pour ${n} personnes`,
+    read: 'Voir la recette',
+    checkHint: 'Cochez ce que vous avez déjà. La liste s’en souvient sur cet appareil.',
+    uncheck: 'Tout décocher',
+    step: (n: number) => `Étape ${n}`,
+    addAllHelp: 'Les quantités par défaut sont ajoutées. Vous les ajustez ensuite dans le panier.',
     title: 'Recettes',
     text: 'Nos recettes de famille, faites avec les produits de la boutique.',
     ingredients: 'Ingrédients',
@@ -384,6 +486,210 @@ export const fr = {
     cod: 'Paiement à la livraison, en espèces. Aucun paiement en ligne.',
   },
   legal: {
+    updated: 'Dernière mise à jour : septembre 2026',
+    legalIntro: 'Qui édite ce site, qui l’héberge, et ce que vous pouvez en faire.',
+    termsIntro: 'Les règles de la boutique, écrites simplement. Elles s’appliquent à toute commande passée sur le site.',
+    privacyIntro: 'Ce qu’on garde de vous, pourquoi, combien de temps, et comment le faire retirer.',
+    creditsTitle: 'Crédits photos',
+    creditsText:
+      'Les photos du site sont sous licence libre. Les auteurs sont cités ci-dessous, comme leurs licences le demandent. Les photos sous licence CC BY-SA ont été recadrées et restent diffusées sous la même licence.',
+    creditsCols: { file: 'Photo', author: 'Auteur', license: 'Licence' },
+    creditsModified: 'recadrée',
+    legalSections: (v: LegalVars) => [
+      {
+        title: 'Éditeur du site',
+        body: [
+          `${v.name} est un élevage familial de volailles installé à Korba, dans le gouvernorat de Nabeul, depuis ${v.since}.`,
+          `Exploitant : ${v.legal}.`,
+          `Adresse : ${v.address}.`,
+          `Téléphone : ${v.phone}. E-mail : ${v.email}.`,
+          'Le matricule fiscal et le numéro d’immatriculation de l’exploitation figurent sur chaque bon de livraison. Ils sont communiqués sur simple demande.',
+        ],
+      },
+      {
+        title: 'Hébergement',
+        body: [
+          `Le site est hébergé par ${v.host}.`,
+          'Les données des commandes et des comptes clients sont stockées sur les serveurs de Supabase, Inc. Le détail figure dans la politique de confidentialité.',
+          'Site conçu et réalisé par Capmedia Digital.',
+        ],
+      },
+      {
+        title: 'Propriété intellectuelle',
+        body: [
+          `Le nom, le logo, les textes, les recettes et la mise en page de ce site appartiennent à ${v.name}. Toute reproduction, même partielle, demande notre accord écrit.`,
+          'Les photos proviennent de banques d’images libres. Leurs auteurs et leurs licences sont listés dans la section « Crédits photos » ci-dessous.',
+          'Vous pouvez partager un lien vers n’importe quelle page du site sans nous demander.',
+        ],
+      },
+      {
+        title: 'Responsabilité',
+        body: [
+          'Les informations du site sont données de bonne foi et mises à jour régulièrement. Les poids affichés sont des estimations : le poids réel est pesé le matin de la livraison.',
+          'Les prix et la disponibilité des produits dépendent de l’élevage. Ils peuvent changer sans préavis, mais le prix qui s’applique est toujours celui affiché au moment de votre commande.',
+          'Le site peut contenir des liens vers des sites tiers (cartes, réseaux sociaux). Nous ne sommes pas responsables de leur contenu.',
+        ],
+      },
+      {
+        title: 'Nous joindre',
+        body: [`Pour toute question sur le site ou sur son contenu : ${v.phone}, ou ${v.email}.`],
+      },
+    ],
+    termsSections: (v: LegalVars) => [
+      {
+        title: '1. Objet',
+        body: [
+          `Ces conditions s’appliquent à toute commande passée sur le site de ${v.name} par un particulier. En confirmant une commande, vous les acceptez. La version qui compte est celle en ligne le jour de la commande.`,
+        ],
+      },
+      {
+        title: '2. Les produits',
+        body: [
+          'Nous vendons des volailles fermières entières, des découpes, de la dinde, des œufs, de la charcuterie de volaille et des produits marinés. Tout est frais et préparé le matin de la livraison.',
+          'Les photos servent à présenter les produits. Un poulet fermier n’est jamais tout à fait identique à un autre.',
+          'La disponibilité dépend de l’élevage. Si un produit manque le jour de la préparation, on vous appelle pour le remplacer ou le retirer.',
+        ],
+      },
+      {
+        title: '3. Les prix et la pesée',
+        body: [
+          'Les prix sont en dinars tunisiens, toutes taxes comprises. Ils s’affichent à la pièce, au kilo, ou au kilo avec un poids estimé.',
+          'Pour les produits vendus au poids estimé (un poulet entier, par exemple), le montant affiché à la commande est une estimation. Le produit est pesé le matin de la livraison et le montant final est ajusté au poids réel, en plus ou en moins. Il est écrit sur le bon de livraison, avec le poids.',
+          'Le prix au kilo qui s’applique est celui affiché au moment de la commande, même s’il change ensuite.',
+          'Les frais de livraison sont affichés avant la confirmation. Ils dépendent de la zone et sont offerts à partir d’un certain montant, indiqué dans le panier.',
+        ],
+      },
+      {
+        title: '4. La commande',
+        body: [
+          'Vous remplissez votre panier, vous indiquez votre nom, votre téléphone, votre adresse et votre zone, vous choisissez un jour et un créneau, puis vous confirmez. Aucun compte ni carte bancaire n’est nécessaire.',
+          `Le minimum de commande est de ${v.minOrder}, hors frais de livraison.`,
+          'Après l’envoi, nous vous appelons pour confirmer la commande et le créneau. La commande n’est ferme qu’après cet appel. Si nous n’arrivons pas à vous joindre, elle n’est pas préparée.',
+          'Nous pouvons refuser une commande pour un motif légitime : adresse hors zone, numéro injoignable, quantité que l’élevage ne peut pas fournir.',
+        ],
+      },
+      {
+        title: '5. Zones et délais',
+        body: [
+          `Nous livrons dans les zones suivantes : ${v.zones}.`,
+          `Une commande passée avant ${v.cutoff} est livrée le lendemain. À Korba et ses alentours, la livraison peut se faire le jour même selon le créneau disponible.`,
+          'Nous ne livrons pas le dimanche. Une commande passée le samedi après l’heure limite est livrée le lundi.',
+          'Le créneau choisi est indicatif. En cas de retard, le livreur vous appelle.',
+        ],
+      },
+      {
+        title: '6. La livraison',
+        body: [
+          'Le livreur vient dans un véhicule frigorifique. À la porte, vous vérifiez la commande : quantités, état des produits, poids si vous le souhaitez.',
+          'Tout problème se signale au livreur, sur place, avant le paiement. C’est le moment le plus simple pour le régler.',
+          'Si personne ne répond et que vous restez injoignable après deux appels, la commande revient à la ferme et nous vous recontactons. Un second passage peut donner lieu à de nouveaux frais de livraison.',
+        ],
+      },
+      {
+        title: '7. Le paiement',
+        body: [
+          'Vous payez en espèces, au livreur, à la remise de la commande. Le montant est celui du bon de livraison, ajusté à la pesée.',
+          'Le site ne prend aucun paiement en ligne et ne demande jamais de numéro de carte.',
+          'Le bon de livraison tient lieu de reçu. Une facture est fournie sur demande.',
+        ],
+      },
+      {
+        title: '8. Le refus à la livraison',
+        body: [
+          'Vous pouvez refuser, à la porte et avant de payer, un produit qui ne correspond pas à votre commande ou dont l’état ne vous convient pas. Il est retiré du bon et vous ne le payez pas.',
+          'Vous pouvez aussi refuser toute la commande. Dans ce cas, pour une commande déjà confirmée par téléphone et refusée sans motif lié aux produits, nous pouvons demander les frais de livraison lors de votre prochaine commande.',
+        ],
+      },
+      {
+        title: '9. L’annulation',
+        body: [
+          `Vous pouvez annuler sans frais jusqu’à ${v.cutoff} la veille de la livraison, par téléphone ou WhatsApp au ${v.phone}.`,
+          'Après cette heure, les volailles sont déjà prévues pour l’abattage du matin. Prévenez-nous le plus tôt possible : nous ferons au mieux, mais nous pouvons refuser l’annulation.',
+        ],
+      },
+      {
+        title: '10. Retours et réclamations',
+        body: [
+          'Nos produits sont frais et périssables. Une fois la commande acceptée et payée, ils ne sont ni repris ni échangés, sauf défaut.',
+          'Un défaut, c’est un produit abîmé, non conforme à la commande, ou dont la chaîne du froid a visiblement été rompue avant la remise. Signalez-le dans les 24 heures, avec une photo, par WhatsApp ou par téléphone.',
+          'Si le défaut est avéré, nous remplaçons le produit à la prochaine livraison ou nous vous remboursons en espèces. Après la remise, la conservation des produits est sous votre responsabilité.',
+        ],
+      },
+      {
+        title: '11. Vos données',
+        body: ['Les données que vous nous confiez servent uniquement à préparer, livrer et suivre votre commande. Tout est détaillé dans notre politique de confidentialité.'],
+      },
+      {
+        title: '12. Litiges',
+        body: [
+          'Ces conditions sont soumises au droit tunisien, et notamment à la loi n° 92-117 du 7 décembre 1992 relative à la protection du consommateur.',
+          `En cas de désaccord, écrivez-nous d’abord : ${v.email} ou ${v.phone}. Nous cherchons toujours une solution amiable.`,
+          'Si aucune solution n’est trouvée, les tribunaux compétents sont ceux du gouvernorat de Nabeul. Vous pouvez aussi vous adresser à l’Organisation de défense du consommateur.',
+        ],
+      },
+    ],
+    privacySections: (v: LegalVars) => [
+      {
+        title: 'Qui est responsable',
+        body: [`${v.name}, ${v.address}. Pour toute question sur vos données : ${v.email} ou ${v.phone}.`],
+      },
+      {
+        title: 'Ce que nous collectons',
+        body: [
+          'À la commande : votre nom, votre numéro de téléphone, votre adresse de livraison (zone, rue, ville, repère), votre e-mail si vous le donnez, le contenu de la commande et votre message éventuel.',
+          'Au formulaire de contact : votre nom, votre téléphone et votre message.',
+          'Si vous créez un compte : les mêmes informations, plus un mot de passe, stocké chiffré. Nous ne pouvons pas le lire.',
+          'Le site n’utilise aucun outil de mesure d’audience ni de publicité. L’hébergeur peut conserver des journaux techniques (adresse IP, date) pour la sécurité.',
+        ],
+      },
+      {
+        title: 'Pourquoi',
+        body: [
+          'Pour préparer et livrer votre commande, vous appeler afin de la confirmer, répondre à vos messages, gérer votre compte si vous en avez un, et tenir notre comptabilité.',
+          'Jamais pour de la publicité. Nous ne vendons ni ne prêtons vos données à personne.',
+        ],
+      },
+      {
+        title: 'Qui y a accès',
+        body: [
+          'L’équipe de la ferme, et le livreur pour votre nom, votre téléphone et votre adresse.',
+          'Nos prestataires techniques, uniquement pour héberger : Supabase, Inc. pour la base de données, GitHub, Inc. pour les pages du site. Ils n’utilisent pas vos données pour eux.',
+          'Personne d’autre, sauf demande d’une autorité fondée sur la loi.',
+        ],
+      },
+      {
+        title: 'Combien de temps',
+        body: [
+          'Les commandes : trois ans, pour la comptabilité et les éventuels litiges.',
+          'Les messages de contact : douze mois.',
+          'Votre compte : tant qu’il existe. Vous pouvez demander sa suppression à tout moment.',
+          'Le panier et vos coordonnées mémorisées : sur votre appareil uniquement, jamais sur nos serveurs, jusqu’à ce que vous les effaciez.',
+        ],
+      },
+      {
+        title: 'Vos droits',
+        body: [
+          'La loi organique n° 2004-63 du 27 juillet 2004 sur la protection des données à caractère personnel vous donne un droit d’accès, de rectification, d’opposition et de suppression de vos données.',
+          `Pour l’exercer, écrivez à ${v.email} ou appelez le ${v.phone}. Nous répondons sous un mois.`,
+          'Si vous estimez que vos droits ne sont pas respectés, vous pouvez saisir l’Instance nationale de protection des données à caractère personnel (INPDP).',
+        ],
+      },
+      {
+        title: 'Cookies et stockage local',
+        body: [
+          'Le site ne dépose aucun cookie publicitaire ni de suivi.',
+          'Il utilise le stockage local de votre navigateur pour garder votre panier, vos coordonnées si vous cochez « se souvenir de moi », les ingrédients cochés dans les recettes et votre session si vous avez un compte. Ces informations restent sur votre appareil. Vous les effacez en supprimant les données du site dans votre navigateur.',
+        ],
+      },
+      {
+        title: 'Sécurité',
+        body: ['Le site et la base de données sont servis en HTTPS. L’accès à la gestion des commandes est protégé par mot de passe et limité à l’équipe de la ferme.'],
+      },
+      {
+        title: 'Modifications',
+        body: ['Si cette politique change, la nouvelle version est publiée ici avec sa date. Les changements importants sont signalés sur le site.'],
+      },
+    ],
     legalTitle: 'Mentions légales',
     termsTitle: 'Conditions générales de vente',
     privacyTitle: 'Politique de confidentialité',
@@ -396,6 +702,8 @@ export const fr = {
     account: 'Compte',
   },
   notFound: {
+    eyebrow: 'Erreur 404',
+    other: 'Cette page en arabe',
     title: 'Cette page a pris la clé des champs.',
     text: 'Elle n’existe pas ou plus. Retournez à l’accueil ou faites un tour à la boutique.',
     home: 'Accueil',
@@ -404,6 +712,20 @@ export const fr = {
   announcement: {
     closed: 'La boutique est fermée aujourd’hui. Les commandes reprennent demain.',
   },
-} as const;
+};
 
 export type Dictionary = typeof fr;
+
+/** Variables injectées dans les textes légaux, depuis `brand`, `seedSettings` et `seedZones`. */
+export interface LegalVars {
+  name: string;
+  legal: string;
+  address: string;
+  phone: string;
+  email: string;
+  since: number;
+  host: string;
+  minOrder: string;
+  cutoff: string;
+  zones: string;
+}

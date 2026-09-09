@@ -1,0 +1,286 @@
+---
+import type { Lang } from '@ferme/core';
+import { brand, formatPrice, seedCategories, seedProducts, seedRecipes, seedZones } from '@ferme/core';
+import Base from '@/layouts/Base.astro';
+import Picture from '@/components/Picture.astro';
+import ProductCard from '@/components/ProductCard.astro';
+import RecipeCard from '@/components/RecipeCard.astro';
+import SectionHead from '@/components/SectionHead.astro';
+import { t, L } from '@/i18n';
+import { href, routes, asset } from '@/lib/paths';
+
+/** Page d'accueil : hero plein cadre, confiance, catégories, produits, étapes, ferme, recettes, avis, zones, appel final. */
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const d = t(lang);
+
+const categories = [...seedCategories].sort((a, b) => a.sort - b.sort);
+const featured = seedProducts.filter((p) => p.is_featured).slice(0, 6);
+const recipes = seedRecipes.slice(0, 3);
+const zones = seedZones.filter((z) => z.active).sort((a, b) => a.sort - b.sort);
+const trust = [...d.home.trust, ...d.home.trust, ...d.home.trust];
+
+const site = Astro.site ? Astro.site.toString().replace(/\/$/, '') : '';
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: brand.name[lang],
+    url: `${site}${href(lang)}`,
+    inLanguage: lang === 'ar' ? 'ar-TN' : 'fr-TN',
+    description: d.meta.defaultDescription,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: brand.name[lang],
+    url: `${site}${href(lang)}`,
+    logo: `${site}${asset('/favicon.svg')}`,
+    telephone: brand.phone,
+    email: brand.email,
+    foundingDate: String(brand.since),
+    address: { '@type': 'PostalAddress', streetAddress: brand.address[lang], addressLocality: 'Korba', addressRegion: 'Nabeul', postalCode: '8070', addressCountry: 'TN' },
+    sameAs: [brand.social.facebook, brand.social.instagram].filter(Boolean),
+  },
+];
+
+const check = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5 10 17.5 19 7"/></svg>`;
+const star = `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 2.5 2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3l-5.9 3.3 1.3-6.6-4.9-4.6 6.6-.8z"/></svg>`;
+---
+
+<Base lang={lang} description={d.meta.defaultDescription} image="/images/farm/hero-ferme.jpg" jsonLd={jsonLd}>
+  <!-- Hero -->
+  <section class="relative isolate overflow-hidden bg-ink text-paper" style="min-height: calc(100svh - var(--header-h))">
+    <div class="photo-veil absolute inset-0">
+      <Picture
+        src="/images/farm/hero-ferme.jpg"
+        alt={d.home.heroAlt}
+        sizes="100vw"
+        loading="eager"
+        fetchpriority="high"
+        class="block h-full w-full"
+        imgClass="hero-zoom h-full w-full object-cover"
+      />
+    </div>
+
+    <div class="pointer-events-none absolute inset-x-0 top-0 z-10 flex justify-end px-4 pt-6 sm:px-6 lg:px-8 lg:pt-10">
+      <div class="animate-float pointer-events-auto flex items-center gap-3 rounded-lg bg-paper p-3 pe-5 text-ink shadow-float">
+        <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-yolk-soft text-yolk-deep" aria-hidden="true">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z" /><circle cx="7" cy="18" r="2" /><circle cx="17" cy="18" r="2" /></svg>
+        </span>
+        <div class="leading-tight">
+          <p class="text-[11px] font-bold uppercase tracking-wide text-prairie">{d.home.heroCard.eyebrow}</p>
+          <p class="font-display text-base font-extrabold sm:text-lg">{d.home.heroCard.title}</p>
+          <p class="text-xs text-ink-3 sm:text-sm">{d.home.heroCard.text}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="container-x relative z-10 flex flex-col justify-end pb-14 pt-40 sm:pb-20 sm:pt-48 lg:pb-28" style="min-height: calc(100svh - var(--header-h))">
+      <p class="reveal eyebrow text-yolk">{d.home.heroEyebrow}</p>
+      <h1 class="reveal mt-4 max-w-4xl font-display font-extrabold leading-[0.95] text-paper" style="--reveal-delay: 80ms; font-size: clamp(2.75rem, 9vw, 6.5rem)">
+        {d.home.heroTitle}
+      </h1>
+      <p class="reveal mt-5 max-w-xl text-lg text-paper/85 sm:text-xl" style="--reveal-delay: 160ms">{d.home.heroText}</p>
+      <div class="reveal mt-8 flex flex-col gap-3 sm:flex-row" style="--reveal-delay: 240ms">
+        <a href={href(lang, routes.shop)} class="btn-yolk btn-lg">
+          {d.home.heroCta}
+          <svg class="rtl:rotate-180" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+        </a>
+        <a href="#comment" class="btn btn-lg border border-paper/40 bg-paper/10 text-paper backdrop-blur-sm hover:bg-paper/20">{d.home.heroCta2}</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Bande de confiance -->
+  <div class="marquee overflow-hidden bg-prairie-deep py-3.5 text-yolk-soft" aria-label={d.home.trust.join(', ')}>
+    <div class="marquee-track animate-marquee flex w-max">
+      <ul class="flex shrink-0 items-center gap-10 pe-10">
+        {trust.map((item) => (
+          <li class="flex items-center gap-2.5 whitespace-nowrap text-sm font-bold uppercase tracking-wide">
+            <span class="text-yolk" set:html={check} />
+            {item}
+          </li>
+        ))}
+      </ul>
+      <ul class="flex shrink-0 items-center gap-10 pe-10" aria-hidden="true">
+        {trust.map((item) => (
+          <li class="flex items-center gap-2.5 whitespace-nowrap text-sm font-bold uppercase tracking-wide">
+            <span class="text-yolk" set:html={check} />
+            {item}
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
+
+  <!-- Catégories -->
+  <section class="container-x py-16 sm:py-20">
+    <SectionHead eyebrow={d.home.categoriesEyebrow} title={d.home.categoriesTitle} text={d.home.categoriesText} link={{ href: href(lang, routes.shop), label: d.common.seeAll }} />
+    <ul class="mt-8 grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3">
+      {categories.map((c, i) => (
+        <li class="reveal" style={`--reveal-delay:${i * 60}ms`}>
+          <a href={href(lang, routes.category(c.slug))} class="group relative block overflow-hidden rounded-lg bg-cream shadow-card transition-shadow hover:shadow-float">
+            <div class="aspect-[4/3] overflow-hidden">
+              <Picture src={c.image} alt="" sizes="(min-width: 768px) 33vw, 50vw" imgClass="h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105" width={1600} height={1200} />
+            </div>
+            <div class="p-3 sm:p-4">
+              <h3 class="text-base font-bold leading-tight sm:text-lg">{L(c.name, lang)}</h3>
+              <p class="mt-1 line-clamp-2 text-sm text-ink-3">{L(c.description, lang)}</p>
+            </div>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <!-- Incontournables -->
+  <section class="bg-cream py-16 sm:py-20">
+    <div class="container-x">
+      <SectionHead eyebrow={d.home.featuredEyebrow} title={d.home.featuredTitle} text={d.home.featuredText} link={{ href: href(lang, routes.shop), label: d.common.seeAll }} />
+      <div class="mt-8 grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-3">
+        {featured.map((p, i) => (
+          <ProductCard product={p} lang={lang} index={i} eager={i < 2} />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Comment ça marche -->
+  <section id="comment" class="container-x scroll-mt-20 py-16 sm:py-20">
+    <SectionHead eyebrow={d.home.howEyebrow} title={d.home.howTitle} text={d.home.howText} align="center" />
+    <div class="relative mt-12">
+      <svg class="draw-path pointer-events-none absolute start-6 top-4 block h-[calc(100%-2rem)] w-px lg:hidden" viewBox="0 0 2 100" preserveAspectRatio="none" aria-hidden="true" data-draw>
+        <path d="M1 0V100" pathLength="1" stroke="var(--color-yolk)" stroke-width="3" fill="none" vector-effect="non-scaling-stroke" />
+      </svg>
+      <svg class="draw-path pointer-events-none absolute inset-x-0 top-7 hidden h-10 w-full rtl:-scale-x-100 lg:block" viewBox="0 0 1000 40" preserveAspectRatio="none" aria-hidden="true" data-draw>
+        <path d="M60 20 C 200 -10, 300 50, 440 20 S 700 -10, 940 20" pathLength="1" stroke="var(--color-yolk)" stroke-width="3" fill="none" vector-effect="non-scaling-stroke" />
+      </svg>
+      <ol class="relative grid gap-8 lg:grid-cols-4 lg:gap-6">
+        {d.home.howSteps.map((s, i) => (
+          <li class="reveal relative flex gap-5 lg:flex-col lg:items-center lg:text-center" style={`--reveal-delay:${i * 120}ms`}>
+            <span class="relative z-10 flex h-12 w-12 shrink-0 items-center justify-center rounded-pill bg-ink font-display text-lg font-extrabold text-yolk shadow-card ring-4 ring-paper lg:h-14 lg:w-14 lg:text-xl" aria-hidden="true">
+              {i + 1}
+            </span>
+            <div class="pt-2 lg:pt-0">
+              <p class="eyebrow mb-1">{d.home.stepLabel(i + 1)}</p>
+              <h3 class="text-xl font-bold leading-tight">{s.title}</h3>
+              <p class="mt-2 text-ink-2">{s.text}</p>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <!-- La ferme -->
+  <section class="overflow-hidden bg-moss py-16 sm:py-20">
+    <div class="container-x grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
+      <div class="reveal relative">
+        <div class="overflow-hidden rounded-xl shadow-float rtl:-rotate-1 ltr:rotate-1">
+          <Picture src="/images/farm/fermier.jpg" alt={d.home.farmAlt} sizes="(min-width: 1024px) 50vw, 100vw" imgClass="aspect-[4/3] w-full object-cover" width={1600} height={1200} />
+        </div>
+        <div class="absolute -bottom-4 -end-2 rounded-lg bg-yolk px-4 py-3 font-display text-lg font-extrabold text-ink shadow-card sm:-end-4 sm:px-5">
+          {d.farm.eyebrow} · {brand.since}
+        </div>
+      </div>
+      <div>
+        <p class="reveal eyebrow">{d.home.farmEyebrow}</p>
+        <h2 class="reveal mt-3 text-3xl font-extrabold leading-[1.05] sm:text-4xl lg:text-5xl" style="--reveal-delay: 60ms">{d.home.farmTitle}</h2>
+        <p class="reveal prose-farm mt-5" style="--reveal-delay: 120ms">{d.home.farmText}</p>
+        <ul class="reveal mt-8 grid grid-cols-2 gap-4 sm:gap-6" style="--reveal-delay: 180ms">
+          {d.farm.numbers.map((n) => (
+            <li class="rounded-lg bg-paper p-4 shadow-card sm:p-5">
+              <p class="font-display text-3xl font-extrabold text-prairie-deep tabular sm:text-4xl" data-count={n.value}>
+                {n.value}
+              </p>
+              <p class="mt-1 text-sm font-semibold text-ink-2">{n.label}</p>
+            </li>
+          ))}
+        </ul>
+        <a href={href(lang, routes.farm)} class="reveal btn-primary btn-lg mt-8" style="--reveal-delay: 240ms">
+          {d.home.farmCta}
+          <svg class="rtl:rotate-180" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Recettes -->
+  <section class="container-x py-16 sm:py-20">
+    <SectionHead eyebrow={d.home.recipesEyebrow} title={d.home.recipesTitle} text={d.home.recipesText} link={{ href: href(lang, routes.recipes), label: d.common.seeAll }} />
+    <div class="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      {recipes.map((r, i) => (
+        <RecipeCard recipe={r} lang={lang} index={i} />
+      ))}
+    </div>
+  </section>
+
+  <!-- Avis -->
+  <section class="bg-cream py-16 sm:py-20">
+    <div class="container-x">
+      <SectionHead eyebrow={d.home.reviewsEyebrow} title={d.home.reviewsTitle} text={d.home.reviewsText} />
+    </div>
+    <ul class="scrollbar-none mt-8 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 sm:px-6 lg:mx-auto lg:grid lg:max-w-7xl lg:grid-cols-3 lg:gap-6 lg:overflow-visible lg:px-8">
+      {d.home.reviews.map((r, i) => (
+        <li class="reveal w-[85vw] max-w-sm shrink-0 snap-center rounded-lg bg-paper p-6 shadow-card lg:w-auto lg:max-w-none" style={`--reveal-delay:${i * 90}ms`}>
+          <div class="flex items-center gap-0.5 text-yolk" role="img" aria-label={d.home.reviewStars}>
+            {[0, 1, 2, 3, 4].map(() => (
+              <span set:html={star} />
+            ))}
+          </div>
+          <p class="mt-4 text-lg leading-relaxed text-ink">« {r.text} »</p>
+          <footer class="mt-5 flex items-center gap-3">
+            <span class="flex h-10 w-10 items-center justify-center rounded-pill bg-prairie-soft font-display text-base font-extrabold text-prairie-deep" aria-hidden="true">
+              {r.name.charAt(0)}
+            </span>
+            <cite class="text-sm font-bold not-italic text-ink-2">{r.name}</cite>
+          </footer>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <!-- Zones -->
+  <section class="container-x py-16 sm:py-20">
+    <SectionHead eyebrow={d.home.zonesEyebrow} title={d.home.zonesTitle} text={d.home.zonesText} />
+    <ul class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      {zones.map((z, i) => (
+        <li class="reveal flex flex-col gap-3 rounded-lg border border-line bg-paper p-5 shadow-card" style={`--reveal-delay:${i * 80}ms`}>
+          <div class="flex items-start justify-between gap-3">
+            <h3 class="text-lg font-bold leading-tight">{L(z.name, lang)}</h3>
+            <span class:list={['chip shrink-0', z.lead_days === 0 ? 'bg-yolk-soft text-yolk-deep' : 'bg-prairie-soft text-prairie-deep']}>{z.lead_days === 0 ? d.home.zoneSameDay : d.home.zoneNextDay}</span>
+          </div>
+          <p class="text-sm text-ink-3">{L(z.areas, lang)}</p>
+          <div class="mt-auto border-t border-line pt-3">
+            <div class="flex items-baseline justify-between gap-2">
+              <span class="text-sm font-semibold text-ink-2">{d.home.zoneFee}</span>
+              <span class="font-display text-xl font-extrabold tabular">{formatPrice(z.fee, lang)}</span>
+            </div>
+            {z.free_from > 0 && <p class="mt-1 text-sm font-semibold text-prairie">{d.home.zoneFreeFrom(formatPrice(z.free_from, lang))}</p>}
+          </div>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <!-- Appel final -->
+  <section class="container-x pb-4">
+    <div class="grain relative overflow-hidden rounded-xl bg-prairie-deep px-6 py-14 text-center sm:px-12 sm:py-20">
+      <div class="reveal relative">
+        <h2 class="mx-auto max-w-3xl text-3xl font-extrabold leading-[1.05] text-yolk sm:text-4xl lg:text-5xl">{d.home.ctaTitle}</h2>
+        <p class="mx-auto mt-4 max-w-xl text-lg text-paper/85">{d.home.ctaText}</p>
+        <a href={href(lang, routes.shop)} class="btn-yolk btn-lg mt-8">
+          {d.home.ctaButton}
+          <svg class="rtl:rotate-180" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    import '@/scripts/vitrine';
+  </script>
+</Base>

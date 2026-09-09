@@ -1,0 +1,15 @@
+{
+  "name": "Gestion Ferme Korba",
+  "short_name": "Gestion FK",
+  "description": "Espace de gestion de la boutique Ferme Korba : commandes, produits, livraison.",
+  "lang": "fr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#fbf7ee",
+  "theme_color": "#14532d",
+  "icons": [
+    { "src": "./favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

@@ -60,9 +60,22 @@ const ld = [business, ...(jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) :
 ---
 
 <!doctype html>
-<html lang={locale(lang)} dir={dir(lang)} class="js">
+<html lang={locale(lang)} dir={dir(lang)}>
   <head>
     <meta charset="utf-8" />
+    <script is:inline>
+      // Le contenu n'est masqué que si le navigateur sait l'animer. Un filet de
+      // sécurité le réaffiche au bout de 2 s si le script de révélation n'a pas
+      // pris la main (erreur JS, réseau coupé) : jamais de page blanche.
+      (function () {
+        var r = document.documentElement;
+        if (!('IntersectionObserver' in window)) return;
+        r.classList.add('js');
+        window.__revealFallback = setTimeout(function () {
+          r.classList.remove('js');
+        }, 2000);
+      })();
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>{fullTitle}</title>
     <meta name="description" content={desc} />
@@ -110,6 +123,13 @@ const ld = [business, ...(jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) :
     <script>
       // Apparition au défilement. Relancé à chaque changement de page.
       function arm() {
+        // Le script est là : le filet de sécurité n'a plus lieu d'être.
+        const w = window as unknown as { __revealFallback?: number };
+        if (w.__revealFallback) {
+          clearTimeout(w.__revealFallback);
+          w.__revealFallback = undefined;
+          document.documentElement.classList.add('js');
+        }
         const els = document.querySelectorAll<HTMLElement>('.reveal:not(.is-in)');
         if (!els.length) return;
         if (!('IntersectionObserver' in window)) {

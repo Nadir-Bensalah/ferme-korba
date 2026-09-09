@@ -1,0 +1,19 @@
+---
+import type { Lang } from '@ferme/core';
+import Base from '@/layouts/Base.astro';
+import Account from '@/components/islands/Account';
+import { t } from '@/i18n';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const d = t(lang);
+---
+
+<Base lang={lang} title={d.account.title} noindex>
+  <section class="container-x py-8 sm:py-12">
+    <h1 class="mx-auto mb-6 max-w-2xl text-3xl font-extrabold sm:text-4xl">{d.account.title}</h1>
+    <Account client:load lang={lang} />
+  </section>
+</Base>

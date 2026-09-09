@@ -1,0 +1,85 @@
+---
+import type { Lang } from '@ferme/core';
+import LegalPage from '@/components/LegalPage.astro';
+import { t } from '@/i18n';
+import { legalVars } from '@/views/legalVars';
+
+/** Mentions légales, avec les crédits photos (repris de assets/photos/CREDITS.md). */
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const d = t(lang);
+const sections = d.legal.legalSections(legalVars(lang));
+
+const UNSPLASH = { name: 'Unsplash License', url: 'https://unsplash.com/license' };
+const CC0 = { name: 'CC0', url: 'https://creativecommons.org/publicdomain/zero/1.0/' };
+const BYSA3 = { name: 'CC BY-SA 3.0', url: 'https://creativecommons.org/licenses/by-sa/3.0' };
+const BYSA4 = { name: 'CC BY-SA 4.0', url: 'https://creativecommons.org/licenses/by-sa/4.0' };
+
+/** Même liste que assets/photos/CREDITS.md. Les CC BY-SA sont recadrées et le restent sous la même licence. */
+const credits = [
+  { file: 'hero-ferme.jpg', author: 'Jan Baborák', authorUrl: 'https://unsplash.com/@janbaborak', source: 'https://unsplash.com/photos/bGVRTa3wA98', license: UNSPLASH },
+  { file: 'poulet-entier.jpg', author: 'Hayley Ryczek', authorUrl: 'https://unsplash.com/@hayleyryczek', source: 'https://unsplash.com/photos/J2pXPoDZE5k', license: UNSPLASH },
+  { file: 'cuisses-poulet.jpg', author: 'Towfiqu barbhuiya', authorUrl: 'https://unsplash.com/@towfiqu999999', source: 'https://unsplash.com/photos/Wt8BLNrgVvQ', license: UNSPLASH },
+  { file: 'escalope-poulet.jpg', author: 'Karyna Panchenko', authorUrl: 'https://unsplash.com/@karyna_panchenko', source: 'https://unsplash.com/photos/z1HyKH0_IZo', license: UNSPLASH },
+  { file: 'ailes-poulet.jpg', author: 'ProjectManhattan', authorUrl: 'https://commons.wikimedia.org/wiki/File:Raw_chicken_wings.jpg', source: 'https://commons.wikimedia.org/wiki/File:Raw_chicken_wings.jpg', license: BYSA3, modified: true },
+  { file: 'pilons-poulet.jpg', author: 'Syed Maaz', authorUrl: 'https://unsplash.com/@syedmaaz904', source: 'https://unsplash.com/photos/ejyrwPSzbGA', license: UNSPLASH },
+  { file: 'dinde-escalope.jpg', author: 'Philippe Zuber', authorUrl: 'https://unsplash.com/@philippezuber', source: 'https://unsplash.com/photos/9ZrWR8R961U', license: UNSPLASH },
+  { file: 'oeufs.jpg', author: 'Rebekah Howell', authorUrl: 'https://unsplash.com/@rebekahhowell00', source: 'https://unsplash.com/photos/A4z0UBgAwyc', license: UNSPLASH },
+  { file: 'merguez.jpg', author: 'Benoît Prieur', authorUrl: 'https://commons.wikimedia.org/wiki/File:Huit_merguez_et_trois_saucisses_en_d%C3%A9but_de_cuisson_au_barbecue_en_mars_2020.jpg', source: 'https://commons.wikimedia.org/wiki/File:Huit_merguez_et_trois_saucisses_en_d%C3%A9but_de_cuisson_au_barbecue_en_mars_2020.jpg', license: CC0, modified: true },
+  { file: 'saucisses-volaille.jpg', author: 'Marshalok Brend', authorUrl: 'https://unsplash.com/@marshalok2026', source: 'https://unsplash.com/photos/6gjCKHHgHjs', license: UNSPLASH },
+  { file: 'charcuterie-volaille.jpg', author: 'Rumman Amin', authorUrl: 'https://unsplash.com/@rumanamin', source: 'https://unsplash.com/photos/JhjQKyxatZU', license: UNSPLASH },
+  { file: 'brochettes.jpg', author: 'Miansari66', authorUrl: 'https://commons.wikimedia.org/wiki/File:Raw_Shish_Taouk.JPG', source: 'https://commons.wikimedia.org/wiki/File:Raw_Shish_Taouk.JPG', license: CC0 },
+  { file: 'poules-plein-air.jpg', author: 'Erwin Bosman', authorUrl: 'https://unsplash.com/@erwinbosman', source: 'https://unsplash.com/photos/IoqSu8OxU4Q', license: UNSPLASH },
+  { file: 'fermier.jpg', author: 'Anil Sharma', authorUrl: 'https://unsplash.com/@anil_sharma_india', source: 'https://unsplash.com/photos/yfKDx1Xp6lI', license: UNSPLASH },
+  { file: 'recette-poulet-roti.jpg', author: 'Jameswasswa', authorUrl: 'https://commons.wikimedia.org/wiki/File:Whole_spiced_chicken_(roasted).jpg', source: 'https://commons.wikimedia.org/wiki/File:Whole_spiced_chicken_(roasted).jpg', license: BYSA4, modified: true },
+  { file: 'recette-tajine.jpg', author: 'Habib M’henni', authorUrl: 'https://commons.wikimedia.org/wiki/File:Tajine_tunisien_au_poulet,_novembre_2022.jpg', source: 'https://commons.wikimedia.org/wiki/File:Tajine_tunisien_au_poulet,_novembre_2022.jpg', license: BYSA4, modified: true },
+  { file: 'recette-brochettes.jpg', author: 'Zayed Ahmed Zadu', authorUrl: 'https://unsplash.com/@zayed_ahmed_zadu', source: 'https://unsplash.com/photos/2EhrT8L_IWo', license: UNSPLASH },
+  { file: 'recette-omelette.jpg', author: 'AN Photography', authorUrl: 'https://unsplash.com/@anfoodphotography', source: 'https://unsplash.com/photos/KD93b4XevCQ', license: UNSPLASH },
+] as { file: string; author: string; authorUrl: string; source: string; license: { name: string; url: string }; modified?: boolean }[];
+---
+
+<LegalPage lang={lang} title={d.legal.legalTitle} intro={d.legal.legalIntro} sections={sections}>
+  <li slot="toc">
+    <a href="#credits" class="text-ink-2 hover:text-ink">{d.legal.creditsTitle}</a>
+  </li>
+
+  <section id="credits" class="scroll-mt-24 pt-7">
+    <h2 class="text-xl font-extrabold sm:text-2xl">{d.legal.creditsTitle}</h2>
+    <p class="prose-farm mt-3 text-base">{d.legal.creditsText}</p>
+    <div class="mt-5 overflow-x-auto rounded-lg border border-line">
+      <table class="w-full min-w-[520px] text-sm">
+        <thead class="bg-cream text-start">
+          <tr>
+            <th scope="col" class="px-4 py-3 text-start font-bold">{d.legal.creditsCols.file}</th>
+            <th scope="col" class="px-4 py-3 text-start font-bold">{d.legal.creditsCols.author}</th>
+            <th scope="col" class="px-4 py-3 text-start font-bold">{d.legal.creditsCols.license}</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-line">
+          {credits.map((c) => (
+            <tr>
+              <td class="px-4 py-2.5">
+                <a href={c.source} class="font-semibold text-ink hover:text-prairie" rel="noopener" target="_blank" dir="ltr">
+                  {c.file}
+                </a>
+                {c.modified && <span class="ms-2 text-xs text-ink-3">({d.legal.creditsModified})</span>}
+              </td>
+              <td class="px-4 py-2.5">
+                <a href={c.authorUrl} class="text-ink-2 hover:text-ink" rel="noopener" target="_blank">
+                  {c.author}
+                </a>
+              </td>
+              <td class="px-4 py-2.5">
+                <a href={c.license.url} class="text-ink-2 hover:text-ink" rel="license noopener" target="_blank" dir="ltr">
+                  {c.license.name}
+                </a>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+</LegalPage>

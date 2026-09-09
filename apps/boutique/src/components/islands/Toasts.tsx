@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import type { Lang } from '@ferme/core';
 import { cartLines, lastAdded, lastRemoved, undoRemove } from '@/stores/cart';
 import { t, L } from '@/i18n';
-import { href, routes } from '@/lib/paths';
+import { asset, href, routes } from '@/lib/paths';
 
 interface Props {
   lang: Lang;
@@ -33,7 +33,7 @@ export default function Toasts({ lang }: Props) {
     if (!mounted || !added) return;
     const line = cartLines.get().find((l) => l.product_id === added.product_id);
     if (!line) return;
-    setToast({ id: added.at, kind: 'added', text: `${L(line.name, lang)} · ${d.common.added}`, image: line.image });
+    setToast({ id: added.at, kind: 'added', text: `${L(line.name, lang)} · ${d.common.added}`, image: line.image ? asset(line.image) : undefined });
   }, [added, mounted]);
 
   useEffect(() => {

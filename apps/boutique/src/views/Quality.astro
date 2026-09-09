@@ -1,0 +1,122 @@
+---
+import type { Lang } from '@ferme/core';
+import Base from '@/layouts/Base.astro';
+import SectionHead from '@/components/SectionHead.astro';
+import { t } from '@/i18n';
+import { href, routes } from '@/lib/paths';
+
+/** Qualité : six engagements, questions fréquentes (FAQPage), appel. */
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const d = t(lang);
+
+/** Pictos en ligne, dans l'ordre des engagements : plein air, nourriture, antibiotiques, froid, pesée, vétérinaire. */
+const icons = [
+  '<circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/>',
+  '<path d="M4 20c0-8 5-13 14-14-1 9-6 14-14 14z"/><path d="M4 20c3-4 6-7 10-9"/>',
+  '<path d="M12 3 4 6v6c0 5 3.5 8.5 8 9 4.5-.5 8-4 8-9V6z"/><path d="m8.5 8.5 7 7M15.5 8.5l-7 7"/>',
+  '<path d="M12 2v20M2 12h20M5.5 5.5l13 13M18.5 5.5l-13 13"/><path d="M12 6 9.5 8.5M12 6l2.5 2.5M12 18l-2.5-2.5M12 18l2.5-2.5"/>',
+  '<path d="M12 3v18M4 7h16M6 7l-3 7a3.5 3.5 0 0 0 7 0L7 7M17 7l-3 7a3.5 3.5 0 0 0 7 0l-3-7M8 21h8"/>',
+  '<path d="M6 3v6a6 6 0 0 0 12 0V3"/><path d="M5 3h2M17 3h2M12 15v2a4 4 0 0 0 8 0v-1"/><circle cx="20" cy="15" r="1.5"/>',
+];
+
+const site = Astro.site ? Astro.site.toString().replace(/\/$/, '') : '';
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  url: `${site}${href(lang, routes.quality)}`,
+  inLanguage: lang === 'ar' ? 'ar-TN' : 'fr-TN',
+  mainEntity: d.quality.faq.map((f) => ({
+    '@type': 'Question',
+    name: f.q,
+    acceptedAnswer: { '@type': 'Answer', text: f.a },
+  })),
+};
+---
+
+<Base lang={lang} title={d.quality.title} description={d.quality.lead} jsonLd={jsonLd} image="/images/farm/poules-plein-air.jpg">
+  <section class="container-x pt-12 sm:pt-16">
+    <SectionHead as="h1" eyebrow={d.quality.eyebrow} title={d.quality.title} text={d.quality.lead} align="center" />
+    <ul class="mt-12 grid gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
+      {d.quality.items.map((item, i) => (
+        <li class="reveal flex flex-col gap-4 rounded-lg border border-line bg-paper p-6 shadow-card" style={`--reveal-delay:${i * 70}ms`}>
+          <span class="flex h-14 w-14 items-center justify-center rounded-md bg-prairie-soft text-prairie-deep" aria-hidden="true">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" set:html={icons[i] ?? icons[0]} />
+          </span>
+          <h2 class="text-xl font-bold leading-tight">{item.title}</h2>
+          <p class="text-ink-2">{item.text}</p>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section class="container-x py-16 sm:py-24">
+    <div class="mx-auto max-w-3xl">
+      <SectionHead title={d.quality.faqTitle} text={d.quality.faqText} align="center" />
+      <div class="faq mt-10 flex flex-col gap-3">
+        {d.quality.faq.map((f, i) => (
+          <details class="reveal group rounded-lg border border-line bg-paper shadow-card open:border-prairie/40" style={`--reveal-delay:${i * 60}ms`} data-faq>
+            <summary class="flex min-h-14 cursor-pointer items-center justify-between gap-4 px-5 py-4 text-start text-lg font-bold leading-tight select-none">
+              {f.q}
+              <svg class="faq-chevron shrink-0 text-prairie transition-transform duration-300" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
+            </summary>
+            <div class="faq-body">
+              <div>
+                <p class="px-5 pb-5 text-ink-2">{f.a}</p>
+              </div>
+            </div>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="container-x pb-4">
+    <div class="grain relative overflow-hidden rounded-xl bg-prairie-deep px-6 py-14 text-center sm:px-12 sm:py-20">
+      <div class="reveal relative">
+        <h2 class="mx-auto max-w-3xl text-3xl font-extrabold leading-[1.05] text-yolk sm:text-4xl lg:text-5xl">{d.quality.ctaTitle}</h2>
+        <p class="mx-auto mt-4 max-w-xl text-lg text-paper/85">{d.quality.ctaText}</p>
+        <a href={href(lang, routes.shop)} class="btn-yolk btn-lg mt-8">
+          {d.quality.cta}
+          <svg class="rtl:rotate-180" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    // FAQ : ouverture et fermeture animées en hauteur. Sans JS, <details> fait le travail.
+    function setup() {
+      document.querySelectorAll<HTMLDetailsElement>('details[data-faq]:not([data-ready])').forEach((el) => {
+        el.dataset.ready = '1';
+        const summary = el.querySelector('summary');
+        const body = el.querySelector<HTMLElement>('.faq-body');
+        if (!summary || !body) return;
+        const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        summary.addEventListener('click', (e) => {
+          if (reduced) return;
+          e.preventDefault();
+          if (el.open) {
+            el.classList.add('is-closing');
+            const done = () => {
+              el.open = false;
+              el.classList.remove('is-closing');
+              body.removeEventListener('transitionend', done);
+            };
+            body.addEventListener('transitionend', done);
+            setTimeout(done, 450);
+          } else {
+            el.classList.add('is-closing');
+            el.open = true;
+            void body.offsetHeight;
+            el.classList.remove('is-closing');
+          }
+        });
+      });
+    }
+    setup();
+    document.addEventListener('astro:page-load', setup);
+  </script>
+</Base>

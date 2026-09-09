@@ -1,0 +1,11 @@
+---
+import { seedRecipes } from '@ferme/core';
+import Recipe from '@/views/Recipe.astro';
+
+export function getStaticPaths() {
+  return seedRecipes.map((r) => ({ params: { slug: r.slug }, props: { recipe: r } }));
+}
+const { recipe } = Astro.props;
+---
+
+<Recipe lang="ar" recipe={recipe} />

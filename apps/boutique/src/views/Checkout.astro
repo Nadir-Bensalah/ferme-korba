@@ -1,0 +1,25 @@
+---
+import type { Lang } from '@ferme/core';
+import Base from '@/layouts/Base.astro';
+import DemoBanner from '@/components/DemoBanner.astro';
+import Checkout from '@/components/islands/Checkout';
+import { t } from '@/i18n';
+import { href, routes } from '@/lib/paths';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const d = t(lang);
+---
+
+<Base lang={lang} title={d.checkout.title} noindex noBottomBar slimFooter>
+  <section class="container-x py-6 sm:py-10">
+    <DemoBanner lang={lang} class="mb-5" />
+    <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
+      <h1 class="text-3xl font-extrabold sm:text-4xl">{d.checkout.title}</h1>
+      <a href={href(lang, routes.cart)} class="text-sm font-bold text-prairie hover:text-prairie-deep">{d.checkout.backToCart}</a>
+    </div>
+    <Checkout client:load lang={lang} />
+  </section>
+</Base>

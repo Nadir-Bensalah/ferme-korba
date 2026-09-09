@@ -1,0 +1,326 @@
+@import 'tailwindcss';
+
+/* ------------------------------------------------------------------
+   Gestion Ferme Korba · même famille visuelle que la boutique,
+   plus dense : moins d'air, tableaux, listes serrées. Téléphone d'abord.
+   ------------------------------------------------------------------ */
+
+@theme {
+  --font-display: 'Bricolage Grotesque', 'Cairo', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Manrope', 'Cairo', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-arabic: 'Cairo', 'Manrope', ui-sans-serif, system-ui, sans-serif;
+
+  --color-ink: #16201a;
+  --color-ink-2: #3f4a42;
+  --color-ink-3: #6b7566;
+  --color-line: #e5e3da;
+  --color-line-2: #d3d0c4;
+  --color-paper: #ffffff;
+  --color-cream: #fbf7ee;
+  --color-cream-2: #f4eedf;
+  --color-moss: #eaf3ea;
+
+  --color-prairie: #1e7a3c;
+  --color-prairie-deep: #14532d;
+  --color-prairie-soft: #dff0e2;
+  --color-yolk: #f2a900;
+  --color-yolk-deep: #c98600;
+  --color-yolk-soft: #fff1cc;
+  --color-paprika: #c8442b;
+  --color-paprika-soft: #fbe6e1;
+  --color-sky: #e6f1fb;
+  --color-sky-deep: #1d4f8a;
+  --color-plum: #6b3fa0;
+  --color-plum-soft: #ede4f7;
+
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --radius-pill: 999px;
+
+  --shadow-card: 0 1px 2px rgba(22, 32, 26, 0.06), 0 8px 24px -12px rgba(22, 32, 26, 0.18);
+  --shadow-float: 0 12px 40px -12px rgba(22, 32, 26, 0.35);
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  --animate-shimmer: shimmer 1.6s linear infinite;
+  --animate-pop: pop 0.35s var(--ease-spring) both;
+  --animate-slide-down: slide-down 0.3s var(--ease-out-expo) both;
+
+  @keyframes shimmer {
+    from {
+      background-position: -200% 0;
+    }
+    to {
+      background-position: 200% 0;
+    }
+  }
+  @keyframes pop {
+    0% {
+      transform: scale(0.85);
+      opacity: 0;
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+  @keyframes slide-down {
+    0% {
+      transform: translateY(-12px);
+      opacity: 0;
+    }
+    100% {
+      transform: none;
+      opacity: 1;
+    }
+  }
+}
+
+@layer base {
+  :root {
+    color-scheme: light;
+    --header-h: 56px;
+    --bottom-bar-h: 64px;
+    --sidebar-w: 248px;
+  }
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+  body {
+    @apply bg-cream text-ink font-sans antialiased;
+    min-height: 100dvh;
+    overflow-x: clip;
+  }
+  ::selection {
+    background: var(--color-yolk-soft);
+    color: var(--color-ink);
+  }
+  h1,
+  h2,
+  h3 {
+    @apply font-display text-ink;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+  :focus-visible {
+    outline: 3px solid var(--color-yolk);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+  button,
+  [role='button'] {
+    touch-action: manipulation;
+  }
+  input,
+  select,
+  textarea {
+    font: inherit;
+  }
+  [dir='rtl'] {
+    font-family: var(--font-arabic);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@utility btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: var(--radius-pill);
+  font-weight: 600;
+  min-height: 48px;
+  padding-inline: 1.1rem;
+  font-size: 0.9375rem;
+  line-height: 1.2;
+  white-space: nowrap;
+  user-select: none;
+  cursor: pointer;
+  transition:
+    transform 0.15s,
+    background-color 0.15s,
+    color 0.15s,
+    border-color 0.15s,
+    box-shadow 0.15s;
+  &:active {
+    transform: scale(0.97);
+  }
+}
+@utility chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  border-radius: var(--radius-pill);
+  padding: 0.2rem 0.6rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+@utility tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+@utility card-flat {
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-line);
+  background: var(--color-paper);
+}
+
+@layer components {
+  .btn-primary {
+    @apply btn bg-prairie text-white shadow-card hover:bg-prairie-deep;
+  }
+  .btn-yolk {
+    @apply btn bg-yolk text-ink hover:bg-yolk-deep;
+  }
+  .btn-ghost {
+    @apply btn border border-line-2 bg-paper text-ink hover:border-ink;
+  }
+  .btn-soft {
+    @apply btn bg-prairie-soft text-prairie-deep hover:bg-moss;
+  }
+  .btn-danger {
+    @apply btn bg-paprika-soft text-paprika hover:bg-paprika hover:text-white;
+  }
+  .btn-sm {
+    min-height: 40px;
+    padding-inline: 0.85rem;
+    @apply text-sm;
+  }
+  .btn-xs {
+    min-height: 34px;
+    padding-inline: 0.7rem;
+    @apply text-xs;
+  }
+  .btn-icon {
+    @apply btn size-12 p-0;
+  }
+  .btn[disabled],
+  .btn[aria-disabled='true'] {
+    @apply cursor-not-allowed opacity-50;
+    transform: none;
+  }
+  .card {
+    @apply rounded-lg bg-paper shadow-card;
+  }
+  .eyebrow {
+    @apply text-xs font-bold uppercase tracking-[0.12em] text-prairie;
+  }
+  .field {
+    @apply block w-full rounded-md border border-line-2 bg-paper px-3 py-2.5 text-base text-ink placeholder:text-ink-3 focus:border-prairie focus:ring-4 focus:ring-prairie/15 focus:outline-none;
+    min-height: 48px;
+  }
+  .field[aria-invalid='true'] {
+    @apply border-paprika focus:border-paprika focus:ring-paprika/15;
+  }
+  .field-sm {
+    min-height: 40px;
+    @apply py-1.5 text-sm;
+  }
+  .label {
+    @apply mb-1 block text-sm font-semibold text-ink-2;
+  }
+  .help {
+    @apply mt-1 text-xs text-ink-3;
+  }
+  .error {
+    @apply mt-1 text-sm font-medium text-paprika;
+  }
+  .skeleton {
+    @apply animate-shimmer rounded-md;
+    background: linear-gradient(90deg, #f1efe7 25%, #faf8f2 50%, #f1efe7 75%);
+    background-size: 200% 100%;
+  }
+  .table {
+    @apply w-full border-collapse text-sm;
+  }
+  .table th {
+    @apply border-b border-line px-3 py-2 text-left text-xs font-bold uppercase tracking-wide text-ink-3;
+  }
+  .table td {
+    @apply border-b border-line px-3 py-2.5 align-middle;
+  }
+  .table tr:last-child td {
+    @apply border-b-0;
+  }
+  .table tbody tr:hover {
+    @apply bg-cream;
+  }
+  .nav-item {
+    @apply flex min-h-12 items-center gap-3 rounded-md px-3 text-sm font-semibold text-ink-2 hover:bg-cream-2;
+  }
+  .nav-item.active {
+    @apply bg-prairie-soft text-prairie-deep;
+  }
+  .tab-item {
+    @apply flex min-h-12 flex-1 flex-col items-center justify-center gap-0.5 text-[11px] font-semibold text-ink-3;
+  }
+  .tab-item.active {
+    @apply text-prairie-deep;
+  }
+  .badge-count {
+    @apply inline-flex min-w-5 items-center justify-center rounded-pill bg-paprika px-1.5 text-[11px] font-bold leading-5 text-white;
+  }
+  .stat-tile {
+    @apply card-flat p-4;
+  }
+  .stat-tile .value {
+    @apply font-display text-2xl font-bold tabular;
+  }
+  .stat-tile .caption {
+    @apply text-xs font-semibold text-ink-3;
+  }
+}
+
+@layer utilities {
+  .safe-bottom {
+    padding-bottom: max(env(safe-area-inset-bottom), 0px);
+  }
+  .pb-bottom-bar {
+    padding-bottom: calc(var(--bottom-bar-h) + env(safe-area-inset-bottom) + 1rem);
+  }
+  .scrollbar-none {
+    scrollbar-width: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Bon de livraison : rien d'autre que le bon quand on imprime. */
+@media print {
+  body {
+    background: #fff;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .print-sheet {
+    box-shadow: none !important;
+    border: 0 !important;
+    max-width: none !important;
+    padding: 0 !important;
+  }
+  @page {
+    margin: 12mm;
+  }
+}

@@ -70,6 +70,13 @@ describe('dates de livraison', () => {
     expect(isDeliveryDateAllowed('2026-09-16', { ...base, now })).toBe(false);
     expect(isDeliveryDateAllowed('2026-13-01', { ...base, now })).toBe(false);
   });
+  it('décale le délai de zone quand l’heure limite est passée', () => {
+    // Tunis livre à J+1. Commandé à 18 h 30, la préparation ne peut plus partir
+    // demain matin : le premier jour possible est J+2.
+    const evening = new Date(2026, 8, 9, 18, 30);
+    expect(isDeliveryDateAllowed('2026-09-10', { ...base, now: evening, leadDays: 1 })).toBe(false);
+    expect(isDeliveryDateAllowed('2026-09-11', { ...base, now: evening, leadDays: 1 })).toBe(true);
+  });
   it('respecte le délai de la zone', () => {
     const now = new Date(2026, 8, 9, 10, 0);
     expect(isDeliveryDateAllowed('2026-09-09', { ...base, now, leadDays: 1 })).toBe(false);

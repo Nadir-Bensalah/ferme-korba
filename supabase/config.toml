@@ -1,0 +1,48 @@
+# Configuration du CLI Supabase pour le développement local (supabase start / db reset).
+# Les clés absentes prennent la valeur par défaut du CLI. Les réglages d'Auth reproduisent
+# ceux à poser dans le tableau de bord du projet en ligne (voir docs/SUPABASE.md).
+
+project_id = "ferme-korba"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+port = 54322
+major_version = 17
+
+[db.seed]
+enabled = true
+sql_paths = ["./seed.sql"]
+
+[studio]
+enabled = true
+port = 54323
+
+[storage]
+enabled = true
+file_size_limit = "5MiB"
+
+[auth]
+enabled = true
+site_url = "http://localhost:4321"
+additional_redirect_urls = ["http://localhost:4322", "https://nadir-bensalah.github.io"]
+jwt_expiry = 3600
+enable_refresh_token_rotation = true
+enable_signup = true
+enable_anonymous_sign_ins = false
+minimum_password_length = 8
+
+[auth.email]
+enable_signup = true
+# Les clients s'inscrivent avec un e-mail technique dérivé du téléphone : pas de confirmation.
+enable_confirmations = false
+double_confirm_changes = false
+secure_password_change = false
+
+[realtime]
+enabled = true

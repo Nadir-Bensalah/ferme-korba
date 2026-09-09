@@ -1,0 +1,55 @@
+---
+import type { Lang, Recipe } from '@ferme/core';
+import { t, L } from '@/i18n';
+import { href, routes } from '@/lib/paths';
+import Picture from '@/components/Picture.astro';
+
+/**
+ * Carte recette : photo, titre, durée, personnes, difficulté.
+ * Utilisée sur l'accueil, la liste des recettes et le bas d'une recette.
+ */
+interface Props {
+  recipe: Recipe;
+  lang: Lang;
+  index?: number;
+  eager?: boolean;
+}
+const { recipe: r, lang, index = 0, eager = false } = Astro.props;
+const d = t(lang);
+const url = href(lang, routes.recipe(r.slug));
+const difficulty = d.common.difficulty[r.difficulty - 1] ?? '';
+---
+
+<article class="reveal group relative flex flex-col overflow-hidden rounded-lg bg-paper shadow-card transition-shadow hover:shadow-float" style={`--reveal-delay:${Math.min(index, 8) * 70}ms`}>
+  <div class="relative aspect-[4/3] overflow-hidden bg-cream">
+    <Picture
+      src={r.image}
+      alt=""
+      sizes="(min-width: 1280px) 400px, (min-width: 768px) 50vw, 100vw"
+      imgClass="h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
+      loading={eager ? 'eager' : 'lazy'}
+      width={1600}
+      height={1200}
+      transitionName={`recipe-${r.id}`}
+    />
+    <span class="chip absolute start-3 top-3 bg-paper/90 text-ink-2 backdrop-blur">{difficulty}</span>
+  </div>
+  <div class="flex flex-1 flex-col gap-2 p-4 sm:p-5">
+    <h3 class="text-lg font-bold leading-tight sm:text-xl">
+      <a href={url} class="after:absolute after:inset-0 after:content-['']">{L(r.title, lang)}</a>
+    </h3>
+    <p class="line-clamp-2 text-sm text-ink-3">{L(r.intro, lang)}</p>
+    <dl class="mt-auto flex flex-wrap items-center gap-x-4 gap-y-1 pt-2 text-sm font-semibold text-ink-2">
+      <div class="flex items-center gap-1.5">
+        <dt class="sr-only">{d.recipes.duration}</dt>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>
+        <dd class="tabular">{r.duration_min} {d.common.minutes}</dd>
+      </div>
+      <div class="flex items-center gap-1.5">
+        <dt class="sr-only">{d.recipes.servingsLabel}</dt>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5" /><path d="M2.5 20a6.5 6.5 0 0 1 13 0" /><circle cx="17" cy="9" r="2.5" /><path d="M15.5 14.5a5 5 0 0 1 6 5" /></svg>
+        <dd class="tabular">{r.servings} {d.common.servings}</dd>
+      </div>
+    </dl>
+  </div>
+</article>

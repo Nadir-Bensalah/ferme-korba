@@ -1,0 +1,15 @@
+---
+import type { Lang } from '@ferme/core';
+import { t } from '@/i18n';
+import { isDemo } from '@/lib/data';
+
+/** Bandeau discret « Site de démonstration », seulement sans base Supabase. */
+interface Props {
+  lang: Lang;
+  class?: string;
+}
+const { lang, class: cls = '' } = Astro.props;
+const d = t(lang);
+---
+
+{isDemo && <p class:list={['demo-banner', cls]}>{d.common.demo}</p>}

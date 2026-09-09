@@ -1,0 +1,16 @@
+---
+import type { Lang } from '@ferme/core';
+import LegalPage from '@/components/LegalPage.astro';
+import { t } from '@/i18n';
+import { legalVars } from '@/views/legalVars';
+
+/** Conditions générales de vente : paiement à la livraison, prix au poids, zones, refus, annulation, litiges. */
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const d = t(lang);
+const sections = d.legal.termsSections(legalVars(lang));
+---
+
+<LegalPage lang={lang} title={d.legal.termsTitle} intro={d.legal.termsIntro} sections={sections} />

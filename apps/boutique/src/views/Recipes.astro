@@ -1,0 +1,27 @@
+---
+import type { Lang } from '@ferme/core';
+import { seedRecipes } from '@ferme/core';
+import Base from '@/layouts/Base.astro';
+import RecipeCard from '@/components/RecipeCard.astro';
+import SectionHead from '@/components/SectionHead.astro';
+import { t } from '@/i18n';
+import { href, routes } from '@/lib/paths';
+
+/** Liste des recettes. */
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const d = t(lang);
+---
+
+<Base lang={lang} title={d.recipes.title} description={d.recipes.text} image="/images/recipes/recette-poulet-roti.jpg">
+  <section class="container-x py-12 sm:py-16">
+    <SectionHead as="h1" eyebrow={d.recipes.eyebrow} title={d.recipes.title} text={d.recipes.text} link={{ href: href(lang, routes.shop), label: d.nav.shop }} />
+    <div class="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+      {seedRecipes.map((r, i) => (
+        <RecipeCard recipe={r} lang={lang} index={i} eager={i < 2} />
+      ))}
+    </div>
+  </section>
+</Base>

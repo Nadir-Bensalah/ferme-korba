@@ -1,0 +1,11 @@
+---
+import { seedCategories } from '@ferme/core';
+import Shop from '@/views/Shop.astro';
+
+export function getStaticPaths() {
+  return seedCategories.map((c) => ({ params: { slug: c.slug } }));
+}
+const { slug } = Astro.params;
+---
+
+<Shop lang="fr" category={slug} />

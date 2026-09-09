@@ -1,0 +1,75 @@
+---
+import type { Lang } from '@ferme/core';
+import Base from '@/layouts/Base.astro';
+import { t } from '@/i18n';
+import { href, routes } from '@/lib/paths';
+
+/**
+ * Gabarit des pages légales : titre, introduction, date, sommaire,
+ * sections numérotées, et un emplacement libre en bas (crédits photos).
+ */
+interface Props {
+  lang: Lang;
+  title: string;
+  intro: string;
+  sections: { title: string; body: string[] }[];
+}
+const { lang, title, intro, sections } = Astro.props;
+const d = t(lang);
+const slug = (s: string, i: number) => `s-${i + 1}-${s.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, '-').replace(/^-|-$/g, '')}`;
+const links = [
+  { to: routes.legal, label: d.footer.legal },
+  { to: routes.terms, label: d.footer.terms },
+  { to: routes.privacy, label: d.footer.privacy },
+];
+const path = Astro.url.pathname;
+---
+
+<Base lang={lang} title={title} description={intro}>
+  <div class="container-x py-12 sm:py-16">
+    <nav class="mb-8 flex flex-wrap gap-2" aria-label={d.footer.info}>
+      {links.map((l) => {
+        const h = href(lang, l.to);
+        const active = path === h;
+        return (
+          <a href={h} class:list={['rounded-pill px-4 py-2 text-sm font-semibold', active ? 'bg-prairie-soft text-prairie-deep' : 'bg-cream text-ink-2 hover:text-ink']} aria-current={active ? 'page' : undefined}>
+            {l.label}
+          </a>
+        );
+      })}
+    </nav>
+
+    <div class="grid gap-10 lg:grid-cols-[240px_minmax(0,1fr)] lg:gap-16">
+      <aside class="lg:sticky lg:top-24 lg:self-start">
+        <p class="eyebrow">{d.footer.info}</p>
+        <h1 class="mt-2 text-3xl font-extrabold leading-[1.05] sm:text-4xl">{title}</h1>
+        <p class="mt-3 text-ink-2">{intro}</p>
+        <p class="mt-3 text-sm text-ink-3">{d.legal.updated}</p>
+        <ol class="mt-6 hidden flex-col gap-1.5 border-s-2 border-line ps-4 text-sm lg:flex">
+          {sections.map((s, i) => (
+            <li>
+              <a href={`#${slug(s.title, i)}`} class="text-ink-2 hover:text-ink">
+                {s.title}
+              </a>
+            </li>
+          ))}
+          <slot name="toc" />
+        </ol>
+      </aside>
+
+      <article class="max-w-3xl">
+        {sections.map((s, i) => (
+          <section id={slug(s.title, i)} class="scroll-mt-24 border-b border-line py-7 first:pt-0 last:border-0">
+            <h2 class="text-xl font-extrabold sm:text-2xl">{s.title}</h2>
+            <div class="prose-farm mt-3 text-base">
+              {s.body.map((p) => (
+                <p>{p}</p>
+              ))}
+            </div>
+          </section>
+        ))}
+        <slot />
+      </article>
+    </div>
+  </div>
+</Base>
