@@ -304,7 +304,7 @@ export default function Checkout({ lang }: Props) {
     <form ref={formRef} onSubmit={submit} noValidate className="lg:grid lg:grid-cols-[1fr_400px] lg:items-start lg:gap-10">
       <div className="flex flex-col gap-8">
         {/* Ancre de progression */}
-        <nav className="sticky z-30 -mx-4 bg-paper/92 px-4 py-2 backdrop-blur-md sm:mx-0 sm:px-0" style={{ top: 'var(--header-h)' }} aria-label={d.checkout.progress}>
+        <nav className="sticky z-30 -mx-4 bg-paper/92 px-4 py-2 backdrop-blur-md sm:mx-0 sm:px-0" style={{ top: 'var(--stick-top)' }} aria-label={d.checkout.progress}>
           <div className="flex gap-1 overflow-x-auto scrollbar-none">
             {(['vous', 'livraison', 'recap'] as const).map((id, i) => (
               <a key={id} href={`#${id}`} className={`step-link ${stepOk[i] ? 'is-ok' : ''}`} aria-current={step === i ? 'step' : undefined}>
@@ -508,7 +508,7 @@ export default function Checkout({ lang }: Props) {
       </div>
 
       {/* 3. Récapitulatif */}
-      <aside id="recap" className="card mt-8 flex scroll-mt-32 flex-col gap-4 p-5 sm:p-6 lg:sticky lg:mt-0" style={{ top: 'calc(var(--header-h) + 16px)' }} aria-labelledby="recap-title">
+      <aside id="recap" className="card mt-8 flex scroll-mt-32 flex-col gap-4 p-5 sm:p-6 lg:sticky lg:mt-0" style={{ top: 'calc(var(--stick-top) + 16px)' }} aria-labelledby="recap-title">
         <h2 id="recap-title" className="text-2xl font-extrabold">
           <span className="me-2 text-prairie">3.</span>
           {d.checkout.summary}

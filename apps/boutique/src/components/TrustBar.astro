@@ -1,0 +1,137 @@
+---
+import type { Lang } from '@ferme/core';
+import { t } from '@/i18n';
+import Icon from '@/components/Icon.astro';
+import type { IconName } from '@/components/icons';
+
+/**
+ * La bande de réassurance : un ruban vert qui défile, avec une vague en haut et
+ * une vague en bas qui mordent sur les sections voisines.
+ *
+ * Elle se colle sous l'en-tête dès qu'on l'atteint. Une fois collée, la vague
+ * du haut se replie pour que le bord soit droit contre la barre de navigation ;
+ * celle du bas reste, la bande garde sa forme.
+ *
+ * Sur l'accueil elle est posée après le hero. Ailleurs, Base.astro la met juste
+ * sous l'en-tête, donc elle est collée dès le premier écran.
+ */
+interface Props {
+  lang: Lang;
+  /** Au ras de l'en-tête dès le départ : pas de vague en haut à afficher. */
+  attached?: boolean;
+  class?: string;
+}
+const { lang, attached = false, class: cls = '' } = Astro.props;
+const d = t(lang);
+const items = [...d.home.trust, ...d.home.trust, ...d.home.trust];
+const icons: IconName[] = ['plein-air', 'aube', 'camion', 'especes'];
+const WAVE =
+  'M0,32 L0,16 C84,2 156,2 240,16 C324,28 396,28 480,16 C564,2 636,2 720,16 C804,28 876,28 960,16 C1044,2 1116,2 1200,16 L1200,32 Z';
+---
+
+<div class="trust-anchor" aria-hidden="true"></div>
+<div class:list={['trust-bar', attached && 'is-attached', cls]} data-trust>
+  {
+    !attached && (
+      <svg class="trust-wave trust-wave-top" viewBox="0 0 1200 32" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+        <path d={WAVE} fill="currentColor" transform="rotate(180 600 16)" />
+      </svg>
+    )
+  }
+  <div class="marquee relative overflow-hidden" aria-label={d.home.trust.join(', ')}>
+    <div class="marquee-track animate-marquee flex w-max">
+      <ul class="flex shrink-0 items-center gap-10 pe-10">
+        {
+          items.map((item, i) => (
+            <li class="flex items-center gap-2.5 whitespace-nowrap text-sm font-bold uppercase tracking-wide">
+              <Icon name={icons[i % icons.length]!} class="h-6 w-6 shrink-0 text-yolk" strokeWidth={1.5} />
+              {item}
+            </li>
+          ))
+        }
+      </ul>
+      <ul class="flex shrink-0 items-center gap-10 pe-10" aria-hidden="true">
+        {
+          items.map((item, i) => (
+            <li class="flex items-center gap-2.5 whitespace-nowrap text-sm font-bold uppercase tracking-wide">
+              <Icon name={icons[i % icons.length]!} class="h-6 w-6 shrink-0 text-yolk" strokeWidth={1.5} />
+              {item}
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+  <svg class="trust-wave trust-wave-bottom" viewBox="0 0 1200 32" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+    <path d={WAVE} fill="currentColor"></path>
+  </svg>
+</div>
+
+<script>
+  // La bande passe en « collée » quand son point d'ancrage sort par le haut.
+  // On ne se fie pas à une mesure de position : l'observateur suffit et ne
+  // coûte rien au défilement.
+  function armTrust() {
+    const anchor = document.querySelector<HTMLElement>('.trust-anchor');
+    const bar = document.querySelector<HTMLElement>('[data-trust]');
+    if (!anchor || !bar || bar.dataset.armed) return;
+    bar.dataset.armed = '1';
+    if (bar.classList.contains('is-attached') || !('IntersectionObserver' in window)) return;
+    const header = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--header-h')) || 64;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry) bar.classList.toggle('is-stuck', !entry.isIntersecting && entry.boundingClientRect.top < header);
+      },
+      { rootMargin: `-${header}px 0px 0px 0px`, threshold: 0 },
+    );
+    io.observe(anchor);
+    document.addEventListener('astro:before-swap', () => io.disconnect(), { once: true });
+  }
+  armTrust();
+  document.addEventListener('astro:page-load', armTrust);
+</script>
+
+<style>
+  .trust-anchor {
+    height: 1px;
+    margin-bottom: -1px;
+  }
+  .trust-bar {
+    position: sticky;
+    top: var(--header-h);
+    z-index: 30;
+    height: var(--trust-h);
+    display: flex;
+    align-items: center;
+    background: var(--color-prairie-deep);
+    color: var(--color-yolk-soft);
+  }
+  /* Les deux vagues débordent de la bande et mordent sur les sections voisines. */
+  .trust-wave {
+    position: absolute;
+    inset-inline: 0;
+    display: block;
+    width: 100%;
+    height: 18px;
+    color: var(--color-prairie-deep);
+    pointer-events: none;
+  }
+  .trust-wave-top {
+    bottom: 100%;
+  }
+  .trust-wave-bottom {
+    top: 100%;
+  }
+  /* Collée sous la barre de navigation : le haut devient droit. */
+  .trust-bar.is-stuck .trust-wave-top {
+    opacity: 0;
+  }
+  .trust-wave-top {
+    transition: opacity 0.2s linear;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .trust-wave-top {
+      transition: none;
+    }
+  }
+</style>

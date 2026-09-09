@@ -90,6 +90,11 @@
     color-scheme: light;
     --header-h: 64px;
     --bottom-bar-h: 72px;
+    /* Bande de réassurance collée sous l'en-tête. --stick-top est la hauteur
+       occupée en haut de l'écran : tout ce qui se colle doit s'y référer, sinon
+       ça se chevauche. */
+    --trust-h: 52px;
+    --stick-top: calc(var(--header-h) + var(--trust-h));
   }
   html {
     scroll-behavior: smooth;
@@ -367,7 +372,7 @@
   /* Barre de catégories collante sous l'en-tête, défilement horizontal. */
   .cat-bar {
     position: sticky;
-    top: var(--header-h);
+    top: var(--stick-top);
     z-index: 30;
     background: color-mix(in srgb, var(--color-paper) 92%, transparent);
     backdrop-filter: blur(10px);
@@ -798,7 +803,7 @@ details[open] .faq-chevron {
   /* Compteur de jours, collé sous l'en-tête pendant toute la frise. */
   .story-meter {
     position: sticky;
-    top: calc(var(--header-h) + 0.5rem);
+    top: calc(var(--stick-top) + 0.5rem);
     z-index: 20;
     pointer-events: none;
   }
@@ -863,7 +868,7 @@ details[open] .faq-chevron {
     }
     .story-scene-col {
       position: sticky;
-      top: calc(var(--header-h) + 4.75rem);
+      top: calc(var(--stick-top) + 4.75rem);
     }
   }
   .story-stage-box {

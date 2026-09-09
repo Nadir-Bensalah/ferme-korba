@@ -173,7 +173,7 @@ export default function CartPage({ lang }: Props) {
           </a>
         </section>
 
-        <aside className="card mt-8 flex flex-col gap-4 p-5 lg:sticky lg:mt-0" style={{ top: 'calc(var(--header-h) + 16px)' }} aria-label={d.cart.summary}>
+        <aside className="card mt-8 flex flex-col gap-4 p-5 lg:sticky lg:mt-0" style={{ top: 'calc(var(--stick-top) + 16px)' }} aria-label={d.cart.summary}>
           <h2 className="text-xl font-extrabold">{d.cart.summary}</h2>
 
           {failed ? (

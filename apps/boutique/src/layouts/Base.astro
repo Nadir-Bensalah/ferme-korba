@@ -6,6 +6,7 @@ import { brand } from '@ferme/core';
 import { t, dir, locale, otherLang } from '@/i18n';
 import { href, asset, switchLangPath } from '@/lib/paths';
 import Header from '@/components/Header.astro';
+import TrustBar from '@/components/TrustBar.astro';
 import Footer from '@/components/Footer.astro';
 import BottomBar from '@/components/BottomBar.astro';
 import Toasts from '@/components/islands/Toasts';
@@ -26,9 +27,11 @@ interface Props {
   noindex?: boolean;
   /** Classe ajoutée au <main>. */
   mainClass?: string;
+  /** L'accueil porte sa propre bande de réassurance, après le hero. */
+  ownTrustBar?: boolean;
 }
 
-const { lang, title, description, image = '/images/og-default.jpg', noBottomBar = false, slimFooter = false, jsonLd, noindex = false, mainClass = '' } = Astro.props;
+const { lang, title, description, image = '/images/og-default.jpg', noBottomBar = false, slimFooter = false, jsonLd, noindex = false, mainClass = '', ownTrustBar = false } = Astro.props;
 const d = t(lang);
 const fullTitle = title ? `${title} · ${d.meta.siteName}` : d.meta.defaultTitle;
 const desc = description ?? d.meta.defaultDescription;
@@ -115,6 +118,7 @@ const ld = [business, ...(jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) :
   <body class:list={['flex min-h-dvh flex-col', !noBottomBar && 'pb-bottom-bar lg:pb-0']}>
     <a href="#contenu" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:rounded-md focus:bg-yolk focus:px-4 focus:py-2 focus:font-bold">{d.nav.skip}</a>
     <Header lang={lang} />
+    {!ownTrustBar && <TrustBar lang={lang} attached />}
     <main id="contenu" class:list={['flex-1', mainClass]}>
       <slot />
     </main>
