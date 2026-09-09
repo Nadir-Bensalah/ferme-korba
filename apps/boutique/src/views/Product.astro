@@ -6,6 +6,8 @@ import Picture from '@/components/Picture.astro';
 import Badges from '@/components/Badges.astro';
 import ProductCard from '@/components/ProductCard.astro';
 import SectionHead from '@/components/SectionHead.astro';
+import Deco from '@/components/deco/Deco.astro';
+import TornEdge from '@/components/deco/TornEdge.astro';
 import ProductBuy from '@/components/islands/ProductBuy';
 import { t, L, locale } from '@/i18n';
 import { href, routes, asset } from '@/lib/paths';
@@ -78,10 +80,14 @@ const breadcrumbLd = {
   itemListElement: crumbs.map((c, i) => ({ '@type': 'ListItem', position: i + 1, name: c.name, item: c.url })),
 };
 const sep = 'text-ink-3 select-none';
+const hasRelated = related.length > 0 && Boolean(cat);
 ---
 
 <Base lang={lang} title={L(p.name, lang)} description={L(p.short, lang)} image={image} jsonLd={[productLd, breadcrumbLd]}>
-  <div class="container-x pt-5 sm:pt-8">
+  <div class="relative overflow-clip bg-paper pb-20">
+    <Deco type="plume" class="deco deco-lg end-2 top-4 hidden w-16 rotate-12 text-prairie/20 lg:block lg:w-20" />
+    <Deco type="grain" class="deco deco-lg start-1 bottom-2 hidden w-16 -rotate-6 text-ink/10 lg:block lg:w-20" />
+    <div class="container-x pt-5 sm:pt-8">
     <nav aria-label={d.shop.breadcrumb} class="text-sm text-ink-3">
       <ol class="flex flex-wrap items-center gap-1.5">
         {
@@ -165,17 +171,23 @@ const sep = 'text-ink-3 select-none';
         }
       </div>
     </article>
+    </div>
+    <TornEdge position="bottom" variant="wave" height={28} class:list={['edge-in', hasRelated ? 'text-moss' : 'text-cream']} />
   </div>
 
   {
-    related.length > 0 && cat && (
-      <section class="container-x mt-16" aria-label={d.shop.inCategory}>
-        <SectionHead title={d.shop.inCategory} link={{ href: href(lang, routes.category(cat.slug)), label: d.common.seeAll }} />
-        <div class="mt-8 grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3 xl:grid-cols-4">
-          {related.map((r, i) => (
-            <ProductCard product={r} lang={lang} index={i} />
-          ))}
+    hasRelated && cat && (
+      <section class="filigree filigree-green filigree-quiet relative overflow-clip bg-moss pb-20 pt-14 sm:pt-16" aria-label={d.shop.inCategory}>
+        <Deco type="ail" class="deco deco-lg end-3 bottom-2 hidden w-16 rotate-6 text-ink/10 lg:block" />
+        <div class="container-x">
+          <SectionHead title={d.shop.inCategory} link={{ href: href(lang, routes.category(cat.slug)), label: d.common.seeAll }} />
+          <div class="mt-8 grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3 xl:grid-cols-4">
+            {related.map((r, i) => (
+              <ProductCard product={r} lang={lang} index={i} />
+            ))}
+          </div>
         </div>
+        <TornEdge position="bottom" variant="torn" height={26} class="edge-in text-cream" />
       </section>
     )
   }

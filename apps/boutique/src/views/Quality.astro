@@ -1,18 +1,40 @@
 ---
 import type { Lang } from '@ferme/core';
+import { brand } from '@ferme/core';
 import Base from '@/layouts/Base.astro';
+import Picture from '@/components/Picture.astro';
 import SectionHead from '@/components/SectionHead.astro';
+import Deco from '@/components/deco/Deco.astro';
+import TornEdge from '@/components/deco/TornEdge.astro';
 import { t } from '@/i18n';
 import { href, routes } from '@/lib/paths';
 
-/** Qualité : six engagements, questions fréquentes (FAQPage), appel. */
+/**
+ * Qualité : la vie d'un poulet de Korba racontée en six étapes qui se
+ * découvrent au défilement, puis les engagements, les faits vérifiables,
+ * les chiffres, les questions fréquentes et l'appel à la boutique.
+ */
 interface Props {
   lang: Lang;
 }
 const { lang } = Astro.props;
 const d = t(lang);
 
-/** Pictos en ligne, dans l'ordre des engagements : plein air, nourriture, antibiotiques, froid, pesée, vétérinaire. */
+/** Dessins de la bibliothèque `Deco`, nommés ici pour ne pas importer un type depuis un .astro. */
+type DecoName = 'oeufs' | 'poussin' | 'grain' | 'ble' | 'poule' | 'plume' | 'persil' | 'oeuf' | 'coriandre';
+
+/** Photo et dessin de chaque étape. L'éclosion n'a pas de photo : le dessin prend sa place. */
+const storyArt: { photo: string; deco: DecoName; mask: string }[] = [
+  { photo: '/images/products/oeufs.jpg', deco: 'oeufs', mask: 'blob' },
+  { photo: '', deco: 'poussin', mask: 'blob-2' },
+  { photo: '/images/farm/hero-ferme.jpg', deco: 'grain', mask: 'blob-2' },
+  { photo: '/images/farm/poules-plein-air.jpg', deco: 'ble', mask: 'blob' },
+  { photo: '/images/farm/fermier.jpg', deco: 'poule', mask: 'blob-2' },
+  { photo: '/images/products/poulet-entier.jpg', deco: 'plume', mask: 'blob' },
+];
+const story = d.quality.story.map((s, i) => ({ ...s, ...(storyArt[i] ?? storyArt[0]!) }));
+
+/** Pictos des engagements : plein air, nourriture, antibiotiques, froid, pesée, vétérinaire. */
 const icons = [
   '<circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/>',
   '<path d="M4 20c0-8 5-13 14-14-1 9-6 14-14 14z"/><path d="M4 20c3-4 6-7 10-9"/>',
@@ -21,6 +43,20 @@ const icons = [
   '<path d="M12 3v18M4 7h16M6 7l-3 7a3.5 3.5 0 0 0 7 0L7 7M17 7l-3 7a3.5 3.5 0 0 0 7 0l-3-7M8 21h8"/>',
   '<path d="M6 3v6a6 6 0 0 0 12 0V3"/><path d="M5 3h2M17 3h2M12 15v2a4 4 0 0 0 8 0v-1"/><circle cx="20" cy="15" r="1.5"/>',
 ];
+
+/** Pictos des badges : durée, matin même, pas d'antibiotique, froid, balance, vétérinaire. */
+const badgeIcons = [
+  '<circle cx="12" cy="12" r="8.5"/><path d="M12 7v5.2l3.2 2"/>',
+  '<path d="M3 19h18M7.5 19a4.5 4.5 0 0 1 9 0M12 3v3.5M5.4 8.4l2 2M18.6 8.4l-2 2M2.5 14.5h2M19.5 14.5h2"/>',
+  '<rect x="3" y="9" width="18" height="6" rx="3"/><path d="M9.5 9v6"/><path d="M4.5 19.5 19.5 4.5"/>',
+  '<path d="M12 2.5v19M4 7l16 10M20 7 4 17"/><path d="M12 6.5 9.4 4.4M12 6.5l2.6-2.1M12 17.5l-2.6 2.1M12 17.5l2.6 2.1"/>',
+  '<path d="M12 4v16M6 20h12M4 8h16M7 8l-3 6.5a3.2 3.2 0 0 0 6 0L7 8M17 8l-3 6.5a3.2 3.2 0 0 0 6 0L17 8"/>',
+  '<path d="M12 3 4 6v6c0 5 3.5 8.5 8 9 4.5-.5 8-4 8-9V6z"/><path d="M9.2 12h5.6M12 9.2v5.6"/>',
+];
+
+/** Les chiffres sont les mêmes dans les deux langues : seuls l'unité et la phrase changent. */
+const numberValues = ['90', '24', '4', String(brand.since)];
+const numbers = d.quality.numbers.map((n, i) => ({ ...n, value: numberValues[i] ?? '', count: i < 3 }));
 
 const site = Astro.site ? Astro.site.toString().replace(/\/$/, '') : '';
 const jsonLd = {
@@ -37,58 +73,251 @@ const jsonLd = {
 ---
 
 <Base lang={lang} title={d.quality.title} description={d.quality.lead} jsonLd={jsonLd} image="/images/farm/poules-plein-air.jpg">
-  <section class="container-x pt-12 sm:pt-16">
-    <SectionHead as="h1" eyebrow={d.quality.eyebrow} title={d.quality.title} text={d.quality.lead} align="center" />
-    <ul class="mt-12 grid gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
-      {d.quality.items.map((item, i) => (
-        <li class="reveal flex flex-col gap-4 rounded-lg border border-line bg-paper p-6 shadow-card" style={`--reveal-delay:${i * 70}ms`}>
-          <span class="flex h-14 w-14 items-center justify-center rounded-md bg-prairie-soft text-prairie-deep" aria-hidden="true">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" set:html={icons[i] ?? icons[0]} />
-          </span>
-          <h2 class="text-xl font-bold leading-tight">{item.title}</h2>
-          <p class="text-ink-2">{item.text}</p>
-        </li>
-      ))}
-    </ul>
+  {/* 1. En-tête sur fond crème, filigrane et dessins dans les marges. */}
+  <section class="filigree relative overflow-hidden bg-cream pt-12 pb-20 sm:pt-16 sm:pb-28">
+    <Deco type="persil" class="deco deco-lg deco-sway start-[3%] top-14 w-24 text-prairie/30" />
+    <Deco type="grain" class="deco deco-lg end-[6%] top-10 w-20 -rotate-12 text-yolk/45" />
+    <Deco type="plume" class="deco deco-lg end-[3%] bottom-16 w-28 rotate-[18deg] text-prairie/25" />
+    <Deco type="oeuf" class="deco -bottom-3 start-1 w-16 text-prairie/15 sm:hidden" />
+    <div class="container-x">
+      <SectionHead as="h1" eyebrow={d.quality.heroEyebrow} title={d.quality.title} text={d.quality.lead} align="center" />
+    </div>
+    <TornEdge position="bottom" class="text-paper" height={26} />
   </section>
 
-  <section class="container-x py-16 sm:py-24">
-    <div class="mx-auto max-w-3xl">
-      <SectionHead title={d.quality.faqTitle} text={d.quality.faqText} align="center" />
-      <div class="faq mt-10 flex flex-col gap-3">
-        {d.quality.faq.map((f, i) => (
-          <details class="reveal group rounded-lg border border-line bg-paper shadow-card open:border-prairie/40" style={`--reveal-delay:${i * 60}ms`} data-faq>
-            <summary class="flex min-h-14 cursor-pointer items-center justify-between gap-4 px-5 py-4 text-start text-lg font-bold leading-tight select-none">
-              {f.q}
-              <svg class="faq-chevron shrink-0 text-prairie transition-transform duration-300" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
-            </summary>
-            <div class="faq-body">
-              <div>
-                <p class="px-5 pb-5 text-ink-2">{f.a}</p>
-              </div>
-            </div>
-          </details>
-        ))}
+  {/* 2. La frise de vie : six étapes, un trait qui se dessine, un compteur de jours. */}
+  <section class="relative overflow-x-clip bg-paper py-14 sm:py-20">
+    <Deco type="ble" class="deco deco-lg start-[2%] top-40 w-20 -rotate-6 text-prairie/15" />
+    <Deco type="coriandre" class="deco deco-lg end-[2%] bottom-32 w-24 text-prairie/15" />
+    <div class="container-x">
+      <SectionHead eyebrow={d.quality.storyEyebrow} title={d.quality.storyTitle} text={d.quality.storyText} align="center" />
+
+      <div class="relative mt-10">
+        {/* Compteur de jours : collé sous l'en-tête, il monte pendant la frise. */}
+        <div class="story-meter -mx-4 sm:-mx-6 lg:-mx-8">
+          <div class="relative flex items-center justify-center gap-2.5 border-y border-line bg-paper/95 px-4 py-2.5 backdrop-blur-md">
+            <span class="tabular font-display text-2xl leading-none font-extrabold text-prairie-deep" data-story-days>90</span>
+            <span class="text-sm font-bold text-ink-2">{d.quality.storyCounter}</span>
+            <span class="story-meter-bar absolute inset-x-0 bottom-0"><span class="story-meter-fill" data-story-fill></span></span>
+          </div>
+        </div>
+
+        <div class="story mt-10" data-story>
+          <div class="story-axis" aria-hidden="true">
+            <svg viewBox="0 0 2 1000" preserveAspectRatio="none" focusable="false">
+              <path class="story-track" d="M1 0V1000" vector-effect="non-scaling-stroke"></path>
+              <path class="story-line" d="M1 0V1000" pathLength="1"></path>
+            </svg>
+          </div>
+
+          <ol class="relative flex flex-col gap-8 sm:gap-10 lg:gap-4">
+            {story.map((s, i) => (
+              <li class="story-step reveal grid lg:grid-cols-2 lg:gap-16" style={`--reveal-delay:${(i % 2) * 90}ms`}>
+                <span class="story-dot" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+                <div class:list={[i % 2 === 0 ? 'lg:col-start-1' : 'lg:col-start-2', 'lg:py-6']}>
+                  <article class="relative overflow-hidden rounded-xl border border-line bg-paper p-5 shadow-card sm:p-6">
+                    <Deco type={s.deco} class="deco deco-lg -end-5 -bottom-5 w-28 rotate-6 text-prairie/10" />
+                    <div class="relative flex items-start justify-between gap-3">
+                      <div class="min-w-0">
+                        <span class="chip bg-yolk-soft text-yolk-deep">{s.when}</span>
+                        <h3 class="mt-3 text-xl leading-tight font-bold sm:text-2xl">{s.title}</h3>
+                      </div>
+                      <span class="story-num shrink-0" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+                    </div>
+                    <div class="relative mt-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-5">
+                      {s.photo ? (
+                        <Picture
+                          src={s.photo}
+                          alt={s.alt}
+                          sizes="(min-width: 640px) 128px, 112px"
+                          class="block h-28 w-28 shrink-0 sm:h-32 sm:w-32"
+                          imgClass={`${s.mask} h-full w-full object-cover`}
+                          width={600}
+                          height={600}
+                        />
+                      ) : (
+                        <span class="flex h-28 w-28 shrink-0 items-center justify-center rounded-lg bg-prairie-soft sm:h-32 sm:w-32" aria-hidden="true">
+                          <Deco type={s.deco} class="deco-sway w-20 text-prairie-deep" />
+                        </span>
+                      )}
+                      <p class="text-ink-2">{s.text}</p>
+                    </div>
+                  </article>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </div>
       </div>
     </div>
   </section>
 
-  <section class="container-x pb-4">
-    <div class="grain relative overflow-hidden rounded-xl bg-prairie-deep px-6 py-14 text-center sm:px-12 sm:py-20">
-      <div class="reveal relative">
-        <h2 class="mx-auto max-w-3xl text-3xl font-extrabold leading-[1.05] text-yolk sm:text-4xl lg:text-5xl">{d.quality.ctaTitle}</h2>
-        <p class="mx-auto mt-4 max-w-xl text-lg text-paper/85">{d.quality.ctaText}</p>
-        <a href={href(lang, routes.shop)} class="btn-yolk btn-lg mt-8">
-          {d.quality.cta}
-          <svg class="rtl:rotate-180" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
-        </a>
+  {/* 3. Les six engagements. */}
+  <section class="relative bg-paper pb-16 sm:pb-24">
+    <div class="container-x">
+      <SectionHead eyebrow={d.quality.eyebrow} title={d.quality.itemsTitle} text={d.quality.itemsText} align="center" />
+      <ul class="mt-10 grid gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
+        {d.quality.items.map((item, i) => (
+          <li class="reveal flex flex-col gap-4 rounded-lg border border-line bg-paper p-6 shadow-card" style={`--reveal-delay:${i * 70}ms`}>
+            <span class="flex h-14 w-14 items-center justify-center rounded-md bg-prairie-soft text-prairie-deep" aria-hidden="true">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" set:html={icons[i] ?? icons[0]} />
+            </span>
+            <h3 class="text-xl leading-tight font-bold">{item.title}</h3>
+            <p class="text-ink-2">{item.text}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  {/* 4. Les badges : des faits, pas des labels. */}
+  <section class="bg-paper pb-16 sm:pb-24">
+    <div class="container-x">
+      <div class="filigree relative overflow-hidden rounded-xl bg-cream px-5 py-12 sm:px-10 sm:py-14">
+        <Deco type="plume" class="deco deco-lg -start-6 -bottom-6 w-32 rotate-12 text-prairie/20" />
+        <div class="relative mx-auto max-w-2xl text-center">
+          <p class="eyebrow mb-2">{d.quality.badgesTitle}</p>
+          <p class="text-lg font-semibold text-ink-2">{d.quality.badgesText}</p>
+        </div>
+        <ul class="relative mt-8 flex flex-wrap justify-center gap-2.5 sm:gap-3">
+          {d.quality.badges.map((label, i) => (
+            <li
+              class="reveal inline-flex items-center gap-2.5 rounded-pill border border-prairie/25 bg-paper py-2.5 ps-3 pe-4 shadow-card"
+              style={`--reveal-delay:${i * 60}ms`}
+            >
+              <svg class="shrink-0 text-prairie" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={badgeIcons[i] ?? badgeIcons[0]} />
+              <span class="text-sm font-bold">{label}</span>
+            </li>
+          ))}
+        </ul>
       </div>
+    </div>
+  </section>
+
+  {/* 5. La transparence en chiffres. */}
+  <section class="bg-moss py-14 sm:py-20">
+    <div class="container-x">
+      <div class="reveal mx-auto max-w-2xl text-center">
+        <h2 class="text-3xl font-extrabold sm:text-4xl">{d.quality.numbersTitle}</h2>
+        <p class="mt-3 text-lg text-ink-2">{d.quality.numbersText}</p>
+      </div>
+      <ul class="mt-10 grid grid-cols-2 gap-x-4 gap-y-10 lg:grid-cols-4">
+        {numbers.map((n, i) => (
+          <li class="reveal text-center" style={`--reveal-delay:${i * 90}ms`}>
+            <p class="flex items-baseline justify-center gap-1.5">
+              <span class="tabular font-display text-5xl leading-none font-extrabold text-prairie-deep sm:text-6xl" data-count={n.count ? n.value : undefined}>{n.value}</span>
+              {n.unit && <span class="text-lg font-extrabold text-yolk-deep">{n.unit}</span>}
+            </p>
+            <p class="mx-auto mt-3 max-w-[15rem] text-sm text-ink-2 sm:text-base">{n.label}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  {/* 6. Les questions fréquentes. Le bord déchiré annonce la section verte. */}
+  <section class="relative bg-paper py-16 sm:py-24">
+    <div class="container-x">
+      <div class="mx-auto max-w-3xl">
+        <SectionHead title={d.quality.faqTitle} text={d.quality.faqText} align="center" />
+        <div class="faq mt-10 flex flex-col gap-3">
+          {d.quality.faq.map((f, i) => (
+            <details class="reveal group rounded-lg border border-line bg-paper shadow-card open:border-prairie/40" style={`--reveal-delay:${i * 60}ms`} data-faq>
+              <summary class="flex min-h-14 cursor-pointer items-center justify-between gap-4 px-5 py-4 text-start text-lg leading-tight font-bold select-none">
+                {f.q}
+                <svg class="faq-chevron shrink-0 text-prairie transition-transform duration-300" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
+              </summary>
+              <div class="faq-body">
+                <div>
+                  <p class="px-5 pb-5 text-ink-2">{f.a}</p>
+                </div>
+              </div>
+            </details>
+          ))}
+        </div>
+      </div>
+    </div>
+    <TornEdge position="bottom" class="text-prairie-deep" height={26} />
+  </section>
+
+  {/* 7. L'appel à la boutique. */}
+  <section class="grain relative overflow-hidden bg-prairie-deep py-16 text-center sm:py-20">
+    <Deco type="ble" class="deco deco-lg -end-4 top-6 w-32 rotate-6 text-yolk/25" />
+    <Deco type="poule" class="deco deco-lg -start-6 bottom-2 w-40 text-yolk/20" />
+    <div class="container-x reveal relative">
+      <h2 class="mx-auto max-w-3xl text-3xl leading-[1.05] font-extrabold text-yolk sm:text-4xl lg:text-5xl">{d.quality.ctaTitle}</h2>
+      <p class="mx-auto mt-4 max-w-xl text-lg text-paper/85">{d.quality.ctaText}</p>
+      <a href={href(lang, routes.shop)} class="btn-yolk btn-lg mt-8">
+        {d.quality.cta}
+        <svg class="rtl:rotate-180" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+      </a>
     </div>
   </section>
 
   <script>
-    // FAQ : ouverture et fermeture animées en hauteur. Sans JS, <details> fait le travail.
+    import '@/scripts/vitrine';
+  </script>
+
+  <script>
+    // Frise de vie : le trait vert se dessine à mesure qu'on descend, et le
+    // compteur de jours monte avec lui. Sans JS, ou en mouvement réduit, le
+    // trait est déjà plein et le compteur affiche 90 : rien n'est masqué.
+    const MAX_DAYS = 90;
+    let wrap: HTMLElement | null = null;
+    let days: HTMLElement | null = null;
+    let fill: HTMLElement | null = null;
+    let near = false;
+    let queued = false;
+
+    function paint() {
+      queued = false;
+      if (!wrap) return;
+      const r = wrap.getBoundingClientRect();
+      const vh = window.innerHeight || 1;
+      const span = Math.max(1, r.height - vh * 0.3);
+      let p = (vh * 0.7 - r.top) / span;
+      p = p < 0 ? 0 : p > 1 ? 1 : p;
+      wrap.style.setProperty('--story-progress', String(1 - p));
+      if (fill) fill.style.setProperty('--story-fill', `${Math.round(p * 100)}%`);
+      if (days) days.textContent = String(Math.round(p * MAX_DAYS));
+    }
+
+    function onScroll() {
+      if (!near || queued) return;
+      queued = true;
+      requestAnimationFrame(paint);
+    }
+
     function setup() {
+      wrap = document.querySelector<HTMLElement>('[data-story]');
+      days = document.querySelector<HTMLElement>('[data-story-days]');
+      fill = document.querySelector<HTMLElement>('[data-story-fill]');
+      near = false;
+      if (!wrap) return;
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      if (!('IntersectionObserver' in window)) return;
+      wrap.dataset.storyLive = '1';
+      near = true;
+      paint();
+      const io = new IntersectionObserver(
+        (entries) => {
+          for (const en of entries) near = en.isIntersecting;
+          if (near) paint();
+        },
+        { rootMargin: '200px 0px 200px 0px' },
+      );
+      io.observe(wrap);
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
+    setup();
+    document.addEventListener('astro:page-load', setup);
+  </script>
+
+  <script>
+    // FAQ : ouverture et fermeture animées en hauteur. Sans JS, <details> fait le travail.
+    function setupFaq() {
       document.querySelectorAll<HTMLDetailsElement>('details[data-faq]:not([data-ready])').forEach((el) => {
         el.dataset.ready = '1';
         const summary = el.querySelector('summary');
@@ -116,7 +345,7 @@ const jsonLd = {
         });
       });
     }
-    setup();
-    document.addEventListener('astro:page-load', setup);
+    setupFaq();
+    document.addEventListener('astro:page-load', setupFaq);
   </script>
 </Base>

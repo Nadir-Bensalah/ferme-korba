@@ -6,6 +6,8 @@ import Picture from '@/components/Picture.astro';
 import ProductCard from '@/components/ProductCard.astro';
 import RecipeCard from '@/components/RecipeCard.astro';
 import RecipeCart from '@/components/islands/RecipeCart';
+import Deco from '@/components/deco/Deco.astro';
+import TornEdge from '@/components/deco/TornEdge.astro';
 import { t, L } from '@/i18n';
 import { href, routes, asset } from '@/lib/paths';
 
@@ -44,6 +46,8 @@ const jsonLd = {
 ---
 
 <Base lang={lang} title={L(r.title, lang)} description={L(r.intro, lang)} image={r.image} jsonLd={jsonLd}>
+  <div class="relative overflow-clip bg-paper pb-12">
+    <Deco type="romarin" class="deco deco-lg end-2 top-3 hidden w-16 rotate-12 text-prairie/20 lg:block lg:w-20" />
   <article class="container-x py-8 sm:py-12">
     <nav class="mb-6 text-sm text-ink-3" aria-label={d.common.back}>
       <a href={href(lang, routes.recipes)} class="inline-flex items-center gap-1.5 font-semibold text-prairie hover:text-prairie-deep">
@@ -53,7 +57,7 @@ const jsonLd = {
     </nav>
 
     <header class="grid items-center gap-8 lg:grid-cols-2 lg:gap-14">
-      <div class="overflow-hidden rounded-xl shadow-float">
+      <div class="blob-2">
         <Picture src={r.image} alt={L(r.title, lang)} sizes="(min-width: 1024px) 50vw, 100vw" loading="eager" fetchpriority="high" imgClass="aspect-[4/3] w-full object-cover" width={1600} height={1200} transitionName={`recipe-${r.id}`} />
       </div>
       <div>
@@ -139,17 +143,24 @@ const jsonLd = {
       )
     }
   </article>
+    <TornEdge position="bottom" variant="wave" height={28} class="edge-in text-moss" />
+  </div>
 
-  <section class="container-x pb-4 pt-8">
-    <div class="flex items-end justify-between gap-3">
-      <h2 class="text-2xl font-extrabold sm:text-3xl">{d.recipes.more}</h2>
-      <a href={href(lang, routes.recipes)} class="font-bold text-prairie hover:text-prairie-deep">{d.common.seeAll}</a>
+  <section class="filigree filigree-green filigree-quiet relative overflow-clip bg-moss pb-20 pt-14 sm:pt-16">
+    <Deco type="piment" class="deco deco-lg end-3 top-1 hidden w-16 rotate-12 text-paprika/20 lg:block" />
+    <Deco type="persil" class="deco deco-lg start-2 bottom-2 hidden w-16 -rotate-6 text-prairie/20 lg:block lg:w-20" />
+    <div class="container-x">
+      <div class="flex items-end justify-between gap-3">
+        <h2 class="text-2xl font-extrabold sm:text-3xl">{d.recipes.more}</h2>
+        <a href={href(lang, routes.recipes)} class="font-bold text-prairie hover:text-prairie-deep">{d.common.seeAll}</a>
+      </div>
+      <div class="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        {others.map((o, i) => (
+          <RecipeCard recipe={o} lang={lang} index={i} />
+        ))}
+      </div>
     </div>
-    <div class="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-      {others.map((o, i) => (
-        <RecipeCard recipe={o} lang={lang} index={i} />
-      ))}
-    </div>
+    <TornEdge position="bottom" variant="torn" height={26} class="edge-in text-cream" />
   </section>
 
   <script>

@@ -4,6 +4,8 @@ import { brand } from '@ferme/core';
 import Base from '@/layouts/Base.astro';
 import Picture from '@/components/Picture.astro';
 import SectionHead from '@/components/SectionHead.astro';
+import Deco from '@/components/deco/Deco.astro';
+import TornEdge from '@/components/deco/TornEdge.astro';
 import { t } from '@/i18n';
 import { href, routes } from '@/lib/paths';
 
@@ -19,31 +21,45 @@ const sections = d.farm.sections.map((s, i) => ({ ...s, photo: photos[i] ?? phot
 ---
 
 <Base lang={lang} title={d.farm.title} description={d.farm.lead} image="/images/farm/fermier.jpg">
-  <section class="container-x pt-12 sm:pt-16">
-    <SectionHead as="h1" eyebrow={d.farm.eyebrow} title={d.farm.title} text={d.farm.lead} align="center" />
-    <div class="reveal mt-10 overflow-hidden rounded-xl shadow-float" style="--reveal-delay: 120ms">
-      <Picture src="/images/farm/hero-ferme.jpg" alt={d.farm.sectionAlts[0] ?? ''} sizes="(min-width: 1280px) 1200px, 100vw" loading="eager" fetchpriority="high" imgClass="aspect-[16/9] w-full object-cover sm:aspect-[21/9]" />
+  <section class="relative overflow-clip bg-paper pb-16 pt-12 sm:pt-16">
+    <Deco type="oranger" class="deco deco-lg end-2 top-6 hidden w-20 rotate-6 text-yolk/25 lg:block lg:w-24" />
+    <div class="container-x">
+      <SectionHead as="h1" eyebrow={d.farm.eyebrow} title={d.farm.title} text={d.farm.lead} align="center" />
+      <div class="reveal mt-10 overflow-hidden rounded-xl shadow-float" style="--reveal-delay: 120ms">
+        <Picture src="/images/farm/hero-ferme.jpg" alt={d.farm.sectionAlts[0] ?? ''} sizes="(min-width: 1280px) 1200px, 100vw" loading="eager" fetchpriority="high" imgClass="aspect-[16/9] w-full object-cover sm:aspect-[21/9]" />
+      </div>
     </div>
+    <TornEdge position="bottom" variant="wave" height={28} class="edge-in text-cream" />
   </section>
 
-  <section class="container-x flex flex-col gap-16 py-16 sm:gap-24 sm:py-24">
-    {sections.map((s, i) => (
-      <article class="grid items-center gap-8 lg:grid-cols-2 lg:gap-16">
-        <div class:list={['reveal', i % 2 === 1 && 'lg:order-2']}>
-          <div class:list={['overflow-hidden rounded-xl shadow-card', i % 2 === 1 ? 'ltr:-rotate-1 rtl:rotate-1' : 'ltr:rotate-1 rtl:-rotate-1']}>
-            <Picture src={s.photo} alt={s.alt} sizes="(min-width: 1024px) 50vw, 100vw" imgClass="aspect-[4/3] w-full object-cover" width={1600} height={1200} />
+  <section class="filigree filigree-quiet relative overflow-clip bg-cream py-16 sm:py-24">
+    <Deco type="ble" class="deco deco-lg end-4 top-3 hidden w-16 rotate-12 text-yolk/25 lg:block lg:w-20" />
+    <Deco type="plume" class="deco deco-lg start-2 bottom-2 hidden w-16 -rotate-12 text-prairie/20 lg:block lg:w-20" />
+    <div class="container-x flex flex-col gap-16 sm:gap-24">
+      {sections.map((s, i) => (
+        <article class="grid items-center gap-8 lg:grid-cols-2 lg:gap-16">
+          <div class:list={['reveal', i % 2 === 1 && 'lg:order-2']}>
+            <div
+              class:list={[
+                i === 0 ? 'blob' : i === 2 ? 'blob-2' : 'overflow-hidden rounded-xl shadow-card',
+                i % 2 === 1 ? 'ltr:-rotate-1 rtl:rotate-1' : 'ltr:rotate-1 rtl:-rotate-1',
+              ]}
+            >
+              <Picture src={s.photo} alt={s.alt} sizes="(min-width: 1024px) 50vw, 100vw" imgClass="aspect-[4/3] w-full object-cover" width={1600} height={1200} />
+            </div>
           </div>
-        </div>
-        <div class:list={['reveal', i % 2 === 1 && 'lg:order-1']} style="--reveal-delay: 100ms">
-          <p class="eyebrow mb-3">{String(i + 1).padStart(2, '0')}</p>
-          <h2 class="text-3xl font-extrabold leading-[1.05] sm:text-4xl">{s.title}</h2>
-          <p class="prose-farm mt-5">{s.text}</p>
-        </div>
-      </article>
-    ))}
+          <div class:list={['reveal', i % 2 === 1 && 'lg:order-1']} style="--reveal-delay: 100ms">
+            <p class="eyebrow mb-3">{String(i + 1).padStart(2, '0')}</p>
+            <h2 class="text-3xl font-extrabold leading-[1.05] sm:text-4xl">{s.title}</h2>
+            <p class="prose-farm mt-5">{s.text}</p>
+          </div>
+        </article>
+      ))}
+    </div>
+    <TornEdge position="bottom" variant="torn" height={26} class="edge-in text-prairie-deep" />
   </section>
 
-  <section class="bg-prairie-deep py-16 text-paper sm:py-20">
+  <section class="relative overflow-clip bg-prairie-deep py-16 text-paper sm:py-20">
     <div class="container-x">
       <h2 class="reveal text-center font-display text-2xl font-extrabold text-yolk sm:text-3xl">{d.farm.numbersTitle}</h2>
       <ul class="mt-10 grid grid-cols-2 gap-6 lg:grid-cols-4">
@@ -57,53 +73,61 @@ const sections = d.farm.sections.map((s, i) => ({ ...s, photo: photos[i] ?? phot
         ))}
       </ul>
     </div>
+    <TornEdge position="bottom" variant="wave" height={28} class="edge-in text-paper" />
   </section>
 
-  <section class="container-x py-16 sm:py-24">
-    <SectionHead eyebrow={d.farm.timelineEyebrow} title={d.farm.timelineTitle} text={d.farm.timelineText} align="center" />
-    <div class="relative mt-12">
-      <svg class="draw-path pointer-events-none absolute start-6 top-4 block h-[calc(100%-2rem)] w-px lg:hidden" viewBox="0 0 2 100" preserveAspectRatio="none" aria-hidden="true" data-draw>
-        <path d="M1 0V100" pathLength="1" stroke="var(--color-prairie)" stroke-width="3" fill="none" vector-effect="non-scaling-stroke" />
-      </svg>
-      <svg class="draw-path pointer-events-none absolute inset-x-0 top-7 hidden h-[2px] w-full rtl:-scale-x-100 lg:block" viewBox="0 0 1000 2" preserveAspectRatio="none" aria-hidden="true" data-draw>
-        <path d="M60 1H940" pathLength="1" stroke="var(--color-prairie)" stroke-width="3" fill="none" vector-effect="non-scaling-stroke" />
-      </svg>
-      <ol class="relative grid gap-8 lg:grid-cols-4 lg:gap-6">
-        {d.farm.timeline.map((step, i) => (
-          <li class="reveal relative flex gap-5 lg:flex-col lg:items-center lg:text-center" style={`--reveal-delay:${i * 120}ms`}>
-            <span class="relative z-10 flex h-12 w-12 shrink-0 items-center justify-center rounded-pill bg-prairie text-paper shadow-card ring-4 ring-paper lg:h-14 lg:w-14" aria-hidden="true">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                {i === 0 && <path d="M12 3c-3.5 0-6 4-6 9a6 6 0 0 0 12 0c0-5-2.5-9-6-9z" />}
-                {i === 1 && <path d="M3 18c4-1 7-4 9-10 2 6 5 9 9 10M12 8v13" />}
-                {i === 2 && <><circle cx="12" cy="12" r="4" /><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1" /></>}
-                {i === 3 && <><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z" /><circle cx="7" cy="18" r="2" /><circle cx="17" cy="18" r="2" /></>}
-              </svg>
-            </span>
-            <div class="pt-2 lg:pt-0">
-              <p class="eyebrow mb-1">{step.when}</p>
-              <h3 class="text-xl font-bold leading-tight">{step.title}</h3>
-              <p class="mt-2 text-ink-2">{step.text}</p>
-            </div>
-          </li>
-        ))}
-      </ol>
+  <section class="relative overflow-clip bg-paper py-16 sm:py-24">
+    <Deco type="poussin" class="deco deco-lg start-6 top-10 hidden w-20 -rotate-6 text-yolk/30 lg:block lg:w-24" />
+    <div class="container-x">
+      <SectionHead eyebrow={d.farm.timelineEyebrow} title={d.farm.timelineTitle} text={d.farm.timelineText} align="center" />
+      <div class="relative mt-12">
+        <svg class="draw-path pointer-events-none absolute start-6 top-4 block h-[calc(100%-2rem)] w-px lg:hidden" viewBox="0 0 2 100" preserveAspectRatio="none" aria-hidden="true" data-draw>
+          <path d="M1 0V100" pathLength="1" stroke="var(--color-prairie)" stroke-width="3" fill="none" vector-effect="non-scaling-stroke" />
+        </svg>
+        <svg class="draw-path pointer-events-none absolute inset-x-0 top-7 hidden h-[2px] w-full rtl:-scale-x-100 lg:block" viewBox="0 0 1000 2" preserveAspectRatio="none" aria-hidden="true" data-draw>
+          <path d="M60 1H940" pathLength="1" stroke="var(--color-prairie)" stroke-width="3" fill="none" vector-effect="non-scaling-stroke" />
+        </svg>
+        <ol class="relative grid gap-8 lg:grid-cols-4 lg:gap-6">
+          {d.farm.timeline.map((step, i) => (
+            <li class="reveal relative flex gap-5 lg:flex-col lg:items-center lg:text-center" style={`--reveal-delay:${i * 120}ms`}>
+              <span class="relative z-10 flex h-12 w-12 shrink-0 items-center justify-center rounded-pill bg-prairie text-paper shadow-card ring-4 ring-paper lg:h-14 lg:w-14" aria-hidden="true">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  {i === 0 && <path d="M12 3c-3.5 0-6 4-6 9a6 6 0 0 0 12 0c0-5-2.5-9-6-9z" />}
+                  {i === 1 && <path d="M3 18c4-1 7-4 9-10 2 6 5 9 9 10M12 8v13" />}
+                  {i === 2 && <><circle cx="12" cy="12" r="4" /><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1" /></>}
+                  {i === 3 && <><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z" /><circle cx="7" cy="18" r="2" /><circle cx="17" cy="18" r="2" /></>}
+                </svg>
+              </span>
+              <div class="pt-2 lg:pt-0">
+                <p class="eyebrow mb-1">{step.when}</p>
+                <h3 class="text-xl font-bold leading-tight">{step.title}</h3>
+                <p class="mt-2 text-ink-2">{step.text}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </div>
     </div>
+    <TornEdge position="bottom" variant="torn" height={26} class="edge-in text-moss" />
   </section>
 
-  <section class="container-x pb-4">
-    <div class="grain relative overflow-hidden rounded-xl bg-prairie-deep px-6 py-14 text-center sm:px-12 sm:py-20">
-      <div class="reveal relative">
-        <h2 class="mx-auto max-w-3xl text-3xl font-extrabold leading-[1.05] text-yolk sm:text-4xl lg:text-5xl">{d.farm.ctaTitle}</h2>
-        <p class="mx-auto mt-4 max-w-xl text-lg text-paper/85">{d.farm.ctaText}</p>
-        <div class="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-          <a href={href(lang, routes.shop)} class="btn-yolk btn-lg">
-            {d.farm.cta}
-            <svg class="rtl:rotate-180" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
-          </a>
-          <a href={href(lang, routes.contact)} class="btn btn-lg border border-paper/40 bg-paper/10 text-paper hover:bg-paper/20">{d.nav.contact} · {brand.phoneDisplay}</a>
+  <section class="relative overflow-clip bg-moss pb-20 pt-20 sm:pb-24 sm:pt-24">
+    <div class="container-x">
+      <div class="grain relative overflow-hidden rounded-xl bg-prairie-deep px-6 py-14 text-center sm:px-12 sm:py-20">
+        <div class="reveal relative">
+          <h2 class="mx-auto max-w-3xl text-3xl font-extrabold leading-[1.05] text-yolk sm:text-4xl lg:text-5xl">{d.farm.ctaTitle}</h2>
+          <p class="mx-auto mt-4 max-w-xl text-lg text-paper/85">{d.farm.ctaText}</p>
+          <div class="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+            <a href={href(lang, routes.shop)} class="btn-yolk btn-lg">
+              {d.farm.cta}
+              <svg class="rtl:rotate-180" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+            </a>
+            <a href={href(lang, routes.contact)} class="btn btn-lg border border-paper/40 bg-paper/10 text-paper hover:bg-paper/20">{d.nav.contact} · {brand.phoneDisplay}</a>
+          </div>
         </div>
       </div>
     </div>
+    <TornEdge position="bottom" variant="wave" height={28} class="edge-in text-cream" />
   </section>
 
   <script>

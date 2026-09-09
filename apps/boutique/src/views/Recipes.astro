@@ -4,6 +4,8 @@ import { seedRecipes } from '@ferme/core';
 import Base from '@/layouts/Base.astro';
 import RecipeCard from '@/components/RecipeCard.astro';
 import SectionHead from '@/components/SectionHead.astro';
+import Deco from '@/components/deco/Deco.astro';
+import TornEdge from '@/components/deco/TornEdge.astro';
 import { t } from '@/i18n';
 import { href, routes } from '@/lib/paths';
 
@@ -16,12 +18,24 @@ const d = t(lang);
 ---
 
 <Base lang={lang} title={d.recipes.title} description={d.recipes.text} image="/images/recipes/recette-poulet-roti.jpg">
-  <section class="container-x py-12 sm:py-16">
-    <SectionHead as="h1" eyebrow={d.recipes.eyebrow} title={d.recipes.title} text={d.recipes.text} link={{ href: href(lang, routes.shop), label: d.nav.shop }} />
-    <div class="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-      {seedRecipes.map((r, i) => (
-        <RecipeCard recipe={r} lang={lang} index={i} eager={i < 2} />
-      ))}
+  <section class="filigree relative overflow-clip bg-cream pb-24 pt-12 sm:pt-16">
+    <Deco type="persil" class="deco deco-sway deco-lg start-3 bottom-1 hidden w-16 -rotate-6 text-prairie/25 lg:block lg:w-20" />
+    <Deco type="piment" class="deco deco-lg end-4 bottom-1 hidden w-16 rotate-12 text-paprika/20 lg:block" />
+    <div class="container-x">
+      <SectionHead as="h1" eyebrow={d.recipes.eyebrow} title={d.recipes.title} text={d.recipes.text} link={{ href: href(lang, routes.shop), label: d.nav.shop }} />
     </div>
+    <TornEdge position="bottom" variant="wave" height={28} class="edge-in text-paper" />
+  </section>
+
+  <section class="relative overflow-clip bg-paper pb-24 pt-12 sm:pt-14">
+    <Deco type="coriandre" class="deco deco-lg start-0 bottom-1 hidden w-16 rotate-6 text-prairie/20 lg:block lg:w-20" />
+    <div class="container-x">
+      <div class="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+        {seedRecipes.map((r, i) => (
+          <RecipeCard recipe={r} lang={lang} index={i} eager={i < 2} />
+        ))}
+      </div>
+    </div>
+    <TornEdge position="bottom" variant="torn" height={26} class="edge-in text-cream" />
   </section>
 </Base>

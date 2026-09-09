@@ -13,7 +13,10 @@ function countUp(el: HTMLElement) {
   const target = Number((m[1] ?? '').replace(/\s/g, ''));
   const suffix = m[2] ?? '';
   const fmt = new Intl.NumberFormat(document.documentElement.lang || 'fr', { useGrouping: false });
-  if (!Number.isFinite(target) || target === 0 || reduced()) {
+  // Une année ne se compte pas : la voir défiler de 0 à 1998 fait compteur de
+  // kilomètres. Idem pour zéro, et quand l'utilisateur réduit les animations.
+  const isYear = /^(19|20)\d{2}$/.test((m[1] ?? '').replace(/\s/g, ''));
+  if (!Number.isFinite(target) || target === 0 || isYear || reduced()) {
     el.textContent = raw;
     return;
   }

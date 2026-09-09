@@ -4,6 +4,8 @@ import { displayPrice, seedCategories, seedProducts } from '@ferme/core';
 import Base from '@/layouts/Base.astro';
 import ProductCard from '@/components/ProductCard.astro';
 import SectionHead from '@/components/SectionHead.astro';
+import Deco from '@/components/deco/Deco.astro';
+import TornEdge from '@/components/deco/TornEdge.astro';
 import ShopLive, { type CardSeed } from '@/components/islands/ShopLive';
 import { t, L } from '@/i18n';
 import { href, routes } from '@/lib/paths';
@@ -47,11 +49,16 @@ const itemList = {
 ---
 
 <Base lang={lang} title={title} description={text} jsonLd={itemList}>
-  <section class="container-x pt-8 sm:pt-12">
-    <SectionHead as="h1" eyebrow={d.shop.breadcrumbShop} title={title} text={text} />
+  <section class="filigree relative overflow-clip bg-cream pb-24 pt-8 sm:pt-12">
+    <Deco type="oeuf" class="deco deco-lg end-3 bottom-2 hidden w-16 rotate-6 text-yolk/25 lg:block lg:w-20" />
+    <Deco type="ble" class="deco deco-lg start-1 bottom-2 hidden w-16 -rotate-12 text-prairie/20 lg:block lg:w-20" />
+    <div class="container-x">
+      <SectionHead as="h1" eyebrow={d.shop.breadcrumbShop} title={title} text={text} />
+    </div>
+    <TornEdge position="bottom" variant="wave" height={26} class="edge-in text-paper" />
   </section>
 
-  <div class="cat-bar mt-6">
+  <div class="cat-bar">
     <nav class="container-x" aria-label={d.shop.filter}>
       <div class="-mx-4 flex gap-2 overflow-x-auto px-4 py-3 scrollbar-none sm:mx-0 sm:px-0">
         <a href={href(lang, routes.shop)} class="cat-chip" aria-current={!cat ? 'page' : undefined}>{d.shop.all}</a>
@@ -66,7 +73,9 @@ const itemList = {
     </nav>
   </div>
 
-  <section class="container-x py-6 sm:py-8" aria-labelledby="grid-title">
+  <section class="relative overflow-clip bg-paper pb-24 pt-6 sm:pt-8" aria-labelledby="grid-title">
+    <Deco type="poule" class="deco deco-lg start-0 bottom-2 hidden w-20 text-ink/10 lg:block lg:w-24" />
+    <div class="container-x">
     <div class="mb-5 flex flex-wrap items-center justify-between gap-3">
       <p id="grid-title" class="text-sm font-semibold text-ink-3" data-product-count>{d.shop.count(products.length)}</p>
       <p class="chip bg-prairie-soft text-prairie-deep normal-case tracking-normal">
@@ -83,6 +92,8 @@ const itemList = {
         ))
       }
     </div>
+    </div>
+    <TornEdge position="bottom" variant="torn" height={26} class="edge-in text-cream" />
   </section>
 
   <ShopLive client:idle lang={lang} category={cat?.slug} seed={seed} />

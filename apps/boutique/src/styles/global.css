@@ -697,3 +697,154 @@ details[open] .faq-chevron {
     }
   }
 }
+
+/* qualité */
+@layer components {
+  /* Frise de vie. Un axe vertical : au début de la ligne sur téléphone, au
+     milieu sur ordinateur. Le trait vert se dessine au défilement. Sans JS
+     il est plein d'entrée de jeu, et rien n'est jamais masqué. */
+  .story {
+    --story-axis: 1.375rem;
+    position: relative;
+  }
+  .story-axis {
+    position: absolute;
+    inset-block: 0.75rem;
+    inset-inline-start: var(--story-axis);
+    width: 2px;
+    margin-inline-start: -1px;
+    pointer-events: none;
+  }
+  .story-axis svg {
+    display: block;
+    width: 2px;
+    height: 100%;
+  }
+  .story-track {
+    fill: none;
+    stroke: var(--color-line-2);
+    stroke-width: 2;
+    stroke-dasharray: 4 8;
+    stroke-linecap: round;
+  }
+  .story-line {
+    fill: none;
+    stroke: var(--color-prairie);
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 0;
+  }
+  .js .story[data-story-live] .story-line {
+    stroke-dashoffset: var(--story-progress, 1);
+  }
+  .story-step {
+    position: relative;
+    padding-inline-start: 3.5rem;
+  }
+  /* Pastille numérotée posée sur l'axe. Verte par défaut : sans JS, la frise
+     est déjà « parcourue ». */
+  .story-dot {
+    position: absolute;
+    top: 0.375rem;
+    inset-inline-start: var(--story-axis);
+    translate: -50% 0;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 999px;
+    border: 2px solid var(--color-prairie);
+    background: var(--color-prairie);
+    color: #fff;
+    box-shadow: 0 0 0 5px var(--color-cream);
+    font-family: var(--font-display);
+    font-size: 0.875rem;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    transition:
+      background-color 0.45s var(--ease-out-expo),
+      border-color 0.45s var(--ease-out-expo),
+      color 0.45s var(--ease-out-expo);
+  }
+  html[dir='rtl'] .story-dot {
+    translate: 50% 0;
+  }
+  .js .story-step:not(.is-in) .story-dot {
+    border-color: var(--color-line-2);
+    background: var(--color-paper);
+    color: var(--color-ink-3);
+  }
+  @media (min-width: 1024px) {
+    .story {
+      --story-axis: 50%;
+    }
+    .story-step {
+      padding-inline-start: 0;
+    }
+    .story-dot {
+      top: 2.5rem;
+    }
+  }
+  /* Le grand chiffre fantôme du fond de carte. */
+  .story-num {
+    font-family: var(--font-display);
+    font-size: 3.5rem;
+    font-weight: 800;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    color: transparent;
+    -webkit-text-stroke: 1.5px color-mix(in srgb, var(--color-prairie) 30%, transparent);
+  }
+  /* Compteur de jours, collé sous l'en-tête pendant toute la frise. */
+  .story-meter {
+    position: sticky;
+    top: calc(var(--header-h) + 0.5rem);
+    z-index: 20;
+    pointer-events: none;
+  }
+  .story-meter-bar {
+    display: block;
+    height: 3px;
+    background: color-mix(in srgb, var(--color-yolk) 25%, transparent);
+    overflow: hidden;
+  }
+  .story-meter-fill {
+    display: block;
+    height: 100%;
+    width: var(--story-fill, 100%);
+    background: var(--color-yolk);
+    transition: width 0.15s linear;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .js .story[data-story-live] .story-line {
+      stroke-dashoffset: 0;
+    }
+    .story-dot,
+    .story-meter-fill {
+      transition: none;
+    }
+  }
+}
+
+/* décor pages */
+/* Sur les très grandes sections, le filigrane se fait plus discret : le motif
+   se répète beaucoup et finirait par passer devant le texte. */
+.filigree-quiet::before {
+  opacity: 0.3;
+}
+
+/* Bords de section : le liseré se pose À L'INTÉRIEUR de la section, collé à
+   son bord, au lieu de déborder au-dehors. Il survit ainsi à un `overflow`
+   coupé et se cale au pixel près, quelle que soit sa hauteur.
+   Hors couche : ces règles doivent l'emporter sur `top-full` / `bottom-full`. */
+.edge-in {
+  top: auto;
+  bottom: 0;
+}
+.edge-in-top {
+  bottom: auto;
+  top: 0;
+}

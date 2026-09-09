@@ -6,6 +6,8 @@ import Picture from '@/components/Picture.astro';
 import ProductCard from '@/components/ProductCard.astro';
 import RecipeCard from '@/components/RecipeCard.astro';
 import SectionHead from '@/components/SectionHead.astro';
+import Deco from '@/components/deco/Deco.astro';
+import TornEdge from '@/components/deco/TornEdge.astro';
 import { t, L } from '@/i18n';
 import { href, routes, asset } from '@/lib/paths';
 
@@ -92,10 +94,12 @@ const star = `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor
         <a href="#comment" class="btn btn-lg border border-paper/40 bg-paper/10 text-paper backdrop-blur-sm hover:bg-paper/20">{d.home.heroCta2}</a>
       </div>
     </div>
+
+    <TornEdge position="bottom" variant="torn" height={26} class="edge-in text-prairie-deep" />
   </section>
 
   <!-- Bande de confiance -->
-  <div class="marquee overflow-hidden bg-prairie-deep py-3.5 text-yolk-soft" aria-label={d.home.trust.join(', ')}>
+  <div class="marquee relative overflow-hidden bg-prairie-deep py-3.5 text-yolk-soft" aria-label={d.home.trust.join(', ')}>
     <div class="marquee-track animate-marquee flex w-max">
       <ul class="flex shrink-0 items-center gap-10 pe-10">
         {trust.map((item) => (
@@ -117,27 +121,32 @@ const star = `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor
   </div>
 
   <!-- Catégories -->
-  <section class="container-x py-16 sm:py-20">
-    <SectionHead eyebrow={d.home.categoriesEyebrow} title={d.home.categoriesTitle} text={d.home.categoriesText} link={{ href: href(lang, routes.shop), label: d.common.seeAll }} />
-    <ul class="mt-8 grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3">
-      {categories.map((c, i) => (
-        <li class="reveal" style={`--reveal-delay:${i * 60}ms`}>
-          <a href={href(lang, routes.category(c.slug))} class="group relative block overflow-hidden rounded-lg bg-cream shadow-card transition-shadow hover:shadow-float">
-            <div class="aspect-[4/3] overflow-hidden">
-              <Picture src={c.image} alt="" sizes="(min-width: 768px) 33vw, 50vw" imgClass="h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105" width={1600} height={1200} />
-            </div>
-            <div class="p-3 sm:p-4">
-              <h3 class="text-base font-bold leading-tight sm:text-lg">{L(c.name, lang)}</h3>
-              <p class="mt-1 line-clamp-2 text-sm text-ink-3">{L(c.description, lang)}</p>
-            </div>
-          </a>
-        </li>
-      ))}
-    </ul>
+  <section class="filigree relative overflow-hidden bg-cream py-16 sm:py-20">
+    <TornEdge position="top" variant="wave" height={22} class="edge-in-top text-prairie-deep" />
+    <Deco type="oeufs" class="deco deco-lg end-0 top-4 hidden w-20 rotate-6 text-yolk/30 lg:block lg:w-24" />
+    <div class="container-x">
+      <SectionHead eyebrow={d.home.categoriesEyebrow} title={d.home.categoriesTitle} text={d.home.categoriesText} link={{ href: href(lang, routes.shop), label: d.common.seeAll }} />
+      <ul class="mt-8 grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3">
+        {categories.map((c, i) => (
+          <li class="reveal" style={`--reveal-delay:${i * 60}ms`}>
+            <a href={href(lang, routes.category(c.slug))} class="group relative block overflow-hidden rounded-lg bg-paper shadow-card transition-shadow hover:shadow-float">
+              <div class="aspect-[4/3] overflow-hidden">
+                <Picture src={c.image} alt="" sizes="(min-width: 768px) 33vw, 50vw" imgClass="h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105" width={1600} height={1200} />
+              </div>
+              <div class="p-3 sm:p-4">
+                <h3 class="text-base font-bold leading-tight sm:text-lg">{L(c.name, lang)}</h3>
+                <p class="mt-1 line-clamp-2 text-sm text-ink-3">{L(c.description, lang)}</p>
+              </div>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+    <TornEdge position="bottom" variant="torn" height={26} class="edge-in text-paper" />
   </section>
 
   <!-- Incontournables -->
-  <section class="bg-cream py-16 sm:py-20">
+  <section class="relative overflow-hidden bg-paper py-16 sm:py-20">
     <div class="container-x">
       <SectionHead eyebrow={d.home.featuredEyebrow} title={d.home.featuredTitle} text={d.home.featuredText} link={{ href: href(lang, routes.shop), label: d.common.seeAll }} />
       <div class="mt-8 grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-3">
@@ -146,43 +155,49 @@ const star = `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor
         ))}
       </div>
     </div>
+    <TornEdge position="bottom" variant="wave" height={28} class="edge-in text-moss" />
   </section>
 
   <!-- Comment ça marche -->
-  <section id="comment" class="container-x scroll-mt-20 py-16 sm:py-20">
-    <SectionHead eyebrow={d.home.howEyebrow} title={d.home.howTitle} text={d.home.howText} align="center" />
-    <div class="relative mt-12">
-      <svg class="draw-path pointer-events-none absolute start-6 top-4 block h-[calc(100%-2rem)] w-px lg:hidden" viewBox="0 0 2 100" preserveAspectRatio="none" aria-hidden="true" data-draw>
-        <path d="M1 0V100" pathLength="1" stroke="var(--color-yolk)" stroke-width="3" fill="none" vector-effect="non-scaling-stroke" />
-      </svg>
-      <svg class="draw-path pointer-events-none absolute inset-x-0 top-7 hidden h-10 w-full rtl:-scale-x-100 lg:block" viewBox="0 0 1000 40" preserveAspectRatio="none" aria-hidden="true" data-draw>
-        <path d="M60 20 C 200 -10, 300 50, 440 20 S 700 -10, 940 20" pathLength="1" stroke="var(--color-yolk)" stroke-width="3" fill="none" vector-effect="non-scaling-stroke" />
-      </svg>
-      <ol class="relative grid gap-8 lg:grid-cols-4 lg:gap-6">
-        {d.home.howSteps.map((s, i) => (
-          <li class="reveal relative flex gap-5 lg:flex-col lg:items-center lg:text-center" style={`--reveal-delay:${i * 120}ms`}>
-            <span class="relative z-10 flex h-12 w-12 shrink-0 items-center justify-center rounded-pill bg-ink font-display text-lg font-extrabold text-yolk shadow-card ring-4 ring-paper lg:h-14 lg:w-14 lg:text-xl" aria-hidden="true">
-              {i + 1}
-            </span>
-            <div class="pt-2 lg:pt-0">
-              <p class="eyebrow mb-1">{d.home.stepLabel(i + 1)}</p>
-              <h3 class="text-xl font-bold leading-tight">{s.title}</h3>
-              <p class="mt-2 text-ink-2">{s.text}</p>
-            </div>
-          </li>
-        ))}
-      </ol>
+  <section id="comment" class="relative scroll-mt-20 overflow-hidden bg-moss py-16 sm:py-20">
+    <Deco type="persil" class="deco deco-sway deco-lg start-4 top-10 hidden w-24 -rotate-6 text-prairie/25 lg:block lg:w-28" />
+    <Deco type="romarin" class="deco deco-lg end-6 top-16 hidden w-20 rotate-12 text-prairie/20 lg:block lg:w-24" />
+    <div class="container-x">
+      <SectionHead eyebrow={d.home.howEyebrow} title={d.home.howTitle} text={d.home.howText} align="center" />
+      <div class="relative mt-12">
+        <svg class="draw-path pointer-events-none absolute start-6 top-4 block h-[calc(100%-2rem)] w-px lg:hidden" viewBox="0 0 2 100" preserveAspectRatio="none" aria-hidden="true" data-draw>
+          <path d="M1 0V100" pathLength="1" stroke="var(--color-yolk)" stroke-width="3" fill="none" vector-effect="non-scaling-stroke" />
+        </svg>
+        <svg class="draw-path pointer-events-none absolute inset-x-0 top-7 hidden h-10 w-full rtl:-scale-x-100 lg:block" viewBox="0 0 1000 40" preserveAspectRatio="none" aria-hidden="true" data-draw>
+          <path d="M60 20 C 200 -10, 300 50, 440 20 S 700 -10, 940 20" pathLength="1" stroke="var(--color-yolk)" stroke-width="3" fill="none" vector-effect="non-scaling-stroke" />
+        </svg>
+        <ol class="relative grid gap-8 lg:grid-cols-4 lg:gap-6">
+          {d.home.howSteps.map((s, i) => (
+            <li class="reveal relative flex gap-5 lg:flex-col lg:items-center lg:text-center" style={`--reveal-delay:${i * 120}ms`}>
+              <span class="relative z-10 flex h-12 w-12 shrink-0 items-center justify-center rounded-pill bg-ink font-display text-lg font-extrabold text-yolk shadow-card ring-4 ring-moss lg:h-14 lg:w-14 lg:text-xl" aria-hidden="true">
+                {i + 1}
+              </span>
+              <div class="pt-2 lg:pt-0">
+                <p class="eyebrow mb-1">{d.home.stepLabel(i + 1)}</p>
+                <h3 class="text-xl font-bold leading-tight">{s.title}</h3>
+                <p class="mt-2 text-ink-2">{s.text}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </div>
     </div>
+    <TornEdge position="bottom" variant="torn" height={26} class="edge-in text-cream-2" />
   </section>
 
   <!-- La ferme -->
-  <section class="overflow-hidden bg-moss py-16 sm:py-20">
+  <section class="relative overflow-hidden bg-cream-2 py-16 sm:py-20">
     <div class="container-x grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
       <div class="reveal relative">
-        <div class="overflow-hidden rounded-xl shadow-float rtl:-rotate-1 ltr:rotate-1">
+        <div class="blob-2 rtl:-rotate-1 ltr:rotate-1">
           <Picture src="/images/farm/fermier.jpg" alt={d.home.farmAlt} sizes="(min-width: 1024px) 50vw, 100vw" imgClass="aspect-[4/3] w-full object-cover" width={1600} height={1200} />
         </div>
-        <div class="absolute -bottom-4 -end-2 rounded-lg bg-yolk px-4 py-3 font-display text-lg font-extrabold text-ink shadow-card sm:-end-4 sm:px-5">
+        <div class="absolute bottom-4 end-10 rounded-lg bg-yolk px-4 py-3 font-display text-lg font-extrabold text-ink shadow-card sm:end-16 sm:px-5">
           {d.farm.eyebrow} · {brand.since}
         </div>
       </div>
@@ -206,20 +221,24 @@ const star = `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor
         </a>
       </div>
     </div>
+    <TornEdge position="bottom" variant="wave" height={28} class="edge-in text-paper" />
   </section>
 
   <!-- Recettes -->
-  <section class="container-x py-16 sm:py-20">
-    <SectionHead eyebrow={d.home.recipesEyebrow} title={d.home.recipesTitle} text={d.home.recipesText} link={{ href: href(lang, routes.recipes), label: d.common.seeAll }} />
-    <div class="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-      {recipes.map((r, i) => (
-        <RecipeCard recipe={r} lang={lang} index={i} />
-      ))}
+  <section class="relative overflow-hidden bg-paper py-16 sm:py-20">
+    <div class="container-x">
+      <SectionHead eyebrow={d.home.recipesEyebrow} title={d.home.recipesTitle} text={d.home.recipesText} link={{ href: href(lang, routes.recipes), label: d.common.seeAll }} />
+      <div class="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        {recipes.map((r, i) => (
+          <RecipeCard recipe={r} lang={lang} index={i} />
+        ))}
+      </div>
     </div>
+    <TornEdge position="bottom" variant="torn" height={26} class="edge-in text-cream" />
   </section>
 
   <!-- Avis -->
-  <section class="bg-cream py-16 sm:py-20">
+  <section class="filigree relative overflow-hidden bg-cream py-16 sm:py-20">
     <div class="container-x">
       <SectionHead eyebrow={d.home.reviewsEyebrow} title={d.home.reviewsTitle} text={d.home.reviewsText} />
     </div>
@@ -241,43 +260,51 @@ const star = `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor
         </li>
       ))}
     </ul>
+    <TornEdge position="bottom" variant="wave" height={26} class="edge-in text-paper" />
   </section>
 
   <!-- Zones -->
-  <section class="container-x py-16 sm:py-20">
-    <SectionHead eyebrow={d.home.zonesEyebrow} title={d.home.zonesTitle} text={d.home.zonesText} />
-    <ul class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-      {zones.map((z, i) => (
-        <li class="reveal flex flex-col gap-3 rounded-lg border border-line bg-paper p-5 shadow-card" style={`--reveal-delay:${i * 80}ms`}>
-          <div class="flex items-start justify-between gap-3">
-            <h3 class="text-lg font-bold leading-tight">{L(z.name, lang)}</h3>
-            <span class:list={['chip shrink-0', z.lead_days === 0 ? 'bg-yolk-soft text-yolk-deep' : 'bg-prairie-soft text-prairie-deep']}>{z.lead_days === 0 ? d.home.zoneSameDay : d.home.zoneNextDay}</span>
-          </div>
-          <p class="text-sm text-ink-3">{L(z.areas, lang)}</p>
-          <div class="mt-auto border-t border-line pt-3">
-            <div class="flex items-baseline justify-between gap-2">
-              <span class="text-sm font-semibold text-ink-2">{d.home.zoneFee}</span>
-              <span class="font-display text-xl font-extrabold tabular">{formatPrice(z.fee, lang)}</span>
+  <section class="relative overflow-hidden bg-paper py-16 sm:py-20">
+    <div class="container-x">
+      <SectionHead eyebrow={d.home.zonesEyebrow} title={d.home.zonesTitle} text={d.home.zonesText} />
+      <ul class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {zones.map((z, i) => (
+          <li class="reveal flex flex-col gap-3 rounded-lg border border-line bg-paper p-5 shadow-card" style={`--reveal-delay:${i * 80}ms`}>
+            <div class="flex items-start justify-between gap-3">
+              <h3 class="text-lg font-bold leading-tight">{L(z.name, lang)}</h3>
+              <span class:list={['chip shrink-0', z.lead_days === 0 ? 'bg-yolk-soft text-yolk-deep' : 'bg-prairie-soft text-prairie-deep']}>{z.lead_days === 0 ? d.home.zoneSameDay : d.home.zoneNextDay}</span>
             </div>
-            {z.free_from > 0 && <p class="mt-1 text-sm font-semibold text-prairie">{d.home.zoneFreeFrom(formatPrice(z.free_from, lang))}</p>}
-          </div>
-        </li>
-      ))}
-    </ul>
+            <p class="text-sm text-ink-3">{L(z.areas, lang)}</p>
+            <div class="mt-auto border-t border-line pt-3">
+              <div class="flex items-baseline justify-between gap-2">
+                <span class="text-sm font-semibold text-ink-2">{d.home.zoneFee}</span>
+                <span class="font-display text-xl font-extrabold tabular">{formatPrice(z.fee, lang)}</span>
+              </div>
+              {z.free_from > 0 && <p class="mt-1 text-sm font-semibold text-prairie">{d.home.zoneFreeFrom(formatPrice(z.free_from, lang))}</p>}
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+    <TornEdge position="bottom" variant="torn" height={26} class="edge-in text-moss" />
   </section>
 
   <!-- Appel final -->
-  <section class="container-x pb-4">
-    <div class="grain relative overflow-hidden rounded-xl bg-prairie-deep px-6 py-14 text-center sm:px-12 sm:py-20">
-      <div class="reveal relative">
-        <h2 class="mx-auto max-w-3xl text-3xl font-extrabold leading-[1.05] text-yolk sm:text-4xl lg:text-5xl">{d.home.ctaTitle}</h2>
-        <p class="mx-auto mt-4 max-w-xl text-lg text-paper/85">{d.home.ctaText}</p>
-        <a href={href(lang, routes.shop)} class="btn-yolk btn-lg mt-8">
-          {d.home.ctaButton}
-          <svg class="rtl:rotate-180" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
-        </a>
+  <section class="relative overflow-hidden bg-moss pb-20 pt-20 sm:pb-24 sm:pt-24">
+    <Deco type="ble" class="deco deco-lg start-2 top-2 hidden w-16 -rotate-12 text-prairie/25 lg:block" />
+    <div class="container-x">
+      <div class="grain relative overflow-hidden rounded-xl bg-prairie-deep px-6 py-14 text-center sm:px-12 sm:py-20">
+        <div class="reveal relative">
+          <h2 class="mx-auto max-w-3xl text-3xl font-extrabold leading-[1.05] text-yolk sm:text-4xl lg:text-5xl">{d.home.ctaTitle}</h2>
+          <p class="mx-auto mt-4 max-w-xl text-lg text-paper/85">{d.home.ctaText}</p>
+          <a href={href(lang, routes.shop)} class="btn-yolk btn-lg mt-8">
+            {d.home.ctaButton}
+            <svg class="rtl:rotate-180" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+          </a>
+        </div>
       </div>
     </div>
+    <TornEdge position="bottom" variant="wave" height={28} class="edge-in text-cream" />
   </section>
 
   <script>
