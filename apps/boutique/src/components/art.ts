@@ -8,4 +8,6 @@ export type ArtName =
   | 'merci-ar'
   | 'paiement-fr'
   | 'paiement-ar'
-  | 'panier-oeufs';
+  | 'panier-oeufs'
+  | 'medaille-premium'
+  | 'badges-confiance';

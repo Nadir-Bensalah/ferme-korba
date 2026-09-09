@@ -24,6 +24,8 @@ export const fr = {
     call: 'Appeler',
   },
   common: {
+    trustStrip: 'Paiement à la livraison, livraison rapide, qualité contrôlée, produits frais, satisfait ou remboursé',
+    premiumMedal: '100 % qualité premium',
     from: 'à partir de',
     perKg: '/ kg',
     perPiece: '/ pièce',
@@ -238,6 +240,7 @@ export const fr = {
     showAll: 'Tout afficher',
   },
   cart: {
+    floating: 'Ouvrir le panier',
     title: 'Votre panier',
     empty: 'Votre panier est vide.',
     emptyCta: 'Voir la boutique',

@@ -14,6 +14,7 @@ import ProductBuy from '@/components/islands/ProductBuy';
 import BackToTop from '@/components/islands/BackToTop';
 import Cutoff from '@/components/islands/Cutoff';
 import ProductFacts from '@/components/ProductFacts.astro';
+import Art from '@/components/Art.astro';
 import { t, L, locale } from '@/i18n';
 import { href, routes, asset } from '@/lib/paths';
 
@@ -168,6 +169,8 @@ const parent = crumbs[crumbs.length - 2] ?? crumbs[0]!;
         </p>
 
         <ProductBuy client:load product={{ id: p.id, slug: p.slug, name: p.name, images: p.images, pricing: p.pricing, stock: p.stock, badges: p.badges }} lang={lang} />
+
+        <Art name="badges-confiance" alt={d.common.trustStrip} class="w-full" width={1400} height={159} sizes="(min-width: 1024px) 560px, 100vw" />
 
         <p class="text-sm font-semibold text-prairie-deep">
           <Cutoff client:idle lang={lang} variant="inline" fallback={d.shop.deliveredTomorrow} />

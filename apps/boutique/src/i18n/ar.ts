@@ -26,6 +26,8 @@ export const ar: Dictionary = {
     call: 'اتصل',
   },
   common: {
+    trustStrip: 'الدفع عند التوصيل، توصيل سريع، جودة مراقبة، منتجات طازجة، راضٍ أو مستردّ',
+    premiumMedal: 'جودة ممتازة 100%',
     from: 'ابتداءً من',
     perKg: '/ كغ',
     perPiece: '/ قطعة',
@@ -233,6 +235,7 @@ export const ar: Dictionary = {
     showAll: 'عرض الكل',
   },
   cart: {
+    floating: 'فتح السلة',
     title: 'سلتك',
     empty: 'سلتك فارغة.',
     emptyCta: 'تصفّح المتجر',

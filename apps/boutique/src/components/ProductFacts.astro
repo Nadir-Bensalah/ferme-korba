@@ -3,6 +3,7 @@ import type { Category, Lang, Product } from '@ferme/core';
 import { brand, formatPrice, seedZones } from '@ferme/core';
 import { t, L } from '@/i18n';
 import { href, routes, telLink } from '@/lib/paths';
+import Art from '@/components/Art.astro';
 
 /**
  * Le bloc de détails de la fiche produit : quatre repères illustrés (mode de
@@ -28,6 +29,7 @@ const icon = 'h-6 w-6 shrink-0 text-prairie';
 
 <div class="flex flex-col gap-4">
   <div class="flex flex-wrap items-center gap-2 text-sm">
+    <Art name="medaille-premium" alt={d.common.premiumMedal} class="h-14 w-14 -rotate-6" width={56} height={56} sizes="56px" />
     <span class="inline-flex items-center gap-1.5 rounded-pill bg-paper px-3 py-1 font-semibold text-ink-2 shadow-card">
       <span class:list={['h-2 w-2 rounded-pill', stock.cls]} aria-hidden="true"></span>
       {stock.label}

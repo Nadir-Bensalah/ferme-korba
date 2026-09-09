@@ -28,6 +28,7 @@ export default function BackToTop({ lang }: { lang: Lang }) {
       type="button"
       onClick={up}
       aria-label={d.common.backToTop}
+      data-back-to-top
       tabIndex={show ? 0 : -1}
       aria-hidden={!show}
       className={`fixed end-4 z-30 flex h-12 w-12 items-center justify-center rounded-pill bg-ink text-paper shadow-float transition duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:bg-prairie-deep active:scale-95 motion-reduce:transition-none bottom-[calc(var(--bottom-bar-h)+1rem+env(safe-area-inset-bottom))] lg:bottom-6 ${

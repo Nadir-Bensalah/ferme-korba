@@ -4,12 +4,13 @@ import { ClientRouter } from 'astro:transitions';
 import type { Lang } from '@ferme/core';
 import { brand } from '@ferme/core';
 import { t, dir, locale, otherLang } from '@/i18n';
-import { href, asset, switchLangPath } from '@/lib/paths';
+import { href, asset, switchLangPath, routes } from '@/lib/paths';
 import Header from '@/components/Header.astro';
 import TrustBar from '@/components/TrustBar.astro';
 import Footer from '@/components/Footer.astro';
 import BottomBar from '@/components/BottomBar.astro';
 import Toasts from '@/components/islands/Toasts';
+import FloatingCart from '@/components/islands/FloatingCart';
 
 interface Props {
   lang: Lang;
@@ -125,6 +126,7 @@ const ld = [business, ...(jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) :
     <Footer lang={lang} slim={slimFooter} />
     {!noBottomBar && <BottomBar lang={lang} />}
     <Toasts client:idle lang={lang} />
+    {!noBottomBar && !Astro.url.pathname.startsWith(href(lang, routes.cart)) && <FloatingCart client:idle lang={lang} />}
     <script>
       // Apparition au défilement. Relancé à chaque changement de page.
       function arm() {
