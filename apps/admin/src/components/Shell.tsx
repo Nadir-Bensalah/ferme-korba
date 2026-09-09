@@ -8,6 +8,7 @@ import {
   Mail,
   MoreHorizontal,
   Package,
+  Percent,
   Route,
   Search,
   Settings,
@@ -36,7 +37,7 @@ interface NavItem {
 export function Logo({ compact }: { compact?: boolean }) {
   return (
     <Link to="/" className="flex min-h-12 items-center gap-2.5 px-1">
-      <img src={`${import.meta.env.BASE_URL}favicon.svg`} alt="" className="size-8" />
+      <img src={`${import.meta.env.BASE_URL}logo-96.png`} alt="" width={32} height={32} className="size-8 shrink-0" />
       {!compact && (
         <span className="leading-tight">
           <span className="block font-display text-base font-bold">{brand.name.fr}</span>
@@ -47,7 +48,7 @@ export function Logo({ compact }: { compact?: boolean }) {
   );
 }
 
-export const SECONDARY_PATHS = ['/categories', '/recettes', '/livraison', '/clients', '/messages', '/reglages', '/export', '/plus'];
+export const SECONDARY_PATHS = ['/offres', '/categories', '/recettes', '/livraison', '/clients', '/messages', '/reglages', '/export', '/plus'];
 
 export function Shell() {
   const { admin, logout } = useAuth();
@@ -82,6 +83,7 @@ export function Shell() {
     { to: '/commandes', label: 'Commandes', icon: ShoppingBag, badge: newCount },
     { to: '/commandes/aujourdhui', label: 'Tournée du jour', icon: Route },
     { to: '/produits', label: 'Produits', icon: Package },
+    { to: '/offres', label: 'Offres', icon: Percent },
     { to: '/categories', label: 'Catégories', icon: Tags },
     { to: '/recettes', label: 'Recettes', icon: BookOpen },
     { to: '/livraison', label: 'Livraison', icon: Truck },

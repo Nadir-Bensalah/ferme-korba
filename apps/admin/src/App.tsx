@@ -17,6 +17,8 @@ import { ProductForm } from '@/screens/ProductForm';
 import { Categories } from '@/screens/Categories';
 import { Recipes } from '@/screens/Recipes';
 import { RecipeForm } from '@/screens/RecipeForm';
+import { Offers } from '@/screens/Offers';
+import { OfferForm } from '@/screens/OfferForm';
 import { Delivery } from '@/screens/Delivery';
 import { Customers } from '@/screens/Customers';
 import { Messages } from '@/screens/Messages';
@@ -56,6 +58,9 @@ function Gate() {
           <Route path="/produits" element={<Products />} />
           <Route path="/produits/nouveau" element={<ProductForm />} />
           <Route path="/produits/:id" element={<ProductForm />} />
+          <Route path="/offres" element={<Offers />} />
+          <Route path="/offres/nouvelle" element={<OfferForm />} />
+          <Route path="/offres/:id" element={<OfferForm />} />
           <Route path="/categories" element={<Categories />} />
           <Route path="/recettes" element={<Recipes />} />
           <Route path="/recettes/nouvelle" element={<RecipeForm />} />

@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Route } from 'lucide-react';
 import { formatPrice } from '@ferme/core';
-import { useOrders, useStats } from '@/lib/queries';
+import { useOffers, useOrders, useStats } from '@/lib/queries';
 import { fmtDateLong, todayISO } from '@/lib/format';
 import { Sparkline } from '@/components/Sparkline';
 import { OrderList } from '@/components/OrderList';
@@ -29,6 +29,8 @@ export function Dashboard() {
   const today = todayISO();
   const stats = useStats();
   const todays = useOrders({ delivery_date: today, status: 'actives', page: 1, page_size: 100 });
+  const offers = useOffers();
+  const activeOffers = offers.data?.filter((o) => o.active).length;
 
   return (
     <div>
@@ -48,13 +50,14 @@ export function Dashboard() {
         <ErrorState error={stats.error} retry={() => void stats.refetch()} />
       ) : (
         <>
-          <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
+          <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
             <Tile caption="Commandes du jour" value={String(stats.data.today_orders)} sub={formatPrice(stats.data.today_revenue, 'fr')} />
             <Tile caption="Chiffre du jour" value={formatPrice(stats.data.today_revenue, 'fr')} />
             <Tile caption="À confirmer" value={String(stats.data.pending)} to="/commandes?status=nouvelle" warn={stats.data.pending > 0} sub={stats.data.pending > 0 ? 'Appelez le client' : 'Rien en attente'} />
             <Tile caption="7 derniers jours" value={formatPrice(stats.data.week_revenue, 'fr')} sub={`${stats.data.week_orders} commande${stats.data.week_orders > 1 ? 's' : ''}`} />
             <Tile caption="30 derniers jours" value={formatPrice(stats.data.month_revenue, 'fr')} />
             <Tile caption="Rupture ou bientôt" value={String(stats.data.low_stock)} to="/produits?stock=hors" warn={stats.data.low_stock > 0} sub="produits" />
+            <Tile caption="Offres actives" value={activeOffers === undefined ? '…' : String(activeOffers)} to="/offres" sub={activeOffers === 0 ? 'Rien en avant sur la boutique' : 'sur l’accueil et la boutique'} />
           </div>
 
           <div className="mt-4 grid gap-4 lg:grid-cols-3">

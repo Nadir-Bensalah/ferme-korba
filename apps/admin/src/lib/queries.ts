@@ -10,6 +10,7 @@ export const qk = {
   products: ['products'] as const,
   categories: ['categories'] as const,
   recipes: ['recipes'] as const,
+  offers: ['offers'] as const,
   zones: ['zones'] as const,
   slots: ['slots'] as const,
   settings: ['settings'] as const,
@@ -24,6 +25,7 @@ export const useOrder = (id: string) => useQuery({ queryKey: qk.order(id), query
 export const useProducts = () => useQuery({ queryKey: qk.products, queryFn: () => source.listProducts() });
 export const useCategories = () => useQuery({ queryKey: qk.categories, queryFn: () => source.listCategories() });
 export const useRecipes = () => useQuery({ queryKey: qk.recipes, queryFn: () => source.listRecipes() });
+export const useOffers = () => useQuery({ queryKey: qk.offers, queryFn: () => source.listOffers() });
 export const useZones = () => useQuery({ queryKey: qk.zones, queryFn: () => source.listZones() });
 export const useSlots = () => useQuery({ queryKey: qk.slots, queryFn: () => source.listSlots() });
 export const useSettings = () => useQuery({ queryKey: qk.settings, queryFn: () => source.getSettings() });

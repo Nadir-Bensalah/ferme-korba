@@ -28,7 +28,7 @@ export function Login() {
     <div className="flex min-h-dvh items-center justify-center bg-cream p-4">
       <div className="card w-full max-w-sm p-6">
         <div className="flex items-center gap-3">
-          <img src={`${import.meta.env.BASE_URL}favicon.svg`} alt="" className="size-12" />
+          <img src={`${import.meta.env.BASE_URL}logo-96.png`} alt="" width={48} height={48} className="size-12 shrink-0" />
           <div>
             <h1 className="text-xl font-bold">{brand.name.fr}</h1>
             <div className="text-sm text-ink-3">Espace de gestion</div>

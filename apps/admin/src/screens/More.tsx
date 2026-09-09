@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { BookOpen, ChevronRight, Download, LogOut, Mail, Route, Settings, Tags, Truck, Users, type LucideIcon } from 'lucide-react';
+import { BookOpen, ChevronRight, Download, LogOut, Mail, Percent, Route, Settings, Tags, Truck, Users, type LucideIcon } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useMessages } from '@/lib/queries';
 import { isDemo } from '@/lib/data';
@@ -7,6 +7,7 @@ import { PageHeader } from '@/components/PageHeader';
 
 const items: { to: string; label: string; icon: LucideIcon; hint?: string }[] = [
   { to: '/commandes/aujourdhui', label: 'Tournée du jour', icon: Route, hint: 'Les livraisons par créneau' },
+  { to: '/offres', label: 'Offres', icon: Percent, hint: 'Offre du jour, packs, saison' },
   { to: '/categories', label: 'Catégories', icon: Tags },
   { to: '/recettes', label: 'Recettes', icon: BookOpen },
   { to: '/livraison', label: 'Livraison', icon: Truck, hint: 'Zones et créneaux' },

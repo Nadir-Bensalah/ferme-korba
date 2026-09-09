@@ -153,6 +153,28 @@ function render(seed) {
       }),
     );
   }
+  lines.push('', '-- Offres');
+  for (const o of seed.offers) {
+    lines.push(
+      upsert('offers', {
+        id: str(o.id),
+        kind: str(o.kind),
+        eyebrow: json(o.eyebrow),
+        title: json(o.title),
+        subtitle: json(o.subtitle),
+        badge: json(o.badge),
+        price: nullable(o.price, num),
+        compare_at: nullable(o.compare_at, num),
+        image: str(o.image),
+        cta: json(o.cta),
+        link: str(o.link),
+        ends_at: nullable(o.ends_at, (v) => `${str(v)}::timestamptz`),
+        product_slugs: textArray(o.product_slugs),
+        active: bool(o.active),
+        sort: num(o.sort),
+      }),
+    );
+  }
   const st = seed.settings;
   lines.push(
     '',
@@ -178,5 +200,5 @@ const sql = render(seed);
 writeFileSync(out, sql, 'utf8');
 console.log(
   `supabase/seed.sql écrit : ${seed.categories.length} catégories, ${seed.products.length} produits, ` +
-    `${seed.recipes.length} recettes, ${seed.zones.length} zones, ${seed.slots.length} créneaux.`,
+    `${seed.recipes.length} recettes, ${seed.offers.length} offres, ${seed.zones.length} zones, ${seed.slots.length} créneaux.`,
 );
