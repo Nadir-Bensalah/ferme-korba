@@ -301,9 +301,8 @@ const expressIcons: Record<'feuille' | 'ble' | 'bouclier' | 'coeur' | 'camion', 
     <Deco type="persil" class="deco end-24 bottom-24 hidden w-12 rotate-45 text-prairie/25 lg:block" />
     <Deco type="persil" class="deco start-[36%] bottom-16 hidden w-10 -rotate-12 text-prairie/20 lg:block" />
     <p class="hand pointer-events-none absolute end-10 top-8 hidden -rotate-6 text-2xl font-semibold text-prairie-deep lg:block xl:end-16 xl:text-3xl" aria-hidden="true">♡ {d.home.reviewsThanks} ♡</p>
-    <Art name="medaille-premium" alt={d.common.premiumMedal} class="pointer-events-none absolute -bottom-4 -start-4 hidden w-40 -rotate-6 lg:block xl:w-48" sizes="192px" />
     <Art name="avis-poule" class="pointer-events-none absolute -bottom-6 -end-6 hidden w-52 lg:block xl:w-64" sizes="256px" />
-    <p class="hand pointer-events-none absolute bottom-4 end-60 hidden rotate-[-6deg] text-lg font-semibold leading-tight text-prairie-deep min-[1700px]:block min-[1700px]:end-80 min-[1700px]:text-2xl" aria-hidden="true">
+    <p class="hand pointer-events-none absolute bottom-8 end-52 hidden rotate-[-6deg] text-xl font-semibold leading-tight text-prairie-deep 2xl:block 2xl:end-64 2xl:text-2xl" aria-hidden="true">
       {d.home.reviewsTriple.map((l) => <span class="block">{l}</span>)}
       <span class="block text-end">♡</span>
     </p>
@@ -328,6 +327,7 @@ const expressIcons: Record<'feuille' | 'ble' | 'bouclier' | 'coeur' | 'camion', 
             </li>
           ))}
         </ul>
+        <Art name="medaille-premium" alt={d.common.premiumMedal} class="mt-10 ms-24 hidden w-40 -rotate-12 lg:block xl:w-44" width={176} height={176} sizes="176px" />
       </div>
 
       <div class="relative">
@@ -337,7 +337,7 @@ const expressIcons: Record<'feuille' | 'ble' | 'bouclier' | 'coeur' | 'camion', 
         <button type="button" class="avis-arrow -end-4 lg:-end-8 xl:-end-12" data-avis-next aria-label={d.home.reviewsNext}>
           <svg class="rtl:-scale-x-100" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6" /></svg>
         </button>
-        <ul class="avis-track scrollbar-none flex snap-x snap-mandatory gap-6 overflow-x-auto px-6 pb-4 pt-6 lg:px-10" data-avis-track>
+        <ul class="avis-track scrollbar-none flex snap-x snap-mandatory gap-6 overflow-x-auto px-6 pb-4 pt-6 lg:px-10 lg:pt-14" data-avis-track>
           {d.home.reviews.map((r, i) => (
             <li class:list={['avis-card reveal relative w-[82vw] max-w-[22rem] shrink-0 snap-center lg:w-[31%] lg:max-w-none', i === 1 && 'lg:-translate-y-8']} style={`--reveal-delay:${i * 90}ms`}>
               <div class:list={['avis-blob relative', i % 2 ? 'is-cream' : '']}>
