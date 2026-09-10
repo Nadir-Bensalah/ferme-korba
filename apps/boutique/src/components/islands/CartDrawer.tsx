@@ -9,7 +9,7 @@ import { data } from '@/lib/data';
 import { href, routes } from '@/lib/paths';
 import { t, L } from '@/i18n';
 import { ProductImage, Stepper, preferredZoneId } from './shared';
-import { DecoArt, Money, formatKg, lineWeight } from './tunnel';
+import { DecoArt, Money } from './tunnel';
 
 interface Props {
   lang: Lang;
@@ -36,7 +36,7 @@ const CSS = `
 .cd-panel {
   position: absolute; inset-block: 0; inset-inline-end: 0;
   display: flex; flex-direction: column;
-  width: 100%; max-width: 420px;
+  width: 100%; max-width: 600px;
   background: var(--color-paper);
   box-shadow: var(--shadow-float);
   transform: translateX(var(--cd-off));
@@ -51,21 +51,36 @@ const CSS = `
   }
 }
 .cd-head {
-  display: flex; align-items: center; gap: .75rem;
-  padding: .75rem 1rem; padding-top: max(.75rem, env(safe-area-inset-top));
+  display: flex; align-items: center; gap: 1rem;
+  padding: 1.25rem 1.5rem 1rem; padding-top: max(1.25rem, env(safe-area-inset-top));
   border-bottom: 1px solid var(--color-line);
 }
+.cd-bag { position: relative; flex: none; color: var(--color-prairie); }
+.cd-bag-n {
+  position: absolute; top: -6px; inset-inline-end: -6px;
+  min-width: 24px; height: 24px; padding: 0 6px; border-radius: 999px;
+  background: var(--color-prairie-deep); color: #fff;
+  font-size: 12px; font-weight: 800; line-height: 24px; text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.cd-close {
+  display: inline-flex; height: 56px; width: 56px; flex: none;
+  align-items: center; justify-content: center;
+  border-radius: 999px; background: var(--color-cream); color: var(--color-ink);
+  transition: background-color .2s;
+}
+.cd-close:hover { background: var(--color-cream-2); }
 .cd-body {
   flex: 1 1 auto; overflow-y: auto; overscroll-behavior: contain;
   display: flex; flex-direction: column; gap: 1.25rem;
-  padding: 1rem;
+  padding: 1rem 1.5rem 1.5rem;
 }
 .cd-foot {
   flex: none;
   border-top: 1px solid var(--color-line);
   background: var(--color-paper);
-  padding: .875rem 1rem calc(.875rem + env(safe-area-inset-bottom));
-  display: flex; flex-direction: column; gap: .625rem;
+  padding: 1rem 1.5rem calc(1rem + env(safe-area-inset-bottom));
+  display: flex; flex-direction: column; gap: .75rem;
   box-shadow: 0 -10px 26px -20px rgba(22, 32, 26, .55);
 }
 .cd-icon {
@@ -75,16 +90,36 @@ const CSS = `
   transition: background-color .2s, color .2s;
 }
 .cd-icon:hover { background: var(--color-cream); color: var(--color-ink); }
-.cd-line { display: flex; gap: .75rem; padding: .875rem 0; border-top: 1px solid var(--color-line); }
-.cd-line:first-child { border-top: 0; padding-top: 0; }
+.cd-line { display: flex; gap: 1.25rem; padding: 1.25rem 0; border-top: 1px solid var(--color-line); }
+.cd-line:first-child { border-top: 0; padding-top: .5rem; }
 .cd-thumb {
-  height: 72px; width: 72px; flex: none; overflow: hidden;
-  border-radius: var(--radius-md); background: var(--color-cream);
+  height: 120px; width: 120px; flex: none; overflow: hidden;
+  border-radius: 1rem; background: var(--color-cream);
 }
-.cd-bar { height: 8px; border-radius: 999px; background: var(--color-cream-2); overflow: hidden; }
+@media (width < 640px) { .cd-thumb { height: 80px; width: 80px; } .cd-line { gap: .875rem; } .cd-short { display: none; } }
+.cd-step .stepper { width: 100%; justify-content: space-between; background: var(--color-cream); border-color: var(--color-line-2); }
+.cd-step .stepper-value { flex: 1; font-size: 15px; }
+.cd-free {
+  display: flex; align-items: center; gap: 1rem;
+  border-radius: var(--radius-lg); background: var(--color-prairie-soft); padding: 1.125rem 1.25rem;
+}
+.cd-free-ico {
+  display: inline-flex; height: 60px; width: 60px; flex: none; align-items: center; justify-content: center;
+  border-radius: 999px; background: color-mix(in srgb, var(--color-prairie) 18%, transparent); color: var(--color-prairie-deep);
+}
+.cd-note {
+  display: flex; align-items: center; gap: 1rem;
+  border-radius: var(--radius-lg); background: var(--color-cream); padding: 1rem 1.25rem;
+  font-weight: 600; color: var(--color-ink); transition: background-color .2s;
+}
+.cd-note:hover { background: var(--color-cream-2); }
+.cd-trust { display: flex; justify-content: space-between; gap: .5rem; padding-top: .25rem; }
+.cd-trust li { display: flex; align-items: center; gap: .5rem; font-size: 13px; font-weight: 600; color: var(--color-ink-2); }
+.cd-trust svg { color: var(--color-prairie); flex: none; }
+.cd-bar { height: 10px; border-radius: 999px; background: color-mix(in srgb, var(--color-prairie) 18%, transparent); overflow: hidden; }
 .cd-bar-fill {
-  height: 100%; min-width: 8px; border-radius: 999px;
-  background: linear-gradient(90deg, var(--color-yolk), var(--color-yolk-deep));
+  height: 100%; min-width: 10px; border-radius: 999px;
+  background: var(--color-prairie);
   transition: width .6s var(--ease-out-expo), background .3s ease;
 }
 .cd-bar-fill[data-full='true'] { background: linear-gradient(90deg, var(--color-prairie), #2f9d55); }
@@ -239,8 +274,6 @@ export default function CartDrawer({ lang, open, onClose }: Props) {
       .slice(0, 3);
   }, [products, inCart]);
 
-  const weight = useMemo(() => roundMillimes(lines.reduce((s, l) => s + lineWeight(l.pricing, l.qty), 0)), [lines]);
-
   if (!render || typeof document === 'undefined') return null;
 
   const zone = zones.find((z) => z.id === zoneId) ?? [...zones].sort((a, b) => a.fee - b.fee)[0] ?? null;
@@ -259,12 +292,23 @@ export default function CartDrawer({ lang, open, onClose }: Props) {
 
       <div ref={panel} className="cd-panel" role="dialog" aria-modal="true" aria-labelledby="cd-title" onKeyDown={onTab}>
         <header className="cd-head">
-          <h2 id="cd-title" className="min-w-0 flex-1 font-display text-lg font-extrabold text-ink">
-            {d.cart.title}
-            {!empty && <span className="ms-2 text-sm font-bold text-ink-3">{d.cart.items(lines.length)}</span>}
-          </h2>
-          <button ref={closeBtn} type="button" className="cd-icon -me-2" onClick={onClose} aria-label={d.common.close}>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true">
+          <span className="cd-bag" aria-hidden="true">
+            <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M5 8h14l-1 12H6z" />
+              <path d="M9 8V6a3 3 0 0 1 6 0v2" />
+            </svg>
+            {!empty && <span className="cd-bag-n">{lines.length}</span>}
+          </span>
+          <div className="min-w-0 flex-1">
+            <h2 id="cd-title" className="font-display text-2xl font-extrabold leading-tight text-ink sm:text-[1.75rem]">
+              {d.cart.title}
+            </h2>
+            <p className="mt-0.5 text-sm text-ink-2">
+              {empty ? d.cart.empty : `${d.cart.items(lines.length)} • ${d.cart.drawerSub}`}
+            </p>
+          </div>
+          <button ref={closeBtn} type="button" className="cd-close" onClick={onClose} aria-label={d.common.close}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true">
               <path d="M6 6l12 12M18 6L6 18" />
             </svg>
           </button>
@@ -291,33 +335,37 @@ export default function CartDrawer({ lang, open, onClose }: Props) {
                   const price = displayPrice(l.pricing, lang);
                   const est = isEstimated(l.pricing);
                   const name = L(l.name, lang);
+                  const short = products.find((p) => p.id === l.product_id)?.short;
                   return (
                     <li key={l.product_id} className="cd-line">
                       <a href={href(lang, routes.product(l.slug))} className="cd-thumb" tabIndex={-1} aria-hidden="true">
                         <ProductImage src={l.image} className="h-full w-full" />
                       </a>
-                      <div className="flex min-w-0 flex-1 flex-col gap-1.5">
-                        <div className="flex items-start gap-2">
-                          <h3 className="min-w-0 flex-1 text-sm font-bold leading-snug">
-                            <a href={href(lang, routes.product(l.slug))} className="hover:text-prairie-deep">
-                              {name}
-                            </a>
-                          </h3>
-                          <p className="shrink-0 font-display text-base font-extrabold tabular">
+                      <div className="flex min-w-0 flex-1 flex-col gap-1">
+                        <div className="flex items-start gap-3">
+                          <div className="min-w-0 flex-1">
+                            <h3 className="font-display text-lg font-extrabold leading-tight">
+                              <a href={href(lang, routes.product(l.slug))} className="hover:text-prairie-deep">
+                                {name}
+                              </a>
+                            </h3>
+                            {short && <p className="cd-short mt-0.5 text-sm text-ink-3">{L(short, lang)}</p>}
+                            <p className="mt-1 text-sm font-semibold text-prairie tabular">
+                              {price.amount} <span className="font-medium">{price.unit}</span>
+                            </p>
+                          </div>
+                          <p className="shrink-0 font-display text-lg font-extrabold tabular">
                             {est && <span className="me-1 text-xs font-semibold text-ink-3">≈</span>}
                             <Money value={formatPrice(lineTotal(l.pricing, l.qty), lang)} />
                           </p>
-                        </div>
-                        <p className="text-xs font-semibold text-ink-3 tabular">
-                          {price.amount} <span className="font-medium">{price.unit}</span>
-                        </p>
-                        <div className="mt-0.5 flex items-center justify-between gap-2">
-                          <Stepper pricing={l.pricing} qty={l.qty} onChange={(q) => setQty(l.product_id, q)} lang={lang} d={d} small allowBelowMin label={`${d.shop.qty} · ${name}`} />
-                          <button type="button" onClick={() => remove(l)} className="cd-icon -me-2" aria-label={`${d.cart.remove} · ${name}`}>
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true">
+                          <button type="button" onClick={() => remove(l)} className="-me-2 -mt-2 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-pill text-ink-2 hover:bg-cream hover:text-ink" aria-label={`${d.cart.remove} · ${name}`}>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
                               <path d="M6 6l12 12M18 6L6 18" />
                             </svg>
                           </button>
+                        </div>
+                        <div className="cd-step mt-2">
+                          <Stepper pricing={l.pricing} qty={l.qty} onChange={(q) => setQty(l.product_id, q)} lang={lang} d={d} allowBelowMin label={`${d.shop.qty} · ${name}`} />
                         </div>
                       </div>
                     </li>
@@ -344,42 +392,36 @@ export default function CartDrawer({ lang, open, onClose }: Props) {
               )}
 
               {freeFrom > 0 && (
-                <div className="flex flex-col gap-2">
-                  <div className="cd-bar" role="progressbar" aria-label={d.cart.progressLabel} aria-valuemin={0} aria-valuemax={100} aria-valuenow={freeReached ? 100 : progress}>
-                    <div className="cd-bar-fill" data-full={freeReached ? 'true' : 'false'} style={{ width: `${freeReached ? 100 : Math.max(4, progress)}%` }} />
+                <div className="cd-free">
+                  <span className="cd-free-ico" aria-hidden="true">
+                    <svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                      <path d="M2 6.5A1.5 1.5 0 0 1 3.5 5H14a1 1 0 0 1 1 1v9H2z" />
+                      <path d="M15 9h3.2a1 1 0 0 1 .8.4l2.6 3.3a1 1 0 0 1 .2.6V15h-6.8z" />
+                      <circle cx="6.5" cy="17.5" r="2.2" />
+                      <circle cx="17.5" cy="17.5" r="2.2" />
+                    </svg>
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="font-display text-lg font-extrabold leading-tight text-prairie-deep">{d.cart.freeReached}</p>
+                    <p className="mt-0.5 text-sm text-ink-2" aria-live="polite">
+                      {freeReached ? d.cart.freeSavedLong(formatPrice(zone?.fee ?? 0, lang)) : d.cart.freeMissingShort(formatPrice(roundMillimes(freeFrom - subtotal), lang))}
+                    </p>
+                    <div className="cd-bar mt-3" role="progressbar" aria-label={d.cart.progressLabel} aria-valuemin={0} aria-valuemax={100} aria-valuenow={freeReached ? 100 : progress}>
+                      <div className="cd-bar-fill" data-full={freeReached ? 'true' : 'false'} style={{ width: `${freeReached ? 100 : Math.max(4, progress)}%` }} />
+                    </div>
                   </div>
-                  <p className={`text-sm font-semibold ${freeReached ? 'text-prairie-deep' : 'text-yolk-deep'}`} aria-live="polite">
-                    {freeReached ? d.cart.freeReached : d.cart.freeMissing(formatPrice(roundMillimes(freeFrom - subtotal), lang))}
-                  </p>
                 </div>
               )}
 
-              {weight > 0 && (
-                <p className="flex items-center gap-2.5 rounded-md bg-cream px-4 py-3 text-sm text-ink-2">
-                  <svg
-                    width="20"
-                    height="20"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.8"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    aria-hidden="true"
-                    className="shrink-0 text-prairie"
-                  >
-                    <path d="M12 4.5v15" />
-                    <path d="M7 19.5h10" />
-                    <path d="M4 8.5h16" />
-                    <path d="M4 8.5 1.8 14a3 3 0 0 0 4.4 0z" />
-                    <path d="M20 8.5 22.2 14a3 3 0 0 1-4.4 0z" />
-                  </svg>
-                  <span>
-                    <span className="font-semibold">{d.cart.weightValue(formatKg(weight, lang))}</span>
-                    <span className="ms-1.5 text-ink-3">{d.cart.weightHelp}</span>
-                  </span>
-                </p>
-              )}
+              <a href={href(lang, routes.checkout)} className="cd-note">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 text-prairie" aria-hidden="true">
+                  <path d="M3 10h18v4H3zM5 14v7h14v-7M12 10v11M12 10c-2-4-6-5-6-2s4 2 6 2Zm0 0c2-4 6-5 6-2s-4 2-6 2Z" />
+                </svg>
+                <span className="min-w-0 flex-1">{d.cart.addNote}</span>
+                <svg className="shrink-0 rtl:-scale-x-100" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="m9 6 6 6-6 6" />
+                </svg>
+              </a>
             </>
           )}
 
@@ -426,25 +468,48 @@ export default function CartDrawer({ lang, open, onClose }: Props) {
               </p>
             )}
             <div className="flex items-baseline justify-between gap-3">
-              <span className="text-sm font-semibold text-ink-2">{d.common.subtotal}</span>
-              <span className="font-display text-2xl font-extrabold tabular">
+              <span className="text-lg font-semibold text-ink">{d.common.subtotal}</span>
+              <span className="font-display text-[1.75rem] font-extrabold tabular">
                 {hasEstimated && <span className="me-1 align-middle text-base font-semibold text-ink-3">≈</span>}
                 <Money value={formatPrice(subtotal, lang)} />
               </span>
             </div>
-            <p className="text-xs text-ink-3">{d.cart.deliveryNext}</p>
+            <p className="flex items-center gap-2 text-sm text-ink-2">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 text-prairie" aria-hidden="true">
+                <path d="M5 19c0-8 5-13 14-14 0 9-5 14-13 14" />
+                <path d="M5 19c3-4 6-7 10-9" />
+              </svg>
+              {d.cart.deliveryNext}
+            </p>
             {belowMin ? (
-              <button type="button" className="btn-primary btn-lg w-full cursor-not-allowed opacity-50" disabled aria-disabled="true">
+              <button type="button" className="btn-primary btn-lg w-full cursor-not-allowed bg-prairie-deep opacity-50" disabled aria-disabled="true">
                 {d.cart.checkout}
               </button>
             ) : (
-              <a href={href(lang, routes.checkout)} className="btn-primary btn-lg w-full">
+              <a href={href(lang, routes.checkout)} className="btn-primary btn-lg min-h-16 w-full gap-3 bg-prairie-deep text-lg hover:bg-prairie">
                 {d.cart.checkout}
+                <svg className="rtl:-scale-x-100" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M5 12h14M13 6l6 6-6 6" />
+                </svg>
               </a>
             )}
-            <a href={href(lang, routes.cart)} className="self-center rounded-pill px-3 py-2 text-sm font-semibold text-ink-3 underline underline-offset-4 hover:text-ink">
+            <a href={href(lang, routes.cart)} className="self-center rounded-pill px-3 py-1.5 text-sm font-bold text-prairie-deep underline underline-offset-4 hover:text-prairie">
               {d.cart.viewCart}
             </a>
+            <ul className="cd-trust">
+              <li>
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M5 19c0-8 5-13 14-14 0 9-5 14-13 14" /><path d="M5 19c3-4 6-7 10-9" /></svg>
+                {d.cart.drawerTrust[0]}
+              </li>
+              <li>
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 3.2 5 6v6.1c0 4 3 6.7 7 8.2 4-1.5 7-4.2 7-8.2V6z" /><path d="m9 12 2.1 2.1L15.2 10" /></svg>
+                {d.cart.drawerTrust[1]}
+              </li>
+              <li>
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M2.5 6.5h10.5v10H2.5z" /><path d="M13 10h3.6l3.9 3.6v2.9H13z" /><circle cx="7" cy="17.5" r="1.9" /><circle cx="17" cy="17.5" r="1.9" /></svg>
+                {d.cart.drawerTrust[2]}
+              </li>
+            </ul>
           </div>
         )}
       </div>
