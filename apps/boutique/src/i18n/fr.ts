@@ -159,6 +159,18 @@ export const fr = {
     zonesTitle: 'On livre chez vous',
     zonesText: 'Korba le jour même, le Cap Bon, Nabeul et Tunis le lendemain.',
     ctaTitle: 'Votre poulet part de la ferme demain matin.',
+    express: {
+      eyebrow: 'Livraison express',
+      title: 'Votre poulet part de la ferme',
+      accent: 'demain matin.',
+      points: ['Poulets élevés en plein air', 'Nourris au grain naturel', 'Sans antibiotiques de confort'],
+      trust: [
+        ['Produits frais', 'et locaux'],
+        ['Livraison rapide', 'dès demain'],
+        ['Paiement sécurisé', ''],
+        ['Soutient nos', 'éleveurs locaux'],
+      ],
+    },
     ctaText: 'Commandez avant 18 h pour une livraison le lendemain.',
     /** Compte à rebours réel, calculé sur l’heure limite et les jours de fermeture. */
     cutoff: {

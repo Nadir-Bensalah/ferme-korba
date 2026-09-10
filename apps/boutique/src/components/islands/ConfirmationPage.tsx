@@ -12,7 +12,7 @@ interface Props {
   lang: Lang;
 }
 
-const COLORS = ['#f2a900', '#1e7a3c', '#c8442b', '#e6f1fb', '#fff1cc'];
+const COLORS = ['#f9b523', '#1e7a3c', '#c8442b', '#e6f1fb', '#fff1cc'];
 
 /** Page de confirmation : succès animé, récapitulatif, lien de suivi, création de compte. */
 export default function ConfirmationPage({ lang }: Props) {

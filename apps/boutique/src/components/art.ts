@@ -24,5 +24,7 @@ export type ArtName =
   | 'carte-feuille'
   | 'carte-soleil'
   | 'poules-heureuses'
+  | 'express-poule'
+  | 'express-carte'
   | 'footer-oeufs-heureux'
   | 'footer-gout-local';

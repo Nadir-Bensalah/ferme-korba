@@ -37,6 +37,7 @@ export default function Cutoff({ lang, fallback, variant = 'banner' }: Props) {
   const d = t(lang);
   const c = d.home.cutoff;
   const [text, setText] = useState<string | null>(null);
+  const [part, setPart] = useState<string>('');
   const [urgent, setUrgent] = useState(false);
 
   useEffect(() => {
@@ -49,6 +50,7 @@ export default function Cutoff({ lang, fallback, variant = 'banner' }: Props) {
       const left = limit.getTime() - now.getTime();
       const openToday = !closed.includes(now.getDay());
 
+      setPart('');
       if (!openToday) {
         setUrgent(false);
         setText(c.closed(formatDate(iso(nextDelivery(now, closed)), lang)));
@@ -69,6 +71,7 @@ export default function Cutoff({ lang, fallback, variant = 'banner' }: Props) {
       const h = Math.floor(totalMin / 60);
       const m = totalMin % 60;
       setUrgent(totalMin <= 60);
+      setPart(c.dur(h, m));
       setText(c.remaining(c.dur(h, m), dayLabel));
     };
 
@@ -88,15 +91,19 @@ export default function Cutoff({ lang, fallback, variant = 'banner' }: Props) {
     );
   }
 
+  const at = part ? label.indexOf(part) : -1;
   return (
-    <p
-      className={`mx-auto inline-flex max-w-full items-center gap-2 rounded-pill px-4 py-2 text-sm font-bold ${
-        urgent ? 'bg-yolk text-ink' : 'bg-paper/12 text-paper'
-      }`}
-      aria-live="polite"
-    >
+    <p className={`mx-auto inline-flex max-w-full flex-wrap items-center justify-center gap-2 rounded-pill px-5 py-2 text-base font-semibold ${urgent ? 'bg-yolk text-ink' : 'bg-paper/12 text-paper'}`} aria-live="polite">
       <ClockIcon className={`h-5 w-5 shrink-0 ${urgent ? 'text-ink' : 'text-yolk'} ${urgent ? 'animate-pulse motion-reduce:animate-none' : ''}`} />
-      <span className="tabular">{label}</span>
+      {at >= 0 ? (
+        <span className="tabular">
+          {label.slice(0, at).trim()}
+          <span className="mx-2 inline-block rounded-md bg-yolk px-3 py-1 font-extrabold text-ink">{part}</span>
+          {label.slice(at + part.length).trim()}
+        </span>
+      ) : (
+        <span className="tabular">{label}</span>
+      )}
     </p>
   );
 }
