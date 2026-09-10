@@ -13,13 +13,15 @@ interface Props {
   compact?: boolean;
   qty?: number;
   className?: string;
+  /** Grand bouton vert profond au lieu du jaune. */
+  tone?: 'yolk' | 'green';
 }
 
 /**
  * Bouton d'ajout au panier. Au clic : la photo du produit « vole » vers
  * l'icône panier, le bouton passe en « Ajouté » une seconde, le compteur rebondit.
  */
-export default function AddButton({ product, lang, compact = false, qty, className = '' }: Props) {
+export default function AddButton({ product, lang, compact = false, qty, className = '', tone = 'yolk' }: Props) {
   const d = t(lang);
   const lines = useStore(cartLines);
   const inCart = lines.some((l) => l.product_id === product.id);
@@ -120,7 +122,7 @@ export default function AddButton({ product, lang, compact = false, qty, classNa
       type="button"
       onClick={onClick}
       disabled={soldOut}
-      className={`btn-lg w-full ${state === 'added' ? 'btn bg-prairie text-white' : 'btn-yolk'} ${className}`}
+      className={`btn-lg w-full ${state === 'added' ? 'btn bg-prairie text-white' : tone === 'green' ? 'btn bg-prairie-deep text-paper hover:bg-prairie' : 'btn-yolk'} ${className}`}
     >
       {soldOut ? (
         d.shop.unavailable

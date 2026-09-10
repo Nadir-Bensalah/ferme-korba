@@ -1,8 +1,9 @@
 ---
 import type { Lang } from '@ferme/core';
-import { brand, formatPrice, seedCategories, seedProducts, seedRecipes, seedZones } from '@ferme/core';
+import { brand, displayPrice, formatPrice, seedCategories, seedProducts, seedRecipes, seedZones } from '@ferme/core';
 import Base from '@/layouts/Base.astro';
 import Picture from '@/components/Picture.astro';
+import AddButton from '@/components/islands/AddButton';
 import ProductCard from '@/components/ProductCard.astro';
 import RecipeCard from '@/components/RecipeCard.astro';
 import SectionHead from '@/components/SectionHead.astro';
@@ -27,6 +28,23 @@ const d = t(lang);
 
 const categories = [...seedCategories].sort((a, b) => a.sort - b.sort);
 const featured = seedProducts.filter((p) => p.is_featured).slice(0, 6);
+// Les bonnes affaires : promos d'abord, puis les plus demandés, quatre en tout.
+const dealScore = (p: (typeof seedProducts)[number]) => (p.compare_at ? 8 : 0) + (p.badges.includes('promo') ? 4 : 0) + (p.badges.includes('best') ? 2 : 0) + (p.is_featured ? 1 : 0);
+const deals = seedProducts
+  .filter((p) => p.stock === 'en_stock')
+  .sort((a, b) => dealScore(b) - dealScore(a) || a.sort - b.sort)
+  .filter((p, _, all) => all.find((q) => q.category_id === p.category_id) === p)
+  .slice(0, 4);
+const dealTag = (p: (typeof seedProducts)[number]) => {
+  const lot = p.slug.match(/x(\d+)|plateau-(\d+)/);
+  if (p.compare_at && p.pricing.mode !== 'per_kg_estimated') {
+    const price = p.pricing.mode === 'per_piece' ? p.pricing.price : p.pricing.price_per_kg;
+    return { label: d.home.deals.off(Math.round((1 - price / p.compare_at) * 100)), cls: 'bg-paprika text-paper' };
+  }
+  if (lot) return { label: d.home.deals.lot(Number(lot[1] ?? lot[2])), cls: 'bg-yolk text-ink' };
+  if (p.badges.includes('nouveau')) return { label: lang === 'ar' ? 'جديد' : 'Nouveau', cls: 'bg-prairie-deep text-paper' };
+  return { label: d.home.deals.best, cls: 'bg-prairie-deep text-paper' };
+};
 const recipes = seedRecipes.slice(0, 3);
 const zones = seedZones.filter((z) => z.active).sort((a, b) => a.sort - b.sort);
 const trust = [...d.home.trust, ...d.home.trust, ...d.home.trust];
@@ -138,6 +156,90 @@ const expressIcons: Record<'feuille' | 'ble' | 'bouclier' | 'coeur' | 'camion', 
   <section class="relative overflow-hidden bg-paper pb-14 pt-14 sm:pb-16 sm:pt-16">
     <div class="container-x">
       <OffersStrip lang={lang} />
+    </div>
+    <TornEdge position="bottom" variant="torn" height={26} class="edge-in text-cream" />
+  </section>
+
+  <!-- Bonnes affaires : des produits frais à prix doux -->
+  <section class="deals relative overflow-hidden bg-cream py-16 sm:py-20 lg:py-24">
+    <Deco type="persil" class="deco start-10 top-40 hidden w-12 -rotate-12 text-prairie/25 lg:block" />
+    <p class="hand pointer-events-none absolute start-16 top-10 hidden -rotate-6 text-2xl font-semibold leading-tight text-prairie-deep lg:block xl:start-24" aria-hidden="true">
+      {d.home.deals.noteLeft}
+      <svg class="ms-24 mt-1 h-10 w-12 text-prairie-deep rtl:-scale-x-100" viewBox="0 0 48 40" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6c14 2 26 12 34 28M30 30l8 4 2-9" /></svg>
+    </p>
+    <p class="hand pointer-events-none absolute end-16 top-10 hidden rotate-6 text-2xl font-semibold leading-tight text-prairie-deep lg:block xl:end-24" aria-hidden="true">
+      {d.home.deals.noteRight} ♡
+      <svg class="mt-1 h-3 w-40 text-prairie-deep" viewBox="0 0 160 12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M3 8c40-6 90-6 154-2" /></svg>
+    </p>
+    <Art name="deals-potager" class="pointer-events-none absolute -bottom-6 -start-8 hidden w-64 lg:block xl:w-80" sizes="320px" />
+    <Art name="deals-caisse" class="pointer-events-none absolute -bottom-6 -end-6 hidden w-64 lg:block xl:w-80" sizes="320px" />
+
+    <div class="mx-auto w-full max-w-[1600px] px-4 sm:px-6 lg:px-24 xl:px-32">
+      <div class="reveal text-center">
+        <p class="eyebrow inline-flex items-center gap-2">
+          <svg class="h-5 w-5 text-prairie" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 19c0-8 5-13 14-14 0 9-5 14-13 14" /><path d="M5 19c3-4 6-7 10-9" /></svg>
+          {d.home.deals.eyebrow}
+        </p>
+        <h2 class="mt-3 text-3xl font-extrabold leading-[1.05] sm:text-4xl lg:text-5xl">{d.home.deals.title}</h2>
+        <p class="mx-auto mt-4 max-w-2xl text-lg text-ink-2">{d.home.deals.text}</p>
+      </div>
+
+      <div class="relative mt-10">
+        <button type="button" class="deals-arrow -start-4 lg:-start-16 xl:-start-20" data-deals-prev aria-label={d.common.previous}>
+          <svg class="rtl:-scale-x-100" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6" /></svg>
+        </button>
+        <button type="button" class="deals-arrow -end-4 lg:-end-16 xl:-end-20" data-deals-next aria-label={d.common.next}>
+          <svg class="rtl:-scale-x-100" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6" /></svg>
+        </button>
+        <ul class="deals-track scrollbar-none flex snap-x snap-mandatory gap-5 overflow-x-auto px-4 pb-4 pt-4 sm:px-6 lg:px-2 xl:gap-6" data-deals-track>
+          {deals.map((p, i) => {
+            const price = displayPrice(p.pricing, lang);
+            const compare = p.compare_at ? formatPrice(p.compare_at, lang) : null;
+            const tag = dealTag(p);
+            return (
+              <li class:list={['deal-card reveal relative w-[80vw] max-w-[20rem] shrink-0 snap-center rounded-3xl p-4 sm:w-[46%] lg:w-[24%] lg:max-w-none', i % 2 ? 'bg-cream-2' : 'bg-prairie-soft']} style={`--reveal-delay:${i * 80}ms`}>
+                <svg class="deal-spark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M4 12h5M6 5l4 3M6 19l4-3" /></svg>
+                <a href={href(lang, routes.product(p.slug))} class="deal-photo block overflow-hidden" tabindex="-1" aria-hidden="true">
+                  <Picture src={p.images[0] ?? ''} alt="" sizes="(min-width: 1024px) 22vw, 80vw" imgClass="aspect-[4/3] w-full object-cover transition-transform duration-700 hover:scale-105" width={800} height={600} />
+                </a>
+                <span class:list={['deal-tag', tag.cls]} aria-hidden="true">{tag.label}</span>
+                <div class="relative mt-4 px-2 pb-1">
+                  <svg class="absolute end-2 top-6 h-9 w-9 text-prairie-deep" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 19c0-8 5-13 14-14 0 9-5 14-13 14" /><path d="M5 19c3-4 6-7 10-9" /></svg>
+                  <h3 class="pe-12 font-display text-xl font-extrabold leading-tight">
+                    <a href={href(lang, routes.product(p.slug))}>{L(p.name, lang)}</a>
+                  </h3>
+                  <p class="mt-1.5 pe-12 text-sm leading-snug text-ink-2">{L(p.short, lang)}</p>
+                  <p class="mt-3 flex items-baseline gap-2 font-display text-2xl font-extrabold text-prairie-deep tabular">
+                    {price.amount}
+                    <span class="text-sm font-semibold text-ink-3">{price.unit}</span>
+                    {compare && <span class="text-sm font-medium text-ink-3 line-through">{compare}</span>}
+                  </p>
+                  <div class="mt-3">
+                    <AddButton client:visible product={{ id: p.id, slug: p.slug, name: p.name, images: p.images, pricing: p.pricing, stock: p.stock }} lang={lang} tone="green" className="min-h-12 gap-2 text-[15px]" />
+                  </div>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+        <div class="mt-1 flex justify-center gap-2" data-deals-dots aria-hidden="true">
+          {deals.map((_, i) => (
+            <span class:list={['h-2.5 w-2.5 rounded-pill bg-line-2 transition-colors', i === 0 && 'bg-prairie-deep']} />
+          ))}
+        </div>
+      </div>
+
+      <ul class="mt-10 flex flex-wrap items-center justify-center gap-x-8 gap-y-4 text-start">
+        {d.home.deals.trust.map(([a, b], i) => (
+          <li class:list={['flex items-center gap-3', i > 0 && 'lg:border-s lg:border-line-2 lg:ps-8']}>
+            <svg class="h-10 w-10 shrink-0 text-prairie-deep" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d={expressIcons[(['camion', 'feuille', 'coeur'] as const)[i]!]} /></svg>
+            <span>
+              <span class="block text-base font-bold leading-tight text-ink">{a}</span>
+              <span class="text-sm text-ink-3">{b}</span>
+            </span>
+          </li>
+        ))}
+      </ul>
     </div>
     <TornEdge position="bottom" variant="torn" height={26} class="edge-in text-cream" />
   </section>
@@ -327,7 +429,7 @@ const expressIcons: Record<'feuille' | 'ble' | 'bouclier' | 'coeur' | 'camion', 
             </li>
           ))}
         </ul>
-        <Art name="medaille-premium" alt={d.common.premiumMedal} class="mt-10 ms-24 hidden w-40 -rotate-12 lg:block xl:w-44" width={176} height={176} sizes="176px" />
+        <Art name="medaille-premium" alt={d.common.premiumMedal} class="mt-16 ms-6 hidden w-72 -rotate-12 lg:block xl:w-80" width={320} height={320} sizes="320px" />
       </div>
 
       <div class="relative">
@@ -469,27 +571,88 @@ const expressIcons: Record<'feuille' | 'ble' | 'bouclier' | 'coeur' | 'camion', 
   <script>
     import '@/scripts/vitrine';
     // Les flèches des avis font glisser la piste d'une carte, et les points suivent.
-    function armAvis() {
-      const track = document.querySelector<HTMLElement>('[data-avis-track]');
+    function armTrack(name: string) {
+      const track = document.querySelector<HTMLElement>(`[data-${name}-track]`);
       if (!track || track.dataset.armed) return;
       track.dataset.armed = '1';
       const step = () => (track.firstElementChild as HTMLElement | null)?.getBoundingClientRect().width ?? 320;
       const dir = document.documentElement.dir === 'rtl' ? -1 : 1;
-      document.querySelector('[data-avis-prev]')?.addEventListener('click', () => track.scrollBy({ left: -step() * dir, behavior: 'smooth' }));
-      document.querySelector('[data-avis-next]')?.addEventListener('click', () => track.scrollBy({ left: step() * dir, behavior: 'smooth' }));
-      const dots = Array.from(document.querySelectorAll<HTMLElement>('[data-avis-dots] > span'));
+      document.querySelector(`[data-${name}-prev]`)?.addEventListener('click', () => track.scrollBy({ left: -step() * dir, behavior: 'smooth' }));
+      document.querySelector(`[data-${name}-next]`)?.addEventListener('click', () => track.scrollBy({ left: step() * dir, behavior: 'smooth' }));
+      const dots = Array.from(document.querySelectorAll<HTMLElement>(`[data-${name}-dots] > span`));
       const update = () => {
         const i = Math.round(Math.abs(track.scrollLeft) / (step() + 24));
         dots.forEach((d, k) => d.classList.toggle('bg-prairie-deep', k === Math.min(i, dots.length - 1)));
       };
       track.addEventListener('scroll', update, { passive: true });
     }
-    armAvis();
-    document.addEventListener('astro:page-load', armAvis);
+    const armAll = () => {
+      armTrack('avis');
+      armTrack('deals');
+    };
+    armAll();
+    document.addEventListener('astro:page-load', armAll);
   </script>
 </Base>
 
 <style>
+  /* Les bonnes affaires : photo au coin arrondi irrégulier, pastille ronde, bouton vert. */
+  .deal-photo {
+    border-radius: 1.25rem 1.25rem 2.5rem 1.25rem;
+  }
+  .deal-tag {
+    position: absolute;
+    top: 0.5rem;
+    inset-inline-end: 0.5rem;
+    display: inline-flex;
+    height: 4.25rem;
+    width: 4.25rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    padding: 0.25rem;
+    text-align: center;
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 800;
+    line-height: 1.05;
+    transform: rotate(8deg);
+    box-shadow: var(--shadow-card);
+  }
+  .deal-spark {
+    position: absolute;
+    inset-inline-start: 0.75rem;
+    top: 0.75rem;
+    z-index: 2;
+    width: 1.75rem;
+    color: var(--color-prairie-deep);
+  }
+  html[dir='rtl'] .deal-spark {
+    transform: scaleX(-1);
+  }
+  .deals-arrow {
+    position: absolute;
+    top: 42%;
+    z-index: 5;
+    display: none;
+    height: 3.5rem;
+    width: 3.5rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: var(--color-paper);
+    color: var(--color-prairie-deep);
+    box-shadow: var(--shadow-card);
+    transition: transform 0.2s;
+  }
+  .deals-arrow:hover {
+    transform: scale(1.06);
+  }
+  @media (min-width: 1024px) {
+    .deals-arrow {
+      display: inline-flex;
+    }
+  }
   /* Les avis : une bulle organique par client, sa photo posée en haut. */
   .avis-blob {
     padding-top: 6.5rem;

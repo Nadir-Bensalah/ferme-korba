@@ -27,5 +27,7 @@ export type ArtName =
   | 'express-poule'
   | 'express-carte'
   | 'avis-poule'
+  | 'deals-caisse'
+  | 'deals-potager'
   | 'footer-oeufs-heureux'
   | 'footer-gout-local';
