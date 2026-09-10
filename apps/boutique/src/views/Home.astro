@@ -4,6 +4,7 @@ import { brand, displayPrice, formatPrice, seedCategories, seedProducts, seedRec
 import Base from '@/layouts/Base.astro';
 import Picture from '@/components/Picture.astro';
 import AddButton from '@/components/islands/AddButton';
+import { photoSources } from '@/lib/img';
 import ProductCard from '@/components/ProductCard.astro';
 import RecipeCard from '@/components/RecipeCard.astro';
 import SectionHead from '@/components/SectionHead.astro';
@@ -27,6 +28,7 @@ const { lang } = Astro.props;
 const d = t(lang);
 
 const categories = [...seedCategories].sort((a, b) => a.sort - b.sort);
+const hero = photoSources('/images/farm/hero-ferme.jpg');
 const featured = seedProducts.filter((p) => p.is_featured).slice(0, 6);
 // Les bonnes affaires : promos d'abord, puis les plus demandés, quatre en tout.
 const dealScore = (p: (typeof seedProducts)[number]) => (p.compare_at ? 8 : 0) + (p.badges.includes('promo') ? 4 : 0) + (p.badges.includes('best') ? 2 : 0) + (p.is_featured ? 1 : 0);
@@ -90,6 +92,9 @@ const expressIcons: Record<'feuille' | 'ble' | 'bouclier' | 'coeur' | 'camion', 
 ---
 
 <Base lang={lang} ownTrustBar description={d.meta.defaultDescription} image="/images/farm/hero-ferme.jpg" jsonLd={jsonLd}>
+  <Fragment slot="head">
+    <link rel="preload" as="image" type="image/avif" imagesrcset={hero.avif} imagesizes="100vw" fetchpriority="high" />
+  </Fragment>
   <!-- Hero -->
   <section class="relative isolate overflow-hidden bg-ink text-paper" style="min-height: calc(100svh - var(--header-h))">
     <div class="hero-veil absolute inset-0">

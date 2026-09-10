@@ -4,6 +4,7 @@ import { formatPrice, seedProducts } from '@ferme/core';
 import { data } from '@/lib/data';
 import { addToCart } from '@/stores/cart';
 import { t, L } from '@/i18n';
+import { photoSources } from '@/lib/img';
 import { asset, href } from '@/lib/paths';
 import type { Dictionary } from '@/i18n/fr';
 import { reducedMotion, whenIdle } from './shared';
@@ -157,25 +158,15 @@ function OfferCard({ offer: o, lang, d, cutoff, eager }: { offer: Offer; lang: L
   );
 }
 
-/** Photo responsive, même découpage que Picture.astro (WebP 480/960/1600, repli JPEG). */
+/** Photo responsive, même découpage que Picture.astro (AVIF et WebP, repli JPEG). */
 function OfferPicture({ src, className, eager }: { src: string; className: string; eager: boolean }) {
-  const fallback = src || '/images/products/poulet-entier.jpg';
-  const local = fallback.startsWith('/images/');
-  const stem = fallback.replace(/\.(jpe?g|png|webp)$/i, '');
-  const sizes = '(min-width: 1024px) 220px, (min-width: 768px) 28vw, 45vw';
+  const p = photoSources(src);
+  const sizes = '(min-width: 1024px) 320px, 60vw';
   return (
     <picture className="block">
-      {local && <source type="image/webp" srcSet={[480, 960, 1600].map((w) => `${asset(`${stem}-${w}.webp`)} ${w}w`).join(', ')} sizes={sizes} />}
-      <img
-        src={local ? asset(fallback) : fallback}
-        alt=""
-        className={className}
-        loading={eager ? 'eager' : 'lazy'}
-        decoding="async"
-        width={800}
-        height={800}
-        sizes={sizes}
-      />
+      {p.local && <source type="image/avif" srcSet={p.avif} sizes={sizes} />}
+      {p.local && <source type="image/webp" srcSet={p.webp} sizes={sizes} />}
+      <img src={p.fallback} alt="" className={className} loading={eager ? 'eager' : 'lazy'} decoding="async" width={640} height={640} sizes={sizes} />
     </picture>
   );
 }

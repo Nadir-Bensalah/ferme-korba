@@ -1,5 +1,5 @@
 /**
- * Prépare les photos pour le site : JPEG 1600 + WebP 480/960/1600, dans
+ * Prépare les photos pour le site : JPEG 1600 + AVIF et WebP 480/768/1080/1600, dans
  * apps/boutique/public/images/{products,recipes,farm}. Source : assets/photos.
  * Usage : node scripts/images.mjs
  */
@@ -17,7 +17,7 @@ const map = {
   farm: ['hero-ferme', 'fermier', 'poules-plein-air'],
 };
 
-const widths = [480, 960, 1600];
+const widths = [480, 768, 1080, 1600];
 for (const [folder, names] of Object.entries(map)) {
   mkdirSync(join(out, folder), { recursive: true });
   for (const name of names) {
@@ -30,6 +30,7 @@ for (const [folder, names] of Object.entries(map)) {
     await img.clone().resize({ width: 1600, withoutEnlargement: true }).jpeg({ quality: 78, mozjpeg: true }).toFile(join(out, folder, `${name}.jpg`));
     for (const w of widths) {
       await img.clone().resize({ width: w, withoutEnlargement: true }).webp({ quality: 74 }).toFile(join(out, folder, `${name}-${w}.webp`));
+      await img.clone().resize({ width: w, withoutEnlargement: true }).avif({ quality: 52, effort: 4 }).toFile(join(out, folder, `${name}-${w}.avif`));
     }
     // Vignette floue de 24 px pour l'affichage progressif.
     const tiny = await img.clone().resize({ width: 24 }).webp({ quality: 40 }).toBuffer();

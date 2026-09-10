@@ -4,6 +4,7 @@ import type { Badge, CustomerProfile, Lang, Pricing } from '@ferme/core';
 import { clampQty, formatQty, qtyBounds, qtyStep, roundMillimes } from '@ferme/core';
 import { auth } from '@/lib/data';
 import { asset } from '@/lib/paths';
+import { artSources, photoSources } from '@/lib/img';
 import type { Dictionary } from '@/i18n/fr';
 
 /**
@@ -120,14 +121,26 @@ export const badgeLabels: Record<Badge, { fr: string; ar: string; cls: string }>
 };
 
 /** Photo produit dans un îlot : WebP 480 avec repli JPEG. */
-export function ProductImage({ src, alt = '', className = '', size = 480 }: { src: string; alt?: string; className?: string; size?: 480 | 960 }) {
-  const fallback = src || '/images/products/poulet-entier.jpg';
-  const local = fallback.startsWith('/images/');
-  const stem = fallback.replace(/\.(jpe?g|png|webp)$/i, '');
+export function ProductImage({ src, alt = '', className = '', size = 480, sizes }: { src: string; alt?: string; className?: string; size?: 480 | 960; sizes?: string }) {
+  const p = photoSources(src || '/images/products/poulet-entier.jpg');
+  const sz = sizes ?? `${size}px`;
   return (
     <picture className={`block ${className}`}>
-      {local && <source type="image/webp" srcSet={asset(`${stem}-${size}.webp`)} />}
-      <img src={local ? asset(fallback) : fallback} alt={alt} className="h-full w-full object-cover" loading="lazy" decoding="async" width={size} height={size} />
+      {p.local && <source type="image/avif" srcSet={p.avif} sizes={sz} />}
+      {p.local && <source type="image/webp" srcSet={p.webp} sizes={sz} />}
+      <img src={p.fallback} alt={alt} className="h-full w-full object-cover" loading="lazy" decoding="async" width={size} height={size} sizes={sz} />
+    </picture>
+  );
+}
+
+/** Une illustration détourée, côté React : mêmes déclinaisons qu'Art.astro. */
+export function ArtPicture({ name, alt = '', className = '', width, height, sizes }: { name: string; alt?: string; className?: string; width: number; height: number; sizes: string }) {
+  const a = artSources(name);
+  return (
+    <picture className={`block ${className}`}>
+      <source type="image/avif" srcSet={a.avif} sizes={sizes} />
+      <source type="image/webp" srcSet={a.webp} sizes={sizes} />
+      <img src={a.fallback} alt={alt} width={width} height={height} loading="lazy" decoding="async" className="h-full w-full object-contain" aria-hidden={alt ? undefined : 'true'} />
     </picture>
   );
 }

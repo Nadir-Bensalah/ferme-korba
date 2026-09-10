@@ -4,9 +4,9 @@ import type { DeliveryZone, Lang, Product, Settings } from '@ferme/core';
 import { allowedDeliveryDates, deliveryFee, displayPrice, formatPrice, isEstimated, lineTotal, roundMillimes } from '@ferme/core';
 import { addToCart, cartHasEstimated, cartLines, cartSubtotal, removeFromCart, setQty } from '@/stores/cart';
 import { data } from '@/lib/data';
-import { asset, href, routes } from '@/lib/paths';
+import { href, routes } from '@/lib/paths';
 import { t, L } from '@/i18n';
-import { ErrorBox, ProductImage, Skeleton, Stepper, preferredZoneId, useMounted, whenIdle } from './shared';
+import { ArtPicture, ErrorBox, ProductImage, Skeleton, Stepper, preferredZoneId, useMounted, whenIdle } from './shared';
 import { EmptyState, FreeShipBar, IcoCash, IcoCheck, IcoClock, IcoPlus, IcoScale, IcoShield, IcoTruck, Money, cutoffLeft, dayWord, formatKg, formatLeft, lineWeight, useNow } from './tunnel';
 import type { Dictionary } from '@/i18n/fr';
 
@@ -220,10 +220,7 @@ export default function CartPage({ lang }: Props) {
 
         <aside className="fk-recap mt-10 lg:sticky lg:mt-0" style={{ top: 'calc(var(--header-h) + 16px)' }} aria-label={d.cart.summary}>
           <div className="fk-recap-card">
-            <picture className="fk-recap-house" aria-hidden="true">
-              <source type="image/webp" srcSet={`${asset('/images/art/recap-maison-400.webp')} 400w, ${asset('/images/art/recap-maison-800.webp')} 800w`} sizes="240px" />
-              <img src={asset('/images/art/recap-maison.png')} alt="" width={240} height={73} loading="lazy" decoding="async" />
-            </picture>
+            <ArtPicture name="recap-maison" className="fk-recap-house" width={240} height={73} sizes="240px" />
             <h2 className="relative flex items-center gap-3 font-display text-2xl font-extrabold">
               <IcoClipboard />
               {d.cart.summary}
@@ -340,19 +337,13 @@ export default function CartPage({ lang }: Props) {
 
             <div className="mt-6 pe-24 sm:pe-32">
               {lang === 'fr' ? (
-                <picture className="block w-44 -rotate-3 sm:w-52">
-                  <source type="image/webp" srcSet={`${asset('/images/art/footer-oeufs-heureux-400.webp')} 400w, ${asset('/images/art/footer-oeufs-heureux-800.webp')} 800w`} sizes="208px" />
-                  <img src={asset('/images/art/footer-oeufs-heureux.png')} alt={d.cart.happyAlt} width={208} height={78} loading="lazy" decoding="async" />
-                </picture>
+                <ArtPicture name="footer-oeufs-heureux" alt={d.cart.happyAlt} className="w-44 -rotate-3 sm:w-52" width={208} height={78} sizes="208px" />
               ) : (
                 <p className="font-display text-lg font-bold">{d.cart.happyAlt}</p>
               )}
             </div>
           </div>
-          <picture className="fk-recap-eggs" aria-hidden="true">
-            <source type="image/webp" srcSet={`${asset('/images/art/panier-oeufs-olives-400.webp')} 400w, ${asset('/images/art/panier-oeufs-olives-800.webp')} 800w`} sizes="260px" />
-            <img src={asset('/images/art/panier-oeufs-olives.png')} alt="" width={260} height={214} loading="lazy" decoding="async" />
-          </picture>
+          <ArtPicture name="panier-oeufs-olives" className="fk-recap-eggs" width={260} height={214} sizes="260px" />
         </aside>
       </div>
 

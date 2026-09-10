@@ -292,8 +292,9 @@ function SuccessHeader({ lang, title, text }: { lang: Lang; title: string; text:
         ))}
       </div>
       <picture className="block w-40 animate-pop sm:w-48">
-        <source type="image/webp" srcSet={`${asset('/images/art/merci-' + lang + '-400.webp')} 400w, ${asset('/images/art/merci-' + lang + '-800.webp')} 800w`} sizes="192px" />
-        <img src={asset(`/images/art/merci-${lang}.png`)} alt="" width={192} height={192} className="h-full w-full object-contain" aria-hidden="true" />
+        <source type="image/avif" srcSet={artSources(`merci-${lang}`).avif} sizes="192px" />
+        <source type="image/webp" srcSet={artSources(`merci-${lang}`).webp} sizes="192px" />
+        <img src={artSources(`merci-${lang}`).fallback} alt="" width={192} height={192} className="h-full w-full object-contain" aria-hidden="true" />
       </picture>
       <h1 className="text-3xl font-extrabold sm:text-4xl">{title}</h1>
       <p className="text-lg text-ink-2">{text}</p>

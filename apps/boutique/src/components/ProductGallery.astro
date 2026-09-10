@@ -29,15 +29,17 @@ const photos = images.length ? images : ['/images/products/poulet-entier.jpg'];
 const main = photos[0]!;
 const many = photos.length > 1;
 
-/** Même règle que Picture : WebP 480/960/1600, repli JPEG. */
+/** Même règle que Picture : AVIF et WebP 480/768/1080/1600, repli JPEG. */
 const variants = photos.map((src) => {
   const local = src.startsWith('/images/');
   const stem = src.replace(/\.(jpe?g|png|webp)$/i, '');
   return {
     src,
     fallback: local ? asset(src) : src,
-    srcset: local ? [480, 960, 1600].map((w) => `${asset(`${stem}-${w}.webp`)} ${w}w`).join(', ') : '',
+    srcset: local ? [480, 768, 1080, 1600].map((w) => `${asset(`${stem}-${w}.webp`)} ${w}w`).join(', ') : '',
+    avif: local ? [480, 768, 1080, 1600].map((w) => `${asset(`${stem}-${w}.avif`)} ${w}w`).join(', ') : '',
     big: local ? asset(`${stem}-1600.webp`) : src,
+    thumb: local ? asset(`${stem}-480.webp`) : src,
   };
 });
 ---
@@ -78,12 +80,13 @@ const variants = photos.map((src) => {
               data-pg-thumb
               data-src={v.fallback}
               data-srcset={v.srcset}
+              data-avif={v.avif}
               data-big={v.big}
               data-index={i}
               aria-pressed={i === 0 ? 'true' : 'false'}
               aria-label={d.shop.gallery.photo(i + 1, photos.length)}
             >
-              <img src={v.fallback} alt="" width="120" height="120" loading="lazy" decoding="async" />
+              <img src={v.thumb} alt="" width="120" height="120" loading="lazy" decoding="async" />
             </button>
           </li>
         ))}
@@ -324,7 +327,7 @@ const variants = photos.map((src) => {
 
       const frame = root.querySelector<HTMLElement>('[data-pg-frame]');
       const img = frame?.querySelector<HTMLImageElement>('img');
-      const source = frame?.querySelector<HTMLSourceElement>('source');
+      const sources = Array.from(frame?.querySelectorAll<HTMLSourceElement>('source') ?? []);
       const dialog = root.querySelector<HTMLDialogElement>('[data-pg-dialog]');
       const big = root.querySelector<HTMLImageElement>('[data-pg-big]');
       const open = root.querySelector<HTMLButtonElement>('[data-pg-open]');
@@ -345,7 +348,10 @@ const variants = photos.map((src) => {
         const b = thumbs[i];
         if (!b) return;
         index = i;
-        if (source && b.dataset.srcset) source.srcset = b.dataset.srcset;
+        sources.forEach((so) => {
+          const next = so.type === 'image/avif' ? b.dataset.avif : b.dataset.srcset;
+          if (next) so.srcset = next;
+        });
         if (b.dataset.src) img.src = b.dataset.src;
         thumbs.forEach((x, j) => x.setAttribute('aria-pressed', j === i ? 'true' : 'false'));
         if (counter) counter.textContent = `${i + 1}/${thumbs.length}`;
