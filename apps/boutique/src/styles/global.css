@@ -15,6 +15,7 @@
   --font-sans: 'Nunito Sans', 'Noto Sans Arabic', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-arabic: 'Noto Sans Arabic', 'Nunito Sans', ui-sans-serif, system-ui, sans-serif;
   --font-arabic-display: 'Baloo Bhaijaan 2', 'Baloo 2', ui-rounded, ui-sans-serif, system-ui, sans-serif;
+  --font-hand: 'Caveat', 'Baloo 2', cursive;
 
   --color-ink: #16201a;
   --color-ink-2: #3f4a42;
@@ -698,6 +699,13 @@ details[open] .faq-chevron {
 }
 
 @layer utilities {
+  /* Écriture manuscrite, pour les mots qui sonnent comme une note à la main. */
+  .hand {
+    font-family: var(--font-hand);
+  }
+  html[dir='rtl'] .hand {
+    font-family: var(--font-arabic-display);
+  }
   /* La photo de la ferme sur l'accueil : le galet remplit tout le cadre. */
   .farm-blob {
     -webkit-mask-size: 128% 128%;

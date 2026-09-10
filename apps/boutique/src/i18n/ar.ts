@@ -151,6 +151,17 @@ export const ar: Dictionary = {
     farmCta: 'زيارة المزرعة',
     recipesTitle: 'أفكار لعشاء الليلة',
     recipesText: 'وصفات عائلتنا بمنتجات المتجر.',
+    reviewsStats: [
+      { value: '+2 500', label: 'زبون راضٍ' },
+      { value: '4,9/5', label: 'معدل التقييم' },
+      { value: '100 %', label: 'منتجات محلية' },
+    ],
+    reviewsCta: 'اكتشف قصصهم',
+    reviewsThanks: 'شكراً على ثقتكم!',
+    reviewsHappy: 'زبائن سعداء، وهذا واضح!',
+    reviewsTriple: ['منتجات طازجة', 'زبائن سعداء', 'نفس الشغف'],
+    reviewsPrev: 'الرأي السابق',
+    reviewsNext: 'الرأي التالي',
     reviewsTitle: 'يثقون بنا',
     reviews: [
       { name: 'سلمى، قربة', text: 'طعم الدجاج كدجاج جدتي. طلبت صباحاً ووصل الساعة الثالثة.' },

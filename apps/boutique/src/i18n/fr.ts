@@ -150,6 +150,17 @@ export const fr = {
     farmCta: 'Visiter la ferme',
     recipesTitle: 'Des idées pour ce soir',
     recipesText: 'Nos recettes de famille, avec les produits de la boutique.',
+    reviewsStats: [
+      { value: '+2 500', label: 'clients satisfaits' },
+      { value: '4,9/5', label: 'note moyenne' },
+      { value: '100 %', label: 'produits locaux' },
+    ],
+    reviewsCta: 'Découvrir leurs histoires',
+    reviewsThanks: 'Merci pour votre confiance !',
+    reviewsHappy: 'Des clients heureux, ça se voit !',
+    reviewsTriple: ['Des produits frais', 'Des clients heureux', 'La même passion'],
+    reviewsPrev: 'Avis précédent',
+    reviewsNext: 'Avis suivant',
     reviewsTitle: 'Ils nous font confiance',
     reviews: [
       { name: 'Salma, Korba', text: 'Le poulet a le goût de celui de ma grand-mère. Livré à 15 h, commandé le matin.' },

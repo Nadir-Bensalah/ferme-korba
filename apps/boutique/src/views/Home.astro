@@ -295,32 +295,93 @@ const expressIcons: Record<'feuille' | 'ble' | 'bouclier' | 'coeur' | 'camion', 
   </section>
 
   <!-- Avis -->
-  <section class="filigree relative overflow-hidden bg-cream py-16 sm:py-20">
-    <div class="container-x">
-      <SectionHead eyebrow={d.home.reviewsEyebrow} title={d.home.reviewsTitle} text={d.home.reviewsText} />
+  <section class="avis relative overflow-hidden bg-cream py-16 sm:py-20 lg:py-24">
+    <Deco type="persil" class="deco start-6 top-32 hidden w-14 rotate-12 text-prairie/25 lg:block" />
+    <Deco type="persil" class="deco end-[38%] top-10 hidden w-10 -rotate-45 text-prairie/20 lg:block" />
+    <Deco type="persil" class="deco end-24 bottom-24 hidden w-12 rotate-45 text-prairie/25 lg:block" />
+    <Deco type="persil" class="deco start-[36%] bottom-16 hidden w-10 -rotate-12 text-prairie/20 lg:block" />
+    <p class="hand pointer-events-none absolute end-10 top-8 hidden -rotate-6 text-2xl font-semibold text-prairie-deep lg:block xl:end-16 xl:text-3xl" aria-hidden="true">♡ {d.home.reviewsThanks} ♡</p>
+    <Art name="medaille-premium" alt={d.common.premiumMedal} class="pointer-events-none absolute -bottom-4 -start-4 hidden w-40 -rotate-6 lg:block xl:w-48" sizes="192px" />
+    <Art name="avis-poule" class="pointer-events-none absolute -bottom-6 -end-6 hidden w-52 lg:block xl:w-64" sizes="256px" />
+    <p class="hand pointer-events-none absolute bottom-4 end-60 hidden rotate-[-6deg] text-lg font-semibold leading-tight text-prairie-deep xl:block 2xl:end-80 2xl:text-2xl" aria-hidden="true">
+      {d.home.reviewsTriple.map((l) => <span class="block">{l}</span>)}
+      <span class="block text-end">♡</span>
+    </p>
+
+    <div class="mx-auto grid w-full max-w-[1600px] items-center gap-12 px-4 sm:px-6 lg:grid-cols-[300px_minmax(0,1fr)] lg:gap-10 lg:px-16 xl:grid-cols-[340px_minmax(0,1fr)] xl:gap-16 xl:px-24">
+      <div class="reveal lg:self-start lg:pt-6">
+        <p class="eyebrow flex items-center gap-2">
+          <svg class="h-5 w-5 text-prairie" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 19c0-8 5-13 14-14 0 9-5 14-13 14" /><path d="M5 19c3-4 6-7 10-9" /></svg>
+          {d.home.reviewsEyebrow}
+        </p>
+        <h2 class="mt-3 text-4xl font-extrabold leading-[1.02] text-prairie-deep sm:text-5xl">{d.home.reviewsTitle} !</h2>
+        <svg class="mt-3 h-3 w-56 text-yolk" viewBox="0 0 220 12" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" aria-hidden="true"><path d="M3 8c60-6 130-6 214-2" /></svg>
+        <p class="mt-5 text-base leading-relaxed text-ink-2">{d.home.reviewsText}</p>
+        <ul class="mt-8 flex divide-x divide-line">
+          {d.home.reviewsStats.map((st, i) => (
+            <li class:list={['flex flex-col items-center gap-1 text-center', i === 0 ? 'pe-4' : 'px-4']}>
+              {i === 0 && <Icon name="personnes" class="h-8 w-8 text-prairie-deep" strokeWidth={1.5} />}
+              {i === 1 && <Icon name="etoile" class="h-8 w-8 text-prairie-deep" strokeWidth={1.5} />}
+              {i === 2 && <svg class="h-8 w-8 text-prairie-deep" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 19c0-8 5-13 14-14 0 9-5 14-13 14" /><path d="M5 19c3-4 6-7 10-9" /></svg>}
+              <span class="font-display text-2xl font-extrabold leading-none text-ink tabular">{st.value}</span>
+              <span class="text-xs text-ink-3">{st.label}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div class="relative">
+        <button type="button" class="avis-arrow -start-4 lg:-start-8 xl:-start-12" data-avis-prev aria-label={d.home.reviewsPrev}>
+          <svg class="rtl:-scale-x-100" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6" /></svg>
+        </button>
+        <button type="button" class="avis-arrow -end-4 lg:-end-8 xl:-end-12" data-avis-next aria-label={d.home.reviewsNext}>
+          <svg class="rtl:-scale-x-100" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6" /></svg>
+        </button>
+        <ul class="avis-track scrollbar-none flex snap-x snap-mandatory gap-6 overflow-x-auto px-6 pb-4 pt-6 lg:px-10" data-avis-track>
+          {d.home.reviews.map((r, i) => (
+            <li class:list={['avis-card reveal relative w-[82vw] max-w-[22rem] shrink-0 snap-center lg:w-[31%] lg:max-w-none', i === 1 && 'lg:-translate-y-8']} style={`--reveal-delay:${i * 90}ms`}>
+              <div class:list={['avis-blob relative', i % 2 ? 'is-cream' : '']}>
+                <span class="avis-photo" aria-hidden="true">
+                  <span class="avis-initial">{r.name.charAt(0)}</span>
+                </span>
+                <Deco type="persil" class="deco -end-2 top-24 w-10 rotate-12 text-prairie/70" />
+                <svg class="avis-spark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M4 12h5M6 5l4 3M6 19l4-3" /></svg>
+                <div class="avis-body">
+                  <svg class="h-9 w-9 text-prairie-deep" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 12.5C4 8.4 6.6 5.5 10.5 4.5l.7 1.7C8.9 7 7.6 8.4 7.3 10.2H10v6.3H4zm10 0c0-4.1 2.6-7 6.5-8l.7 1.7c-2.3.8-3.6 2.2-3.9 4H21v6.3h-6z" /></svg>
+                  <p class="hand mt-1 text-[1.45rem] font-medium leading-snug text-ink">« {r.text} »</p>
+                  <div class="mt-3 flex items-center gap-0.5 text-yolk" role="img" aria-label={d.home.reviewStars}>
+                    {[0, 1, 2, 3, 4].map(() => (
+                      <span set:html={star} />
+                    ))}
+                  </div>
+                  <footer class="mt-4 flex items-center gap-3">
+                    <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-pill bg-prairie-soft font-display text-base font-extrabold text-prairie-deep" aria-hidden="true">
+                      {r.name.charAt(0)}
+                    </span>
+                    <span class="min-w-0">
+                      <cite class="block truncate text-sm font-bold not-italic text-ink">{r.name}</cite>
+                      <span class="text-xs text-ink-3">{d.home.reviewSource}</span>
+                    </span>
+                  </footer>
+                </div>
+              </div>
+            </li>
+          ))}
+        </ul>
+        <div class="mt-2 flex justify-center gap-2" data-avis-dots aria-hidden="true">
+          {d.home.reviews.map((_, i) => (
+            <span class:list={['h-2.5 w-2.5 rounded-pill bg-line-2 transition-colors', i === 0 && 'bg-prairie-deep']} />
+          ))}
+        </div>
+        <div class="mt-8 flex flex-col items-center gap-4">
+          <a href={href(lang, routes.farm)} class="btn-primary btn-lg min-h-16 bg-prairie-deep px-12 text-lg hover:bg-prairie">
+            {d.home.reviewsCta}
+            <svg class="rtl:rotate-180" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+          </a>
+          <p class="hand text-2xl font-semibold text-prairie-deep">{d.home.reviewsHappy} ♡</p>
+        </div>
+      </div>
     </div>
-    <ul class="scrollbar-none mt-8 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 sm:px-6 lg:mx-auto lg:grid lg:max-w-7xl lg:grid-cols-3 lg:gap-6 lg:overflow-visible lg:px-8">
-      {d.home.reviews.map((r, i) => (
-        <li class="review reveal relative w-[85vw] max-w-sm shrink-0 snap-center overflow-hidden rounded-lg bg-paper p-6 shadow-card lg:w-auto lg:max-w-none" style={`--reveal-delay:${i * 90}ms`}>
-          <Icon name="citation" class="pointer-events-none absolute end-4 top-4 h-12 w-12 text-cream-2" />
-          <div class="relative flex items-center gap-0.5 text-yolk" role="img" aria-label={d.home.reviewStars}>
-            {[0, 1, 2, 3, 4].map(() => (
-              <span set:html={star} />
-            ))}
-          </div>
-          <p class="relative mt-4 text-lg leading-relaxed text-ink">« {r.text} »</p>
-          <footer class="relative mt-5 flex items-center gap-3">
-            <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-pill bg-prairie-soft font-display text-base font-extrabold text-prairie-deep" aria-hidden="true">
-              {r.name.charAt(0)}
-            </span>
-            <span class="min-w-0">
-              <cite class="block truncate text-sm font-bold not-italic text-ink-2">{r.name}</cite>
-              <span class="text-xs text-ink-3">{d.home.reviewSource}</span>
-            </span>
-          </footer>
-        </li>
-      ))}
-    </ul>
     <TornEdge position="bottom" variant="wave" height={26} class="edge-in text-paper" />
   </section>
 
@@ -407,10 +468,95 @@ const expressIcons: Record<'feuille' | 'ble' | 'bouclier' | 'coeur' | 'camion', 
 
   <script>
     import '@/scripts/vitrine';
+    // Les flèches des avis font glisser la piste d'une carte, et les points suivent.
+    function armAvis() {
+      const track = document.querySelector<HTMLElement>('[data-avis-track]');
+      if (!track || track.dataset.armed) return;
+      track.dataset.armed = '1';
+      const step = () => (track.firstElementChild as HTMLElement | null)?.getBoundingClientRect().width ?? 320;
+      const dir = document.documentElement.dir === 'rtl' ? -1 : 1;
+      document.querySelector('[data-avis-prev]')?.addEventListener('click', () => track.scrollBy({ left: -step() * dir, behavior: 'smooth' }));
+      document.querySelector('[data-avis-next]')?.addEventListener('click', () => track.scrollBy({ left: step() * dir, behavior: 'smooth' }));
+      const dots = Array.from(document.querySelectorAll<HTMLElement>('[data-avis-dots] > span'));
+      const update = () => {
+        const i = Math.round(Math.abs(track.scrollLeft) / (step() + 24));
+        dots.forEach((d, k) => d.classList.toggle('bg-prairie-deep', k === Math.min(i, dots.length - 1)));
+      };
+      track.addEventListener('scroll', update, { passive: true });
+    }
+    armAvis();
+    document.addEventListener('astro:page-load', armAvis);
   </script>
 </Base>
 
 <style>
+  /* Les avis : une bulle organique par client, sa photo posée en haut. */
+  .avis-blob {
+    padding-top: 6.5rem;
+  }
+  .avis-body {
+    border-radius: 60% 40% 55% 45% / 45% 55% 45% 55%;
+    background: var(--color-prairie-soft);
+    padding: 6.75rem 1.75rem 2rem;
+    margin-top: -5rem;
+  }
+  .avis-blob.is-cream .avis-body {
+    background: var(--color-cream-2);
+    border-radius: 45% 55% 40% 60% / 55% 45% 55% 45%;
+  }
+  .avis-photo {
+    position: absolute;
+    top: 0;
+    inset-inline-start: 1rem;
+    z-index: 2;
+    display: flex;
+    height: 10.5rem;
+    width: 10.5rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: 55% 45% 50% 50% / 50% 55% 45% 50%;
+    background: color-mix(in srgb, var(--color-prairie) 18%, var(--color-cream));
+    box-shadow: 0 0 0 10px color-mix(in srgb, var(--color-prairie) 10%, transparent);
+  }
+  .avis-initial {
+    font-family: var(--font-display);
+    font-size: 4rem;
+    font-weight: 800;
+    color: var(--color-prairie-deep);
+  }
+  .avis-spark {
+    position: absolute;
+    inset-inline-start: -0.75rem;
+    top: 3rem;
+    width: 2rem;
+    color: var(--color-yolk);
+  }
+  html[dir='rtl'] .avis-spark {
+    transform: scaleX(-1);
+  }
+  .avis-arrow {
+    position: absolute;
+    top: 45%;
+    z-index: 5;
+    display: none;
+    height: 3.5rem;
+    width: 3.5rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: var(--color-paper);
+    color: var(--color-prairie-deep);
+    box-shadow: var(--shadow-card);
+    transition: transform 0.2s;
+  }
+  .avis-arrow:hover {
+    transform: scale(1.06);
+  }
+  @media (min-width: 1024px) {
+    .avis-arrow {
+      display: inline-flex;
+    }
+  }
   /* La carte verte de la livraison express, sur fond vert d'eau. */
   .express {
     background: #e8f1e6;
