@@ -215,8 +215,8 @@ const star = `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor
   </section>
 
   <!-- La ferme -->
-  <section class="relative overflow-hidden bg-cream-2 py-16 sm:py-20 lg:py-24">
-    <div class="container-x grid items-center gap-14 lg:grid-cols-[1.05fr_1fr] lg:gap-12 xl:gap-16">
+  <section class="relative overflow-hidden bg-cream-2 py-16 sm:py-20 lg:py-28">
+    <div class="mx-auto grid w-full max-w-[1600px] items-center gap-14 px-4 sm:px-6 lg:grid-cols-[1fr_1.1fr] lg:gap-16 lg:px-10 xl:gap-24 xl:px-12">
       <div class="reveal farm-visual relative pt-24 sm:pt-28 lg:pt-32">
         <Art name="poules-heureuses" alt={d.home.farmScriptAlt} class="farm-script absolute start-0 top-0 z-20 w-60 sm:w-72 lg:w-80" width={320} height={160} sizes="320px" />
         <Art name="bande-branche" class="deco -end-6 top-8 z-10 w-36 -rotate-[100deg] sm:w-44 lg:w-52" sizes="208px" />
@@ -240,31 +240,33 @@ const star = `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor
         </p>
         <h2 class="reveal mt-3 text-3xl font-extrabold leading-[1.05] sm:text-4xl lg:text-5xl" style="--reveal-delay: 60ms">{d.home.farmTitle}</h2>
         <p class="reveal prose-farm mt-5" style="--reveal-delay: 120ms">{d.home.farmText}</p>
-        <ul class="reveal mt-8 grid gap-4 sm:grid-cols-2 sm:gap-5" style="--reveal-delay: 180ms">
+        <ul class="reveal mt-10 grid gap-5 sm:grid-cols-2 sm:gap-6" style="--reveal-delay: 180ms">
           {d.home.farmCards.map((c, i) => (
-            <li class="farm-card flex items-start gap-4 rounded-xl bg-paper p-5 shadow-card">
-              <span class="flex h-16 w-16 shrink-0 items-center justify-center">
+            <li class="farm-card flex items-start gap-5 rounded-2xl bg-paper p-6 shadow-card xl:p-7">
+              <span class="flex h-20 w-20 shrink-0 items-center justify-center">
                 {i === 3 ? (
-                  <svg class="h-14 w-14 text-prairie" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3" /><circle cx="5.5" cy="10" r="2.2" /><circle cx="18.5" cy="10" r="2.2" /><path d="M7 20v-2a5 5 0 0 1 10 0v2M2 19v-1.5a3.5 3.5 0 0 1 4.5-3.4M22 19v-1.5a3.5 3.5 0 0 0-4.5-3.4" /></svg>
+                  <svg class="h-16 w-16 text-prairie" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3" /><circle cx="5.5" cy="10" r="2.2" /><circle cx="18.5" cy="10" r="2.2" /><path d="M7 20v-2a5 5 0 0 1 10 0v2M2 19v-1.5a3.5 3.5 0 0 1 4.5-3.4M22 19v-1.5a3.5 3.5 0 0 0-4.5-3.4" /></svg>
                 ) : (
-                  <Art name={i === 0 ? 'carte-poule' : i === 1 ? 'carte-feuille' : 'carte-soleil'} class="h-16 w-16" width={64} height={64} sizes="64px" />
+                  <Art name={i === 0 ? 'carte-poule' : i === 1 ? 'carte-feuille' : 'carte-soleil'} class="h-20 w-20" width={80} height={80} sizes="80px" />
                 )}
               </span>
               <span class="min-w-0">
-                <span class="block font-display text-3xl font-extrabold leading-none text-prairie-deep tabular" data-count={c.value}>{c.value}</span>
-                <span class="mt-1.5 block text-[15px] font-bold leading-tight text-ink">{c.label}</span>
-                <span class="mt-1.5 block text-sm leading-snug text-ink-3">{c.text}</span>
+                <span class="block font-display text-4xl font-extrabold leading-none text-prairie-deep tabular" data-count={c.value}>{c.value}</span>
+                <span class="mt-2 block text-base font-bold leading-tight text-ink">{c.label}</span>
+                <span class="mt-2 block text-sm leading-snug text-ink-3">{c.text}</span>
               </span>
             </li>
           ))}
         </ul>
-        <a href={href(lang, routes.farm)} class="reveal btn-primary btn-lg mt-8 bg-prairie-deep hover:bg-prairie" style="--reveal-delay: 240ms">
-          {d.home.farmCta}
-          <svg class="rtl:rotate-180" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
-        </a>
-        <div class="pointer-events-none absolute -bottom-8 end-0 hidden items-end gap-4 lg:flex" aria-hidden="true">
-          <Art name="recap-maison" class="w-64 opacity-90 xl:w-72" sizes="288px" />
-          {lang === 'fr' && <Art name="footer-gout-local" class="mb-6 w-36 -rotate-12" sizes="144px" />}
+        <div class="reveal mt-10 flex items-end justify-between gap-6" style="--reveal-delay: 240ms">
+          <a href={href(lang, routes.farm)} class="btn-primary btn-lg min-h-16 shrink-0 bg-prairie-deep px-10 text-lg hover:bg-prairie">
+            {d.home.farmCta}
+            <svg class="rtl:rotate-180" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+          </a>
+          <div class="pointer-events-none relative hidden pe-4 pt-16 lg:block" aria-hidden="true">
+            <Art name="recap-maison" class="-mb-10 w-72 opacity-90 xl:w-80" sizes="320px" />
+            {lang === 'fr' && <Art name="footer-gout-local" class="absolute -top-2 end-0 w-40 -rotate-12 xl:w-44" sizes="176px" />}
+          </div>
         </div>
       </div>
     </div>
