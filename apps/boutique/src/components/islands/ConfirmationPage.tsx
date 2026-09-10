@@ -3,6 +3,7 @@ import type { Lang, OrderSummaryForCustomer } from '@ferme/core';
 import { brand, fieldErrors, formatPrice, formatQty, isEstimated, registerSchema } from '@ferme/core';
 import { auth, data } from '@/lib/data';
 import { asset, href, routes, whatsappLink } from '@/lib/paths';
+import { artSources } from '@/lib/img';
 import { t, L, formatDate, formatHour } from '@/i18n';
 import { ErrorBox, Notice, ProductImage, Skeleton, TextField, errorMessage, isoToday, localPhone, reducedMotion, useUser } from './shared';
 import { DecoArt, IcoBookmark, IcoCalendar, IcoChat, IcoPhone, IcoTruck, buildIcs, downloadIcs } from './tunnel';
