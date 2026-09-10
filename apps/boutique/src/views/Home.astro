@@ -105,16 +105,7 @@ const expressIcons: Record<'feuille' | 'ble' | 'bouclier' | 'coeur' | 'camion', 
     </div>
 
     <div class="pointer-events-none absolute inset-x-0 top-0 z-10 flex justify-end px-4 pt-6 sm:px-6 lg:px-8 lg:pt-10">
-      <div class="animate-float pointer-events-auto flex items-center gap-3 rounded-lg bg-paper p-3 pe-5 text-ink shadow-float">
-        <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-yolk-soft text-yolk-deep" aria-hidden="true">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z" /><circle cx="7" cy="18" r="2" /><circle cx="17" cy="18" r="2" /></svg>
-        </span>
-        <div class="leading-tight">
-          <p class="text-[11px] font-bold uppercase tracking-wide text-prairie">{d.home.heroCard.eyebrow}</p>
-          <p class="font-display text-base font-extrabold sm:text-lg">{d.home.heroCard.title}</p>
-          <p class="text-xs text-ink-3 sm:text-sm">{d.home.heroCard.text}</p>
-        </div>
-      </div>
+      <Art name="express-carte" alt={d.home.farmScriptAlt} class="animate-float w-44 rotate-3 drop-shadow-[0_18px_30px_rgba(0,0,0,0.35)] sm:w-56 lg:w-64" width={256} height={220} sizes="256px" loading="eager" />
     </div>
 
     <div class="hero-inner container-x relative z-10 flex flex-col justify-end pt-24 sm:pb-20 sm:pt-48 lg:pb-28" style="min-height: calc(100svh - var(--header-h))">
