@@ -1,0 +1,66 @@
+---
+import { GATE_HASH } from '@/gate';
+
+/**
+ * L'écran de mot de passe : tant que le visiteur ne l'a pas donné, la page
+ * reste cachée. L'empreinte du mot de passe est comparée dans le navigateur
+ * et retenue dans le navigateur ; c'est une porte pour prospects, pas un
+ * coffre-fort : le site reste un site statique public.
+ */
+const enabled = GATE_HASH.length === 64;
+---
+
+{
+  enabled && (
+    <>
+      <style is:inline>
+        html:not(.gate-ok) body > *:not(.gate) { display: none !important; }
+        .gate { position: fixed; inset: 0; z-index: 1000; display: flex; align-items: center; justify-content: center; background: #104628; padding: 1.5rem; }
+        html.gate-ok .gate { display: none; }
+        .gate-card { width: 100%; max-width: 380px; background: #fff; border-radius: 20px; padding: 2rem 1.75rem; text-align: center; box-shadow: 0 30px 60px -20px rgba(0,0,0,.5); font-family: 'Nunito Sans', system-ui, sans-serif; color: #16201a; }
+        .gate-card h1 { margin: 0 0 .25rem; font-size: 1.35rem; font-weight: 800; }
+        .gate-card p { margin: 0 0 1.25rem; font-size: .9rem; color: #6b7566; }
+        .gate-card input { width: 100%; box-sizing: border-box; border: 1px solid #d3d0c4; border-radius: 12px; padding: .8rem 1rem; font-size: 1rem; margin-bottom: .75rem; }
+        .gate-card button { width: 100%; border: 0; border-radius: 999px; padding: .85rem; font-size: 1rem; font-weight: 700; color: #fff; background: #104628; cursor: pointer; }
+        .gate-err { color: #c8442b; font-size: .85rem; min-height: 1.2rem; margin-top: .5rem; }
+        .gate-foot { margin-top: 1.25rem; font-size: .75rem; color: #6b7566; }
+      </style>
+      <script is:inline define:vars={{ hash: GATE_HASH }}>
+        (function () {
+          try {
+            if (localStorage.getItem('fk:gate') === hash) document.documentElement.classList.add('gate-ok');
+          } catch (e) {}
+          window.__gateHash = hash;
+        })();
+      </script>
+      <div class="gate" role="dialog" aria-labelledby="gate-title">
+        <form class="gate-card" id="gate-form">
+          <h1 id="gate-title">Site en accès restreint</h1>
+          <p>Démo réservée. Entrez le mot de passe que Capmedia Digital vous a communiqué.</p>
+          <input type="password" id="gate-pass" autocomplete="current-password" placeholder="Mot de passe" autofocus />
+          <button type="submit">Entrer</button>
+          <div class="gate-err" id="gate-err" aria-live="polite" />
+          <div class="gate-foot">Capmedia Digital · contact@capmedia.tn</div>
+        </form>
+      </div>
+      <script is:inline>
+        (function () {
+          var form = document.getElementById('gate-form');
+          if (!form) return;
+          form.addEventListener('submit', async function (e) {
+            e.preventDefault();
+            var v = document.getElementById('gate-pass').value.trim();
+            var buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(v));
+            var hex = Array.from(new Uint8Array(buf)).map(function (b) { return b.toString(16).padStart(2, '0'); }).join('');
+            if (hex === window.__gateHash) {
+              try { localStorage.setItem('fk:gate', hex); } catch (err) {}
+              document.documentElement.classList.add('gate-ok');
+            } else {
+              document.getElementById('gate-err').textContent = 'Mot de passe incorrect.';
+            }
+          });
+        })();
+      </script>
+    </>
+  )
+}

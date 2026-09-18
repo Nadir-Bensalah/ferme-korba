@@ -8,6 +8,8 @@ import { href, asset, switchLangPath, routes } from '@/lib/paths';
 import Header from '@/components/Header.astro';
 import TrustBar from '@/components/TrustBar.astro';
 import Footer from '@/components/Footer.astro';
+import Gate from '@/components/Gate.astro';
+import { GATE_HASH } from '@/gate';
 import BottomBar from '@/components/BottomBar.astro';
 import Toasts from '@/components/islands/Toasts';
 import FloatingCart from '@/components/islands/FloatingCart';
@@ -83,7 +85,7 @@ const ld = [business, ...(jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) :
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>{fullTitle}</title>
     <meta name="description" content={desc} />
-    {noindex ? <meta name="robots" content="noindex, nofollow" /> : <meta name="robots" content="index, follow, max-image-preview:large" />}
+    {noindex || GATE_HASH ? <meta name="robots" content="noindex, nofollow" /> : <meta name="robots" content="index, follow, max-image-preview:large" />}
     <link rel="canonical" href={canonical} />
     <link rel="alternate" hreflang="fr-TN" href={`${site}${frPath}`} />
     <link rel="alternate" hreflang="ar-TN" href={`${site}${arPath}`} />
@@ -117,6 +119,7 @@ const ld = [business, ...(jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) :
     <slot name="head" />
   </head>
   <body class:list={['flex min-h-dvh flex-col', !noBottomBar && 'pb-bottom-bar lg:pb-0']}>
+    <Gate />
     <a href="#contenu" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:rounded-md focus:bg-yolk focus:px-4 focus:py-2 focus:font-bold">{d.nav.skip}</a>
     <Header lang={lang} />
     {!ownTrustBar && <TrustBar lang={lang} attached />}
