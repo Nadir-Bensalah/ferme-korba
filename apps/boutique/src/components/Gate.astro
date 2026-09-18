@@ -27,10 +27,40 @@ const enabled = GATE_HASH.length === 64;
       </style>
       <script is:inline define:vars={{ hash: GATE_HASH }}>
         (function () {
-          try {
-            if (localStorage.getItem('fk:gate') === hash) document.documentElement.classList.add('gate-ok');
-          } catch (e) {}
-          window.__gateHash = hash;
+          if (window.__gateArmed) return;
+          window.__gateArmed = true;
+          var KEY = 'fk:gate';
+          function unlocked() {
+            try { return localStorage.getItem(KEY) === hash; } catch (e) { return window.__gateOk === true; }
+          }
+          function apply() {
+            if (unlocked()) document.documentElement.classList.add('gate-ok');
+          }
+          apply();
+          // Les pages suivantes arrivent par navigation douce : on rejoue la vérification à chaque fois.
+          document.addEventListener('astro:after-swap', apply);
+          document.addEventListener('astro:page-load', apply);
+          // Le formulaire est écouté au niveau du document : il survit aux changements de page.
+          document.addEventListener('submit', async function (e) {
+            var form = e.target;
+            if (!form || form.id !== 'gate-form') return;
+            e.preventDefault();
+            var input = form.querySelector('#gate-pass');
+            var err = form.querySelector('#gate-err');
+            var v = (input && input.value || '').trim().toLowerCase();
+            var hex = '';
+            try {
+              var buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(v));
+              hex = Array.from(new Uint8Array(buf)).map(function (b) { return b.toString(16).padStart(2, '0'); }).join('');
+            } catch (e2) {}
+            if (hex === hash) {
+              window.__gateOk = true;
+              try { localStorage.setItem(KEY, hex); } catch (e3) {}
+              document.documentElement.classList.add('gate-ok');
+            } else if (err) {
+              err.textContent = 'Mot de passe incorrect. Vérifiez la touche majuscule et les espaces.';
+            }
+          });
         })();
       </script>
       <div class="gate" role="dialog" aria-labelledby="gate-title">
@@ -43,24 +73,6 @@ const enabled = GATE_HASH.length === 64;
           <div class="gate-foot">Capmedia Digital · contact@capmedia.tn</div>
         </form>
       </div>
-      <script is:inline>
-        (function () {
-          var form = document.getElementById('gate-form');
-          if (!form) return;
-          form.addEventListener('submit', async function (e) {
-            e.preventDefault();
-            var v = document.getElementById('gate-pass').value.trim().toLowerCase();
-            var buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(v));
-            var hex = Array.from(new Uint8Array(buf)).map(function (b) { return b.toString(16).padStart(2, '0'); }).join('');
-            if (hex === window.__gateHash) {
-              try { localStorage.setItem('fk:gate', hex); } catch (err) {}
-              document.documentElement.classList.add('gate-ok');
-            } else {
-              document.getElementById('gate-err').textContent = 'Mot de passe incorrect. Vérifiez la touche majuscule et les espaces.';
-            }
-          });
-        })();
-      </script>
     </>
   )
 }
